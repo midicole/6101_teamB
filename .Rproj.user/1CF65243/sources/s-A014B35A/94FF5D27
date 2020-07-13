@@ -1,0 +1,33 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1594676985433.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "94FF5D27",
+    "lastKnownWriteTime" : 0,
+    "last_content_update" : 1594676985433,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "22EA5C36",
+        "caption" : "Melbourne_housing_FULL",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=Melbourne_housing_FULL&cache_key=22EA5C36",
+        "displayedObservations" : 34857,
+        "environment" : "",
+        "expression" : "Melbourne_housing_FULL",
+        "object" : "Melbourne_housing_FULL",
+        "preview" : 0,
+        "totalObservations" : 34857,
+        "variables" : 21
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
