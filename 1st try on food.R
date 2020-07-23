@@ -3,6 +3,7 @@ dim(food)
 str(food)
 food$State<-as.factor(food$State)
 
+### sampling process removed, new "food.csv" has been uploaded
 ### Model Building
 summary(lm(LILATracts_1And10~.-CensusTract-State,data = food))
 glm_1sttry<-glm(LILATracts_1And10~.-CensusTract-State,data = food,family = "binomial")
