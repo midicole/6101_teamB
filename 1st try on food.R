@@ -92,3 +92,45 @@ res.aov_17 <- aov(POP2010 ~ TractOMultir, data = my_data)
 res.aov_18 <- aov(POP2010 ~ TractHispanic, data = my_data)
 res.aov_19 <- aov(POP2010 ~ TractHUNV, data = my_data)
 res.aov_20 <- aov(POP2010 ~ TractSNAP, data = my_data)
+
+
+summary(res.aov_1)
+summary(res.aov_2)
+summary(res.aov_3)
+summary(res.aov_4)
+summary(res.aov_5)
+summary(res.aov_6)
+summary(res.aov_7)
+summary(res.aov_8)
+summary(res.aov_8)
+summary(res.aov_9)
+summary(res.aov_10)
+summary(res.aov_11)
+summary(res.aov_12)
+summary(res.aov_13)
+summary(res.aov_14)
+summary(res.aov_15)
+summary(res.aov_16)
+summary(res.aov_17)
+summary(res.aov_18)
+summary(res.aov_19)
+summary(res.aov_20)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
