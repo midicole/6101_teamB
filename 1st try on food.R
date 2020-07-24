@@ -2,6 +2,7 @@
 dim(food)
 str(food)
 food$State<-as.factor(food$State)
+food$Region<-as.factor(food$Region)
 
 ### sampling process removed, new "food.csv" has been uploaded
 ### Model Building
