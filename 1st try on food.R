@@ -70,5 +70,25 @@ res.aov <- aov(POP2010 ~ Urban, data = my_data)
 
 summary(res.aov)
 
-####
+#### Di Anova copy and paste part
 
+res.aov_1 <- aov(POP2010 ~ Urban, data = my_data)
+res.aov_2 <- aov(POP2010 ~ State, data = my_data)
+res.aov_3 <- aov(POP2010 ~ Region, data = my_data)
+res.aov_4 <- aov(POP2010 ~ OHU2010, data = my_data)
+res.aov_5 <- aov(POP2010 ~ NUMGQTRS, data = my_data)
+res.aov_6 <- aov(POP2010 ~ LILATracts_1And10, data = my_data)
+res.aov_7 <- aov(POP2010 ~ PovertyRate, data = my_data)
+res.aov_8 <- aov(POP2010 ~ MedianFamilyIncome, data = my_data)
+res.aov_9 <- aov(POP2010 ~ TractLOWI, data = my_data)
+res.aov_10 <- aov(POP2010 ~ TractKids, data = my_data)
+res.aov_11 <- aov(POP2010 ~ TractSeniors, data = my_data)
+res.aov_12 <- aov(POP2010 ~ TractWhite, data = my_data)
+res.aov_13 <- aov(POP2010 ~ TractBlack, data = my_data)
+res.aov_14 <- aov(POP2010 ~ TractAsian, data = my_data)
+res.aov_15 <- aov(POP2010 ~ TractNHOPI, data = my_data)
+res.aov_16 <- aov(POP2010 ~ TractAIAN, data = my_data)
+res.aov_17 <- aov(POP2010 ~ TractOMultir, data = my_data)
+res.aov_18 <- aov(POP2010 ~ TractHispanic, data = my_data)
+res.aov_19 <- aov(POP2010 ~ TractHUNV, data = my_data)
+res.aov_20 <- aov(POP2010 ~ TractSNAP, data = my_data)
