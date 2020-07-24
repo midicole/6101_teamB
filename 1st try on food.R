@@ -71,3 +71,10 @@ summary(res.aov)
 
 ####
 
+# Ashley Chi-Square (only works with two categotical variables)
+chisq.test(food$Urban,y=food$LILATracts_1And10)
+chisq.test(food$State, y=food$LILATracts_1And10)
+
+
+# Making Regions into a dummy Variable 
+state.regions <- factor(food.access$Region, levels= c(""))
