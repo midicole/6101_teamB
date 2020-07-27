@@ -4,10 +4,34 @@ dim(food)
 str(food)
 food$State<-as.factor(food$State)
 
+# Changed y variable name 
+colnames(food)[8] <- c("Desert")
+
+# Make Regions a factor 
+food$Region <- as.factor(food$Region)
+str(food)
+
+# Make Urban a factor 
+food$Urban<- as.factor(food$Urban)
+str(food)
+levels(food$Urban)
+
+#Correlation Tests on x variables and y 
+cor.test(food$POP2010, food$Desert)
+cor.test(food$TractBlack, food$Desert)
+cor.test(food$PovertyRate, food$Desert)
+cor.test(food$TractSNAP, food$Desert)
+
+# Mapping Census Data
+library(tigris)
+library(acs)
+library(stringr) 
+
+
 ### sampling process removed, new "food.csv" has been uploaded
 ### Model Building
-summary(lm(LILATracts_1And10~.-CensusTract-State,data = food))
-glm_1sttry<-glm(LILATracts_1And10~.-CensusTract-State,data = food,family = "binomial")
+summary(lm(Desert~.-CensusTract-State,data = food))
+glm_1sttry<-glm(Desert~.-CensusTract-State,data = food,family = "binomial")
 summary(glm_1sttry)
 
 
@@ -26,7 +50,7 @@ levels(my_data$State)
 #Creating levels as seen under the my_data
 
 my_data$State <- ordered(my_data$POP2010) 
-                         levels = c("State", "Urban", "POP2010","OHU2010", "NUMGQTRS", "LILATracts_1And10", "PovertyRate", "MedianFamilyIncome",
+                         levels = c("State", "Urban", "POP2010","OHU2010", "NUMGQTRS", "LILATracts_1And10]", "PovertyRate", "MedianFamilyIncome",
                                     "TractLOWI", "TractKids", "TractSenios", "TractWhite", "TractBlack", "TractAsian", "TractNHOPI", "TractAIAN", "TractOMultir", 
                                     "TractHispanic","TractHUNV","TractSNAP")
 library(dplyr)
@@ -73,12 +97,11 @@ summary(res.aov)
 ####
 
 # Ashley Chi-Square (only works with two categotical variables)
-chisq.test(food$Urban,y=food$LILATracts_1And10)
-chisq.test(food$State, y=food$LILATracts_1And10)
+chisq.test(food$Urban,y=food$Desert)
+chisq.test(food$Region, y=food$Desert)
+chisq.test(food$State, y=food$Desert)
 
 
-# Making Regions into a dummy Variable 
-state.regions <- factor(food.access$Region, levels= c(""))
 =======
 ### now we use dataset food on the master branch which has been extracted 
 dim(food)
