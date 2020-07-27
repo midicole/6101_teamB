@@ -117,6 +117,24 @@ summary(res.aov_19)
 summary(res.aov_20)
 
 
+### grahphs
+boxplot(POP2010~Urban,data=food,main="Urban")
+
+boxplot(POP2010~LILATracts_1And10,data=food,main="LILATracts_1And10")
+
+t.test(y=food$POP2010,x=food$Urban)
+### results indicate that there is a difference for POP2010 between urban=1 and urban=1
+### mean(food$POP2010[food$Urban==0])
+### mean(food$POP2010[food$Urban==1])
+
+t.test(y=food$POP2010,x=food$LILATracts_1And10)
+
+food_without_firstthree<-food[,c(-1,-2,-3)]
+install.packages("car")
+library(car)
+cor(food_without_firstthree)
+scatterplotMatrix(food_without_firstthree,spread=FALSE,smoother.args=list(lty=2),main="scatter plot matrix")
+### this step took me like 5 minutes, didn't use pairs() here because it may need more time
 
 
 
