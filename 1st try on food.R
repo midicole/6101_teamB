@@ -1,5 +1,5 @@
-<<<<<<< HEAD
 ### now we use dataset food on the master branch which has been extracted 
+food <- data.frame(read.csv("food.csv"))
 dim(food)
 str(food)
 food$State<-as.factor(food$State)
@@ -11,10 +11,28 @@ colnames(food)[8] <- c("Desert")
 food$Region <- as.factor(food$Region)
 str(food)
 
-# Make Urban a factor 
-food$Urban<- as.factor(food$Urban)
-str(food)
-levels(food$Urban)
+# Deciding Best Variaables 
+install.packages("ISLR")
+install.packages("leaps")
+# Forward Selection
+reg.best10.forward <- regsubsets(Desert~-CensusTract-State-TractLOWI-TractKids-TractSeniors, data = food, nvmax=10, nbest=1, method="forwad")
+plot(reg.best10.forward, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.best10.forward, scale = "cp", main = "Cp")
+plot(reg.best10.forward, scale = "bic", main = "BIC")
+
+# Backward Selection
+reg.best10.bkwd <- regsubsets(Desert~., data= food, nvmax=10, nbest=1, method="backward")
+plot(reg.best10.bkwd, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.best10.bkwd, scale = "bic", main = "BIC")
+plot(reg.best10.bkwd, scale = "aic", main = "AIC")
+
+# Sequential Selection 
+install.packages("ISLR")
+install.packages("leaps")
+reg.best10.seq <- regsubsets(Desert~., data= food, nvmax=10, nbest=1, method="seqrep")
+plot(reg.best10.seq, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.best10.seq, scale = "aic", main = "AIC")
+plot(reg.best10.seq, scale = "bic", main = "BIC")
 
 #Correlation Tests on x variables and y 
 cor.test(food$POP2010, food$Desert)
@@ -102,7 +120,6 @@ chisq.test(food$Region, y=food$Desert)
 chisq.test(food$State, y=food$Desert)
 
 
-=======
 ### now we use dataset food on the master branch which has been extracted 
 dim(food)
 str(food)
@@ -197,4 +214,3 @@ res.aov_17 <- aov(POP2010 ~ TractOMultir, data = my_data)
 res.aov_18 <- aov(POP2010 ~ TractHispanic, data = my_data)
 res.aov_19 <- aov(POP2010 ~ TractHUNV, data = my_data)
 res.aov_20 <- aov(POP2010 ~ TractSNAP, data = my_data)
->>>>>>> d1e9fff705beed85ed6101aac89ff9b58d7d8343
