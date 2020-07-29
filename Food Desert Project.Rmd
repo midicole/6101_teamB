@@ -3,7 +3,7 @@ title: "Food Deserts in the United States"
 author: "Team B"
 date: "7/28/2020"
 output: 
- html_document
+ html_document:
    code_folding: hide
    number_sections: true
    toc: yes
