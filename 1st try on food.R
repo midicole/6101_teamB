@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ### now we use dataset food on the master branch which has been extracted 
 dim(food)
 str(food)
@@ -103,6 +104,8 @@ chisq.test(food$State, y=food$Desert)
 
 
 =======
+=======
+>>>>>>> 90b8ce984ad4025db84a61ea10f398584d360ad0
 ### now we use dataset food on the master branch which has been extracted 
 dim(food)
 str(food)
@@ -197,4 +200,67 @@ res.aov_17 <- aov(POP2010 ~ TractOMultir, data = my_data)
 res.aov_18 <- aov(POP2010 ~ TractHispanic, data = my_data)
 res.aov_19 <- aov(POP2010 ~ TractHUNV, data = my_data)
 res.aov_20 <- aov(POP2010 ~ TractSNAP, data = my_data)
+<<<<<<< HEAD
 >>>>>>> d1e9fff705beed85ed6101aac89ff9b58d7d8343
+=======
+
+
+summary(res.aov_1)
+summary(res.aov_2)
+summary(res.aov_3)
+summary(res.aov_4)
+summary(res.aov_5)
+summary(res.aov_6)
+summary(res.aov_7)
+summary(res.aov_8)
+summary(res.aov_8)
+summary(res.aov_9)
+summary(res.aov_10)
+summary(res.aov_11)
+summary(res.aov_12)
+summary(res.aov_13)
+summary(res.aov_14)
+summary(res.aov_15)
+summary(res.aov_16)
+summary(res.aov_17)
+summary(res.aov_18)
+summary(res.aov_19)
+summary(res.aov_20)
+
+
+### grahphs
+boxplot(POP2010~Urban,data=food,main="Urban")
+
+boxplot(POP2010~LILATracts_1And10,data=food,main="LILATracts_1And10")
+
+t.test(y=food$POP2010,x=food$Urban)
+### results indicate that there is a difference for POP2010 between urban=1 and urban=1
+### mean(food$POP2010[food$Urban==0])
+### mean(food$POP2010[food$Urban==1])
+
+t.test(y=food$POP2010,x=food$LILATracts_1And10)
+
+food_without_firstthree<-food[,c(-1,-2,-3)]
+install.packages("car")
+library(car)
+cor(food_without_firstthree)
+scatterplotMatrix(food_without_firstthree,spread=FALSE,smoother.args=list(lty=2),main="scatter plot matrix")
+### this step took me like 5 minutes, didn't use pairs() here because it may need more time
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 90b8ce984ad4025db84a61ea10f398584d360ad0
