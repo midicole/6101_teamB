@@ -1,13 +1,14 @@
 ---
-title: "Food Desert Project Team B"
-author: "Ashley George"
+title: "Food Deserts in the United States"
+author: "Team B"
 date: "7/28/2020"
-output: html_document
-code_folding: hide
-    number_sections: true
-    toc: yes
-    toc_depth: 3
-    toc_float: yes
+output: 
+  html_document
+   code_folding: hide
+   number_sections: true
+   toc: yes
+   toc_depth: 3
+   toc_float: yes
   pdf_document:
     toc: yes
     toc_depth: '3'
@@ -32,6 +33,12 @@ unloadPkg = function(pkg, character.only = FALSE) {
 loadPkg("xtable")
 loadPkg("kableExtra")
 loadPkg("stringi")
+loadPkg("leaps")
+loadPkg("ggplot2")
+loadPkg("ggmap")
+loadPkg("ISLR")
+loadPkg("faraway")
+
 
 xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bso="striped", wide=FALSE) { 
   #' Combining base::summary, xtable, and kableExtra, to easily display model summary. 
@@ -112,16 +119,11 @@ xkablevif = function(model, title="VIFs of the model", digits = 3, pos="left", b
   if (wide) { vifs <- t(vifs) }
   xkabledply( vifs, title=title, digits = digits, pos=pos, bso=bso )
 }
-
-# Load leaps :: regsubset() package 
-loadPkg("ISLR")
 ```
 
 
-
-
-
-
+# Chapter 1 Introduction 
+For years social scientists have used various parameters to define food deserts. Food dese
 
 ## Exploratory Data Analysis
 
@@ -135,31 +137,31 @@ food$Region <- as.factor(food$Region)
 
 # Changed y variable name 
 colnames(food)[8] <- c("Desert")
-str(food)
+#str(food)
 
 # Deciding Best Varaible with Forward Selection and Subsetting
-reg.10.forward <-regsubsets(Desert~-CensusTract-State-TractLOWI-TractKids-TractSeniors, data = food, nvmax=10, nbest=1, method="forwad")
+reg.10.forward <-regsubsets(Desert~.-CensusTract-State-TractLOWI-TractKids-TractSeniors, data = food, nvmax=10, nbest=1, method="forward")
 plot(reg.10.forward, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.10.forward, scale = "cp", main = "Cp")
+plot(reg.10.forward, scale = "Cp", main = "CP")
 plot(reg.10.forward, scale = "bic", main = "BIC")
 
 # Backward Selection
-reg.best10.bkwd <- regsubsets(Desert~-CensusTract-State-TractLOWI-TractKids-TractSeniors, data= food, nvmax=10, nbest=1, method="backward")
+reg.best10.bkwd <- regsubsets(Desert~.-CensusTract-State-TractLOWI-TractKids-TractSeniors, data= food, nvmax=10, nbest=1, method="backward")
 plot(reg.best10.bkwd, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.best10.bkwd, scale = "bic", main = "BIC")
-plot(reg.best10.bkwd, scale = "aic", main = "AIC")
+plot(reg.best10.bkwd, scale = "Cp", main = "CP")
 
 # Sequential Selection 
-reg.best10.seq <- regsubsets(Desert~-CensusTract-State-TractLOWI-TractKids-TractSeniors, data= food, nvmax=10, nbest=1, method="seqrep")
+reg.best10.seq <- regsubsets(Desert~CensusTract+State+TractLOWI+TractKids+TractSeniors, data= food, nvmax=10, nbest=1, method="seqrep")
 plot(reg.best10.seq, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.best10.seq, scale = "aic", main = "AIC")
+plot(reg.best10.seq, scale = "Cp", main = "CP")
 plot(reg.best10.seq, scale = "bic", main = "BIC")
 
 #Correlation Tests on x variables and y 
-cor.test(food$POP2010, food$Desert)
-cor.test(food$TractBlack, food$Desert)
-cor.test(food$PovertyRate, food$Desert)
-cor.test(food$TractSNAP, food$Desert)
+#cor.test(food$POP2010, food$Desert)
+#cor.test(food$TractBlack, food$Desert)
+#cor.test(food$PovertyRate, food$Desert)
+#cor.test(food$TractSNAP, food$Desert)
 ```
 
 # Mapping Census Data
@@ -170,9 +172,14 @@ library(stringr)
 
 ### sampling process removed, new "food.csv" has been uploaded
 ### Model Building
+
+```{r}
 summary(lm(Desert~.-CensusTract-State,data = food))
 glm_1sttry<-glm(Desert~.-CensusTract-State,data = food,family = "binomial")
 summary(glm_1sttry)
+
+
+```
 
 
 
