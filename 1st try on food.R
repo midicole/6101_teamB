@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 ### now we use dataset food on the master branch which has been extracted 
 dim(food)
 str(food)
@@ -103,9 +101,6 @@ chisq.test(food$Region, y=food$Desert)
 chisq.test(food$State, y=food$Desert)
 
 
-=======
-=======
->>>>>>> 90b8ce984ad4025db84a61ea10f398584d360ad0
 ### now we use dataset food on the master branch which has been extracted 
 dim(food)
 str(food)
@@ -200,10 +195,6 @@ res.aov_17 <- aov(POP2010 ~ TractOMultir, data = my_data)
 res.aov_18 <- aov(POP2010 ~ TractHispanic, data = my_data)
 res.aov_19 <- aov(POP2010 ~ TractHUNV, data = my_data)
 res.aov_20 <- aov(POP2010 ~ TractSNAP, data = my_data)
-<<<<<<< HEAD
->>>>>>> d1e9fff705beed85ed6101aac89ff9b58d7d8343
-=======
-
 
 summary(res.aov_1)
 summary(res.aov_2)
@@ -263,4 +254,3 @@ scatterplotMatrix(food_without_firstthree,spread=FALSE,smoother.args=list(lty=2)
 
 
 
->>>>>>> 90b8ce984ad4025db84a61ea10f398584d360ad0
