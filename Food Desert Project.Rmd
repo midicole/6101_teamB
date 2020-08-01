@@ -38,6 +38,9 @@ loadPkg("ggplot2")
 loadPkg("ggmap")
 loadPkg("ISLR")
 loadPkg("faraway")
+loadPkg("tigris")
+loadPkg("acs")
+loadPkg("stringr") 
 
 
 xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bso="striped", wide=FALSE) { 
@@ -158,33 +161,31 @@ plot(reg.best10.seq, scale = "Cp", main = "CP")
 plot(reg.best10.seq, scale = "bic", main = "BIC")
 
 #Correlation Tests on x variables and y 
-#cor.test(food$POP2010, food$Desert)
-#cor.test(food$TractBlack, food$Desert)
-#cor.test(food$PovertyRate, food$Desert)
-#cor.test(food$TractSNAP, food$Desert)
+cor.test(food$POP2010, food$Desert)
+cor.test(food$TractBlack, food$Desert)
+cor.test(food$PovertyRate, food$Desert)
+cor.test(food$TractSNAP, food$Desert)
 ```
 
-# Mapping Census Data
-library(tigris)
-library(acs)
-library(stringr) 
 
 
-### sampling process removed, new "food.csv" has been uploaded
-### Model Building
+
 
 ```{r}
+### sampling process removed, new "food.csv" has been uploaded
+### Model Building
 summary(lm(Desert~.-CensusTract-State,data = food))
 glm_1sttry<-glm(Desert~.-CensusTract-State,data = food,family = "binomial")
 summary(glm_1sttry)
-
+exp(glm_1sttry$coefficients)
 
 ```
 
 
 
-#Eric ANOVA building test:
 
+```{r}
+#Eric ANOVA building test:
 summary(food)
 
 my_data <- food
@@ -243,27 +244,18 @@ summary(res.aov)
 
 ####
 
+```
+
+```{r}
 # Ashley Chi-Square (only works with two categotical variables)
 chisq.test(food$Urban,y=food$Desert)
 chisq.test(food$Region, y=food$Desert)
 chisq.test(food$State, y=food$Desert)
-
-
-=======
-### now we use dataset food on the master branch which has been extracted 
-dim(food)
-str(food)
-food$State<-as.factor(food$State)
-food$Region<-as.factor(food$Region)
-
-### sampling process removed, new "food.csv" has been uploaded
-### Model Building
-summary(lm(LILATracts_1And10~.-CensusTract-State,data = food))
-glm_1sttry<-glm(LILATracts_1And10~.-CensusTract-State,data = food,family = "binomial")
-summary(glm_1sttry)
+```
 
 
 
+```{r}
 #Eric ANOVA building test:
 
 summary(food)
@@ -321,8 +313,33 @@ res.aov <- aov(POP2010 ~ Urban, data = my_data)
 # Summary of the analysis
 
 summary(res.aov)
+```
 
+
+
+```{r}
 #### Di Anova copy and paste part
+res.aov_1 <- aov(POP2010 ~ Urban, data = my_data)
+res.aov_2 <- aov(POP2010 ~ State, data = my_data)
+res.aov_3 <- aov(POP2010 ~ Region, data = my_data)
+res.aov_4 <- aov(POP2010 ~ OHU2010, data = my_data)
+res.aov_5 <- aov(POP2010 ~ NUMGQTRS, data = my_data)
+res.aov_6 <- aov(POP2010 ~ LILATracts_1And10, data = my_data)
+res.aov_7 <- aov(POP2010 ~ PovertyRate, data = my_data)
+res.aov_8 <- aov(POP2010 ~ MedianFamilyIncome, data = my_data)
+res.aov_9 <- aov(POP2010 ~ TractLOWI, data = my_data)
+res.aov_10 <- aov(POP2010 ~ TractKids, data = my_data)
+res.aov_11 <- aov(POP2010 ~ TractSeniors, data = my_data)
+res.aov_12 <- aov(POP2010 ~ TractWhite, data = my_data)
+res.aov_13 <- aov(POP2010 ~ TractBlack, data = my_data)
+res.aov_14 <- aov(POP2010 ~ TractAsian, data = my_data)
+res.aov_15 <- aov(POP2010 ~ TractNHOPI, data = my_data)
+res.aov_16 <- aov(POP2010 ~ TractAIAN, data = my_data)
+res.aov_17 <- aov(POP2010 ~ TractOMultir, data = my_data)
+res.aov_18 <- aov(POP2010 ~ TractHispanic, data = my_data)
+res.aov_19 <- aov(POP2010 ~ TractHUNV, data = my_data)
+res.aov_20 <- aov(POP2010 ~ TractSNAP, data = my_data)
+```
 
 
 
@@ -352,19 +369,6 @@ res.aov_20 <- aov(Desert ~ TractSNAP, data = my_data)
 
 
 
-```
 
 
-```{r cars}
-summary(cars)
-```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
