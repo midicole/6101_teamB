@@ -269,6 +269,156 @@ outlierKD2(food.desert, NUMGQTRS, rm=FALSE)
 
 ```
 
+```{r Meian Family Income Normality Test}
+summary(food$MedianFamilyIncome)
+hist(food$MedianFamilyIncome, main="Histogram of Median Family Income", col="dark blue")
+qqnorm(food$MedianFamilyIncome, main="Q-Q Plot of Median Family Income")
+# The median family income for the data frame is right-skewed. Though the Q-Q plot resembles a straight line representing some type of normality in the distribution. 
+
+# Median Family Income of only Food Deserts 
+hist(food.desert$MedianFamilyIncome, main="Histogram of Median Family Income in Food Deserts", col="dark red")
+qqnorm(food.desert$MedianFamilyIncome, main="Q-Q Plot of Median Family Income in Food Deserts")
+# When looking at the distribution of the median family income for tracts that are located in food deserts again we can see that the distribution is right-skewed or positive. The Q-Q plot does resemble a striaght line showcasing a resembles of a normal distribution. 
+
+#Finding Outliers 
+outlierKD2(food, MedianFamilyIncome, rm=FALSE)
+outlierKD2(food.desert, MedianFamilyIncome, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+
+```{r Low-Income Population Normality Test}
+summary(food$TractLOWI)
+hist(food$TractLOWI, main="Histogram of Low-Income Population", col="light green")
+qqnorm(food$TractLOWI, main="Q-Q Plot of Low-Income Population")
+# The low-income population for the data frame is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+
+# Low-Income Population of only Food Deserts 
+hist(food.desert$TractLOWI, main="Histogram of Low-Income Population in Food Deserts", col="red")
+qqnorm(food.desert$TractLOWI, main="Q-Q Plot of   Low-Income Population in Food Deserts")
+# The low-income population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food, TractLOWI, rm=FALSE)
+outlierKD2(food.desert, TractLOWI, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+```{r Kid Count Normality Test}
+hist(food$TractKids, main="Histogram of Kid Count", col="purple")
+qqnorm(food$TractKids, main="Q-Q Plot of Kid Count in Tract")
+# The number of kids in a census tract for the data frame is right-skewed. The Q-Q plot resembles  the histogram's distribution and is right-skewed or positive.
+
+# Kid Count of only Food Deserts 
+hist(food.desert$TractKids, main="Histogram of Kid Count in Food Deserts", col="yellow")
+qqnorm(food.desert$TractKids, main="Q-Q Plot of Kid Count Population in Food Deserts")
+# The kid count for the subset of food deserts is right-skewed. The Q-Q plot resembles  the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food, TractKids, rm=FALSE)
+outlierKD2(food.desert, TractKids, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+```{r Senior Count Normality Test}
+hist(food$TractSeniors, main="Histogram of Seniors in Tract", col="brown")
+qqnorm(food$TractSeniors, main="Q-Q Plot of Seniors in Tract")
+# The number of seniors in  the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+# Low-Income Population of only Food Deserts 
+hist(food.desert$TractSeniors, main="Histogram of Seniors in Food Deserts", col="pink")
+qqnorm(food.desert$TractSeniors, main="Q-Q Plot of Seniors in Food Deserts")
+# The number of seniors for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food, TractSeniors, rm=FALSE)
+outlierKD2(food.desert, TractSeniors, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+
+```{r White Population Normality Test}
+summary(food$TractWhite)
+hist(food$TractWhite, main="Histogram of White Population", col="orange")
+qqnorm(food$TractWhite, main="Q-Q Plot of White Population")
+# The white population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+# White Populatin in only Food Deserts 
+hist(food.desert$TractWhite, main="Histogram of White Population in Food Deserts", col="dark green")
+qqnorm(food.desert$TractWhite, main="Q-Q Plot of White Population in Food Deserts")
+# The white population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food, TractLOWI, rm=FALSE)
+outlierKD2(food.desert, TractLOWI, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+
+```{r Black Population Normality Test}
+hist(food$TractBlack, main="Histogram of Black Population", col="dark red")
+qqnorm(food$TractBlack, main="Q-Q Plot of Black Population")
+# The black population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+# Black Population of only Food Deserts 
+hist(food.desert$TractBlack, main="Histogram of Black Population in Food Deserts", col="red")
+qqnorm(food.desert$TractBlack, main="Q-Q Plot of Black Population in Food Deserts")
+# The black population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food, TractBlack, rm=FALSE)
+outlierKD2(food.desert, TractBlack, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+```{r Meian Asian Population }
+hist(food$TractAsian, main="Histogram of Asian Population", col="dark orange")
+qqnorm(food$TractAsian, main="Q-Q Plot of Asian Population")
+# The Asian population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+# Asian Population of only Food Deserts 
+hist(food.desert$TractAsian, main="Histogram of Asian Population in Food Deserts", col="green")
+qqnorm(food.desert$TractAsian, main="Q-Q Plot of Asian Population in Food Deserts")
+# The Asian population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food, TractAsian, rm=FALSE)
+outlierKD2(food.desert, TractAsian, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+
+```{r Native Hawaiian and Pacific Islander Normality Test}
+hist(food$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander  Population", col="blue")
+qqnorm(food$TractNHOPI, main="Q-Q Plot of Native Hawaiian or Pacific Islander Population")
+# The Native Hawaiian or Pacific Islander population for the data frame is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+
+# Native Hawaiian or Pacific Islander Population in only Food Deserts 
+hist(food.desert$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander Population in Food Deserts", col="light blue")
+qqnorm(food.desert$TractNHOPI, main="Q-Q Plot of Native Hawaiian or Pacific Islander Population in Food Deserts")
+# The Native Hawaiian or Pacific Islander population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food, TractNHOPI, rm=FALSE)
+outlierKD2(food.desert, TractNHOPI, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
+```
+
+```{r American Indian and Alaskan Native Population }
+hist(food$TractAIAN, main="Histogram of American Indian and Alaskan Native Population", col="orange")
+qqnorm(food$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Native Population")
+# The American Indian and Alaskan Native populatio for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+# American Indian and Alaskan Native Population in only Food Deserts 
+hist(food.desert$TractAIAN, main="Histogram of American Indian and Alaskan Native Population in Food Deserts", col="red")
+qqnorm(food.desert$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Native Population in Food Deserts")
+# The American Indian and Alaskan Native population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+
+#Finding Outliers 
+outlierKD2(food.desert, TractAIAN, rm=FALSE)
+#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.
+```
+
 # Chapter 2.1 Exploratory Data Analysis 
 ### Here we are performing Chi-Square test on  to determine whether there is a relationship between the categorical variables. 
 ```{r Categorical Variable Analysis}
