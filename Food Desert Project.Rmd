@@ -223,11 +223,13 @@ outlierKD2(food.desert, PovertyRate, FALSE)
 summary(food$POP2010)
 hist(food$POP2010, main="Histogram of Population in Tract", xlab="Population", col="red")
 qqnorm(food$POP2010, main="Q-Q Plot of Tract Population")
+qqline(food$POP2010)
 # We can tell from our Histogram and Q-Q plot that the distributon of the population is skewed to righly skewed and does not have any since of normality. 
 
 # Population Normality Test of only areas with Food Deserts 
 hist(food.desert$POP2010, main="Histogram of Population of Tract in Food Desert", xlab="Population", col="yellow")
 qqnorm(food.desert$POP2010, main="Q-Q Plot of Food Desert Population Tract")
+qqline(food.desert$POP2010)
 summary(food.desert$POP2010)
 # When looking at the normality of the population distribution when the tract is located in a food desert the Q-Q plot seems to resemeble more of a straight line but the histogram is still slighly skewed to the right. However, the minimum, maximum, median, and mean values change significanlty when reviewing the population of a tract in a food desert versus not. 
 
@@ -240,11 +242,13 @@ outlierKD2(food.desert, POP2010, rm=FALSE)
 ```{r Occupied Housing Normality Test}
 hist(food$OHU2010, main="Histogram of Housing Units", xlab="Housing", col="orange")
 qqnorm(food$OHU2010, main="Q-Q Plot of Housing Units")
+qqline(food$OHU2010)
 # When we are looking at our results of the total occupied housing units in the tracts we can see that the data points are righly skewed.  
 
 # Occupied Housing Normality for only food deserts
 hist(food.desert$OHU2010, main="Histogram of Housing Units in Food Deserts", xlab="Housing in Food Desert", col="pink")
 qqnorm(food.desert$OHU2010, main="Q-Q Plot of Housing in Food Desert")
+qqline(food.desert$OHU2010)
 # When we are looking at the total occupied housing units in tracts that are classified as food deserts it seems that the distribution is still slightly skewed to the right. However, the Q-Q plot of this data is definetly more normally distributed in the subset of food desert than the whole data frame. 
 
 # Finding Outliers 
@@ -257,11 +261,13 @@ outlierKD2(food.desert, OHU2010, rm=FALSE)
 summary(food$NUMGQTRS)
 hist(food$NUMGQTRS, main="Histogram of Group Housing Units", xlab="Group Housing", col="dark green")
 qqnorm(food$NUMGQTRS, main="Q-Q Plot of Group Housing Units")
+qqline(food$NUMGQTRS)
 # Group Housing units distribution is not normal. It is skewed righ, but barely skewed right. The Q-Q Plot does not even slightly resemeble a straight line. 
 
 # Group Housing Normality for only food deserts
 hist(food.desert$NUMGQTRS, main="Histogram of Group Housing Units in Food Deserts", xlab=" Group Housing in Food Desert", col="light blue ")
 qqnorm(food.desert$OHU2010, main="Q-Q Plot of Housing in Food Desert")
+qqline(food.desert$OHU2010)
 # When we take the subset of group hosuing units only located in food deserts the distribution improves a bit more at least with our Q-Q plot. However, the histogram still resembles a right-skewed distribution. 
 
 # Finding Outliers 
