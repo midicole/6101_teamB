@@ -379,7 +379,7 @@ outlierKD2(food.desert, TractBlack, rm=FALSE)
 #By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
 
-```{r Meian Asian Population }
+```{r Asian Population Normality Test}
 hist(food$TractAsian, main="Histogram of Asian Population", col="dark orange")
 qqnorm(food$TractAsian, main="Q-Q Plot of Asian Population")
 # The Asian population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
@@ -412,7 +412,7 @@ outlierKD2(food.desert, TractNHOPI, rm=FALSE)
 #By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
 
-```{r American Indian and Alaskan Native Population }
+```{r American Indian and Alaskan Native Population Normality Test}
 hist(food$TractAIAN, main="Histogram of American Indian and Alaskan Native Population", col="orange")
 qqnorm(food$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Native Population")
 # The American Indian and Alaskan Native populatio for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
@@ -437,6 +437,7 @@ urban.tble <- chisq.test(contable.urban)
 urban.tble
 urban.tble$expected
 xkabledply(urban.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in Urban Tracts")
+exp(urban.tble$p.value)
 ```
 
 ```{r Categorical Variable Analysis}
