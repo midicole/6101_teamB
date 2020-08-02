@@ -204,6 +204,7 @@ str(food)
 # Poverty Rate Normality of Tracts
 hist(food$PovertyRate, main="Histogram of Percentage of Tract at or Below Federal Poverty Rate", xlab="Poverty Rate", col="purple")
 qqnorm(food$PovertyRate, main="Q-Q plot of Percentage of Tract at or Below Poverty Rate")
+qqline(food$PovertyRate)
 outlierKD2(food, PovertyRate, FALSE)
 # The Poverty Rate is still slightly skewed to the right with and without outliers and the mean with outliers is about 16% and without outliers it is about 15% so this did not change much.
 
@@ -211,6 +212,7 @@ outlierKD2(food, PovertyRate, FALSE)
 food.desert <- subset(food, Desert==1)
 hist(food.desert$PovertyRate, main="Histogram of the Percentage of Tract at or Below Poverty Rate in a Food Desert", xlab= "Poverty Rate", col="blue")
 qqnorm(food.desert$PovertyRate, main="Percentage of Tract in Food Desert at or Below Poverty Rate")
+qqline(food.desert$PovertyRate)
 outlierKD2(food.desert, PovertyRate, FALSE)
 # When we subset our data to only census tracts that are located in food deserts the mean is 26.97 which means about 27% of households located in a food desert   are at or below the federal poverty rate. Furthermore, when we use this subset to take out outliers we only have 36 outliers and the mean changes from 26.97 to 25.42 so there is no signifcant change in removing outliers within this subset. However, within this subset after we move the outliers we can see that our   histogram is more normally distributed. With outliers our distribution is skewed to the right like it is without subsetting the data. 
 
