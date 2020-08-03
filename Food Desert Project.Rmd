@@ -45,6 +45,7 @@ loadPkg("ggpubr")
 loadPkg("dplyr")
 loadPkg("leaps")
 loadPkg("MASS")
+loadPkg("corrplot")
 
 xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bso="striped", wide=FALSE) { 
   #' Combining base::summary, xtable, and kableExtra, to easily display model summary. 
@@ -204,6 +205,7 @@ str(food)
 # Poverty Rate Normality of Tracts
 hist(food$PovertyRate, main="Histogram of Percentage of Tract at or Below Federal Poverty Rate", xlab="Poverty Rate", col="purple")
 qqnorm(food$PovertyRate, main="Q-Q plot of Percentage of Tract at or Below Poverty Rate")
+qqline(food$PovertyRate)
 outlierKD2(food, PovertyRate, FALSE)
 # The Poverty Rate is still slightly skewed to the right with and without outliers and the mean with outliers is about 16% and without outliers it is about 15% so this did not change much.
 
@@ -211,6 +213,7 @@ outlierKD2(food, PovertyRate, FALSE)
 food.desert <- subset(food, Desert==1)
 hist(food.desert$PovertyRate, main="Histogram of the Percentage of Tract at or Below Poverty Rate in a Food Desert", xlab= "Poverty Rate", col="blue")
 qqnorm(food.desert$PovertyRate, main="Percentage of Tract in Food Desert at or Below Poverty Rate")
+qqline(food.desert$PovertyRate)
 outlierKD2(food.desert, PovertyRate, FALSE)
 # When we subset our data to only census tracts that are located in food deserts the mean is 26.97 which means about 27% of households located in a food desert   are at or below the federal poverty rate. Furthermore, when we use this subset to take out outliers we only have 36 outliers and the mean changes from 26.97 to 25.42 so there is no signifcant change in removing outliers within this subset. However, within this subset after we move the outliers we can see that our   histogram is more normally distributed. With outliers our distribution is skewed to the right like it is without subsetting the data. 
 
@@ -221,11 +224,13 @@ outlierKD2(food.desert, PovertyRate, FALSE)
 summary(food$POP2010)
 hist(food$POP2010, main="Histogram of Population in Tract", xlab="Population", col="red")
 qqnorm(food$POP2010, main="Q-Q Plot of Tract Population")
+qqline(food$POP2010)
 # We can tell from our Histogram and Q-Q plot that the distributon of the population is skewed to righly skewed and does not have any since of normality. 
 
 # Population Normality Test of only areas with Food Deserts 
 hist(food.desert$POP2010, main="Histogram of Population of Tract in Food Desert", xlab="Population", col="yellow")
 qqnorm(food.desert$POP2010, main="Q-Q Plot of Food Desert Population Tract")
+qqline(food.desert$POP2010)
 summary(food.desert$POP2010)
 # When looking at the normality of the population distribution when the tract is located in a food desert the Q-Q plot seems to resemeble more of a straight line but the histogram is still slighly skewed to the right. However, the minimum, maximum, median, and mean values change significanlty when reviewing the population of a tract in a food desert versus not. 
 
@@ -238,11 +243,13 @@ outlierKD2(food.desert, POP2010, rm=FALSE)
 ```{r Occupied Housing Normality Test}
 hist(food$OHU2010, main="Histogram of Housing Units", xlab="Housing", col="orange")
 qqnorm(food$OHU2010, main="Q-Q Plot of Housing Units")
+qqline(food$OHU2010)
 # When we are looking at our results of the total occupied housing units in the tracts we can see that the data points are righly skewed.  
 
 # Occupied Housing Normality for only food deserts
 hist(food.desert$OHU2010, main="Histogram of Housing Units in Food Deserts", xlab="Housing in Food Desert", col="pink")
 qqnorm(food.desert$OHU2010, main="Q-Q Plot of Housing in Food Desert")
+qqline(food.desert$OHU2010)
 # When we are looking at the total occupied housing units in tracts that are classified as food deserts it seems that the distribution is still slightly skewed to the right. However, the Q-Q plot of this data is definetly more normally distributed in the subset of food desert than the whole data frame. 
 
 # Finding Outliers 
@@ -255,29 +262,32 @@ outlierKD2(food.desert, OHU2010, rm=FALSE)
 summary(food$NUMGQTRS)
 hist(food$NUMGQTRS, main="Histogram of Group Housing Units", xlab="Group Housing", col="dark green")
 qqnorm(food$NUMGQTRS, main="Q-Q Plot of Group Housing Units")
+qqline(food$NUMGQTRS)
 # Group Housing units distribution is not normal. It is skewed righ, but barely skewed right. The Q-Q Plot does not even slightly resemeble a straight line. 
 
 # Group Housing Normality for only food deserts
 hist(food.desert$NUMGQTRS, main="Histogram of Group Housing Units in Food Deserts", xlab=" Group Housing in Food Desert", col="light blue ")
 qqnorm(food.desert$OHU2010, main="Q-Q Plot of Housing in Food Desert")
+qqline(food.desert$OHU2010)
 # When we take the subset of group hosuing units only located in food deserts the distribution improves a bit more at least with our Q-Q plot. However, the histogram still resembles a right-skewed distribution. 
 
 # Finding Outliers 
 outlierKD2(food, NUMGQTRS, rm=FALSE)
 outlierKD2(food.desert, NUMGQTRS, rm=FALSE)
 # When we look at the group housing outliers in the data frame there are 831. The mean of the data with the outliers is 110 and without the outliers the mean is 24. This is a pretty big drop in the mean than from the other variables that we have seen, but nonetheless the data still has a right-skewed distribution and would yield the same results. When we are looking at the outliers from the subset of group housing units in food deserts the mean also has a big drop. With the outliers the mean is 200 and without outliers the mean is 42. However, the distribution is still right-skewed and would yield the same results. 
-
 ```
 
-```{r Meian Family Income Normality Test}
+```{r Median Family Income Normality Test}
 summary(food$MedianFamilyIncome)
 hist(food$MedianFamilyIncome, main="Histogram of Median Family Income", col="dark blue")
 qqnorm(food$MedianFamilyIncome, main="Q-Q Plot of Median Family Income")
+qqline(food$MedianFamilyIncome)
 # The median family income for the data frame is right-skewed. Though the Q-Q plot resembles a straight line representing some type of normality in the distribution. 
 
 # Median Family Income of only Food Deserts 
 hist(food.desert$MedianFamilyIncome, main="Histogram of Median Family Income in Food Deserts", col="dark red")
 qqnorm(food.desert$MedianFamilyIncome, main="Q-Q Plot of Median Family Income in Food Deserts")
+qqline(food.desert$MedianFamilyIncome)
 # When looking at the distribution of the median family income for tracts that are located in food deserts again we can see that the distribution is right-skewed or positive. The Q-Q plot does resemble a striaght line showcasing a resembles of a normal distribution. 
 
 #Finding Outliers 
@@ -291,11 +301,13 @@ outlierKD2(food.desert, MedianFamilyIncome, rm=FALSE)
 summary(food$TractLOWI)
 hist(food$TractLOWI, main="Histogram of Low-Income Population", col="light green")
 qqnorm(food$TractLOWI, main="Q-Q Plot of Low-Income Population")
+qqline(food$TractLOWI)
 # The low-income population for the data frame is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
 
 # Low-Income Population of only Food Deserts 
 hist(food.desert$TractLOWI, main="Histogram of Low-Income Population in Food Deserts", col="red")
 qqnorm(food.desert$TractLOWI, main="Q-Q Plot of   Low-Income Population in Food Deserts")
+qqline(food.desert$TractLOWI)
 # The low-income population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
@@ -307,11 +319,13 @@ outlierKD2(food.desert, TractLOWI, rm=FALSE)
 ```{r Kid Count Normality Test}
 hist(food$TractKids, main="Histogram of Kid Count", col="purple")
 qqnorm(food$TractKids, main="Q-Q Plot of Kid Count in Tract")
+qqline(food$TractKids)
 # The number of kids in a census tract for the data frame is right-skewed. The Q-Q plot resembles  the histogram's distribution and is right-skewed or positive.
 
 # Kid Count of only Food Deserts 
 hist(food.desert$TractKids, main="Histogram of Kid Count in Food Deserts", col="yellow")
 qqnorm(food.desert$TractKids, main="Q-Q Plot of Kid Count Population in Food Deserts")
+qqline(food.desert$TractKids)
 # The kid count for the subset of food deserts is right-skewed. The Q-Q plot resembles  the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
@@ -323,11 +337,13 @@ outlierKD2(food.desert, TractKids, rm=FALSE)
 ```{r Senior Count Normality Test}
 hist(food$TractSeniors, main="Histogram of Seniors in Tract", col="brown")
 qqnorm(food$TractSeniors, main="Q-Q Plot of Seniors in Tract")
+qqline(food$TractSeniors)
 # The number of seniors in  the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 # Low-Income Population of only Food Deserts 
 hist(food.desert$TractSeniors, main="Histogram of Seniors in Food Deserts", col="pink")
 qqnorm(food.desert$TractSeniors, main="Q-Q Plot of Seniors in Food Deserts")
+qqline(food.desert$TractSeniors)
 # The number of seniors for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
@@ -341,11 +357,13 @@ outlierKD2(food.desert, TractSeniors, rm=FALSE)
 summary(food$TractWhite)
 hist(food$TractWhite, main="Histogram of White Population", col="orange")
 qqnorm(food$TractWhite, main="Q-Q Plot of White Population")
+qqline(food$TractWhite)
 # The white population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 # White Populatin in only Food Deserts 
 hist(food.desert$TractWhite, main="Histogram of White Population in Food Deserts", col="dark green")
 qqnorm(food.desert$TractWhite, main="Q-Q Plot of White Population in Food Deserts")
+qqline(food.desert$TractWhite)
 # The white population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
@@ -358,11 +376,13 @@ outlierKD2(food.desert, TractLOWI, rm=FALSE)
 ```{r Black Population Normality Test}
 hist(food$TractBlack, main="Histogram of Black Population", col="dark red")
 qqnorm(food$TractBlack, main="Q-Q Plot of Black Population")
+qqline(food$TractBlack)
 # The black population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 # Black Population of only Food Deserts 
 hist(food.desert$TractBlack, main="Histogram of Black Population in Food Deserts", col="red")
 qqnorm(food.desert$TractBlack, main="Q-Q Plot of Black Population in Food Deserts")
+qqline(food.desert$TractBlack)
 # The black population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
@@ -371,14 +391,16 @@ outlierKD2(food.desert, TractBlack, rm=FALSE)
 #By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
 
-```{r Meian Asian Population }
+```{r Asian Population Normality Test}
 hist(food$TractAsian, main="Histogram of Asian Population", col="dark orange")
 qqnorm(food$TractAsian, main="Q-Q Plot of Asian Population")
+qqline(food$TractAsian)
 # The Asian population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 # Asian Population of only Food Deserts 
 hist(food.desert$TractAsian, main="Histogram of Asian Population in Food Deserts", col="green")
 qqnorm(food.desert$TractAsian, main="Q-Q Plot of Asian Population in Food Deserts")
+qqline(food.desert$TractAsian)
 # The Asian population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
@@ -391,11 +413,13 @@ outlierKD2(food.desert, TractAsian, rm=FALSE)
 ```{r Native Hawaiian and Pacific Islander Normality Test}
 hist(food$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander  Population", col="blue")
 qqnorm(food$TractNHOPI, main="Q-Q Plot of Native Hawaiian or Pacific Islander Population")
+qqline(food$TractNHOPI)
 # The Native Hawaiian or Pacific Islander population for the data frame is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
 
 # Native Hawaiian or Pacific Islander Population in only Food Deserts 
 hist(food.desert$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander Population in Food Deserts", col="light blue")
 qqnorm(food.desert$TractNHOPI, main="Q-Q Plot of Native Hawaiian or Pacific Islander Population in Food Deserts")
+qqline(food.desert$TractNHOPI)
 # The Native Hawaiian or Pacific Islander population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
@@ -404,20 +428,91 @@ outlierKD2(food.desert, TractNHOPI, rm=FALSE)
 #By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
 
-```{r American Indian and Alaskan Native Population }
+```{r American Indian and Alaskan Native Population Normality Test}
 hist(food$TractAIAN, main="Histogram of American Indian and Alaskan Native Population", col="orange")
 qqnorm(food$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Native Population")
+qqline(food$TractAIAN)
 # The American Indian and Alaskan Native populatio for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 # American Indian and Alaskan Native Population in only Food Deserts 
 hist(food.desert$TractAIAN, main="Histogram of American Indian and Alaskan Native Population in Food Deserts", col="red")
 qqnorm(food.desert$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Native Population in Food Deserts")
+qqline(food.desert$TractAIAN)
 # The American Indian and Alaskan Native population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
 
 #Finding Outliers 
+outlierKD2(food,TractAIAN , rm=FALSE)
 outlierKD2(food.desert, TractAIAN, rm=FALSE)
 #By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.
 ```
+
+```{r Multiple race/other race population Normality Test}
+hist(food$TractOMultir, main="Histogram of Multiple race/other race population", col="orange")
+qqnorm(food$TractOMultir, main="Q-Q Plot of Multiple race/other race population")
+qqline(food$TractOMultir)
+
+
+hist(food.desert$TractOMultir, main="Histogram of Multiple race/other race population in Food Deserts", col="red")
+qqnorm(food.desert$TractOMultir, main="Q-Q Plot of Multiple race/other race population in Food Deserts")
+qqline(food.desert$TractOMultir)
+
+
+#Finding Outliers 
+outlierKD2(food,TractAIAN,rm=FALSE)
+outlierKD2(food.desert, TractAIAN, rm=FALSE)
+
+```
+
+```{r Hispanic or Latinx population Normality Test}
+hist(food$TractHispanic, main="Histogram of Hispanic or Latinx population", col="orange")
+qqnorm(food$TractHispanic, main="Q-Q Plot of Hispanic or Latinx population")
+qqline(food$TractHispanic)
+
+
+hist(food.desert$TractHispanic, main="Histogram of Hispanic or Latinx population in Food Deserts", col="red")
+qqnorm(food.desert$TractHispanic, main="Q-Q Plot of Hispanic or Latinx population in Food Deserts")
+qqline(food.desert$TractHispanic)
+
+
+#Finding Outliers 
+outlierKD2(food,TractHispanic,rm=FALSE)
+outlierKD2(food.desert, TractHispanic, rm=FALSE)
+
+```
+
+```{r Housing units without access to a vehicle Normality Test}
+hist(food$TractHUNV, main="Histogram of housing units without access to a vehicle", col="orange")
+qqnorm(food$TractHUNV, main="Q-Q Plot of housing units without access to a vehicle")
+qqline(food$TractHUNV)
+
+
+hist(food.desert$TractHUNV, main="Histogram of housing units without access to a vehicle in Food Deserts", col="red")
+qqnorm(food.desert$TractHUNV, main="Q-Q Plot of housing units without access to a vehicle in Food Deserts")
+qqline(food.desert$TractHUNV)
+
+
+#Finding Outliers 
+outlierKD2(food,TractHUNV,rm=FALSE)
+outlierKD2(food.desert, TractHUNV, rm=FALSE)
+
+```
+
+```{r housing units receiving SNAP benefits Normality Test}
+hist(food$TractSNAP, main="Histogram of housing units receiving SNAP benefits", col="orange")
+qqnorm(food$TractSNAP, main="Q-Q Plot of housing units receiving SNAP benefits")
+qqline(food$TractSNAP)
+
+
+hist(food.desert$TractSNAP, main="Histogram of housing units receiving SNAP benefits in Food Deserts", col="red")
+qqnorm(food.desert$TractSNAP, main="Q-Q Plot of housing units receiving SNAP benefits in Food Deserts")
+qqline(food.desert$TractSNAP)
+
+
+#Finding Outliers 
+outlierKD2(food,TractSNAP,rm=FALSE)
+outlierKD2(food.desert,TractSNAP, rm=FALSE)
+```
+
 
 # Chapter 2.1 Exploratory Data Analysis 
 ### Here we are performing Chi-Square test on  to determine whether there is a relationship between the categorical variables. 
@@ -429,7 +524,12 @@ urban.tble <- chisq.test(contable.urban)
 urban.tble
 urban.tble$expected
 xkabledply(urban.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in Urban Tracts")
+exp(urban.tble$p.value)
 ```
+
+Here, we mainly focus on the output of Chi-Square test, we got test statistics of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), the corresponding p-value is lower than 0.05 obviously. Hence, we have enough evidence to reject the null hypothesis: variable 'Urban' and 'Desert' are independent.
+
+Now, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
 
 ```{r Categorical Variable Analysis}
 # Contingency Table of Food Deserts and Geographical Region 
@@ -440,6 +540,8 @@ region.tble
 region.tble$expected
 xkabledply(region.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in Geographical Regions")
 ```
+
+Similarly,  we can conclude that variable 'Region' and 'Desert' are not independent.
 
 ```{r Categorical Variable Analysis}
 # Contingency Table of Food Deserts and States
@@ -452,26 +554,128 @@ state.tble$p.value
 xkabledply(state.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in U.S. Staes")
 ```
 
+Similarly,  we can conclude that variable 'State' and 'Desert' are not independent.
+
+We want to check if all X-variables have a relationship with y-variable. Let's make this process quicker
+
+```{R Chi-Square test between Y and X}
+chisq.test(food$Desert,food$POP2010)
+chisq.test(food$Desert,food$OHU2010)
+chisq.test(food$Desert,food$NUMGQTRS)
+chisq.test(food$Desert,food$PovertyRate)
+chisq.test(food$Desert,food$MedianFamilyIncome)
+chisq.test(food$Desert,food$TractLOWI)
+chisq.test(food$Desert,food$TractKids)
+chisq.test(food$Desert,food$TractSeniors)
+chisq.test(food$Desert,food$TractWhite)
+chisq.test(food$Desert,food$TractBlack)
+chisq.test(food$Desert,food$TractAsian)
+chisq.test(food$Desert,food$TractNHOPI)
+chisq.test(food$Desert,food$TractAIAN)
+chisq.test(food$Desert,food$TractOMultir)
+chisq.test(food$Desert,food$TractHispanic)
+chisq.test(food$Desert,food$TractHUNV)
+chisq.test(food$Desert,food$TractSNAP)
+```
+
+We chose to use 0.05 as the significance level, thus, for now, we can say that variable 'POP2010', 'OHU2010','MedianFamilyIncome','TractKids','TractSeniors','TractWhite','TractAsian','TractNHOPI' might not be good to use because there are no relationships between them and dependent variable 'Desert' based on the outputs of Chi-Square tests. But correlation matrix may give different results. It is better to make a final decision while building model.
+
+After detecting relationship between Y and X, we need to see if all X are independent of each other, if we choose to do this one by one, it will be very time consuming (approximately 210 combinations) and hard to interpret, so we only pick out the variables that are possible to have relationship with others in common sense, for example, 'POP2010' and 'Urban' might not be independent.
+
+```{R Chi-Square test between X's}
+chisq.test(food$Urban,food$POP2010)
+chisq.test(food$Region,food$POP2010)
+chisq.test(food$State,food$POP2010)
+chisq.test(food$OHU2010,food$POP2010)
+chisq.test(food$Region,food$Urban)
+chisq.test(food$PovertyRate,food$Urban)
+chisq.test(food$PovertyRate,food$MedianFamilyIncome)
+chisq.test(food$POP2010,food$NUMGQTRS)
+```
+
+TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
+variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
+
+
+
+```{r Correaltion of Variables on Desert Variable}
+food_coronly <- food[c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
+corr.food <- cor(food_coronly)
+corrplot(corr.food)
+```
+
+
+
 # Chapter 3: Model Building 
+## Linear Model Try
 ### Here we are disceting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
-```{r Using Model Building}
+```{r Forward Variable Selection}
 # Deciding Best Varaible with Forward Selection and Subsetting
-reg.10.forward <-regsubsets(Desert~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
+reg.forward <-regsubsets(Desert ~.-CensusTract-State , data = food, nvmax=19, nbest=1, method="forward")
+plot(reg.forward, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.forward, scale = "Cp", main = "CP")
+plot(reg.forward, scale = "bic", main = "BIC")
+#model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
+#model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
+#model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
+#summary(model_forward_adjr2)
+#summary(model_forward_Cp)
+#summary(model_forward_bic)
+
+#anova(model_forward_adjr2,model_forward_Cp)
+#anova(model_forward_adjr2,model_forward_bic)
+#anova(model_forward_Cp,model_forward_bic)
+```
+
+We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite,
+the summary of model_forward_adjr2 indicated that it should not be included in the mdoel, and anova() function's F test gave the same conclusion, for now, model_forward_Cp is a better choice. Then, we compared model_forward_Cp and model_forward_bic, together with result of summary of Model_forward_Cp, we can conclude that for forward selection, the variables in model_forward_Cp are good for now.
+
+```{R Backward Variable Selection}
+# Backward Selection
+reg.best10.bkwd <- regsubsets(Desert~.-CensusTract-State, data= food, nvmax=19, nbest=1, method="backward")
+plot(reg.best10.bkwd, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.best10.bkwd, scale = "Cp", main = "CP")
+plot(reg.best10.bkwd, scale = "bic", main = "BIC")
+
+model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
+model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
+summary(model_backward_adjr2)
+summary(model_backward_BIC)
+
+anova(model_backward_adjr2,model_backward_BIC)
+```
+
+
+Cp and Adjusted R-square gave the same results, we only compare with BIC. 
+
+Based on the results, model_backward_adjr2 is a better choice. And to make the sequential seleciton easier, we removed variable 'TractBlack', 'TractWhite' and 'TractHispanic'
+
+```{R Sequential Variable Selection}
+# Sequential Selection 
+reg.best10.seq <- regsubsets(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food, nvmax=19, nbest=1, method="seqrep")
+plot(reg.best10.seq, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.best10.seq, scale = "Cp", main = "CP")
+plot(reg.best10.seq, scale = "bic", main = "BIC")
+
+model_seq_adjr2<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food)
+model_seq_BIC<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP, data= food)
+
+summary(model_seq_adjr2)
+summary(model_seq_BIC)
+
+anova(model_seq_adjr2,model_seq_BIC)
+```
+
+Cp and adjusted R-square gave the same result, so we only compare it with the model from BIC
+
+We got a p-value larger than 0.05 from output of F test but not very obviously significant, and from summary of model_seq_adjr2, we can see that variable 'TractAsian' should be excluded. 
+
+```{R Exhaustive Variable Selection}
+reg.10.forward <-regsubsets(Desert~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="exhaustive")
 plot(reg.10.forward, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.10.forward, scale = "Cp", main = "CP")
 plot(reg.10.forward, scale = "bic", main = "BIC")
 
-# Backward Selection
-reg.best10.bkwd <- regsubsets(Desert~.-CensusTract-State-TractLOWI-TractKids-TractSeniors, data= food, nvmax=10, nbest=1, method="backward")
-plot(reg.best10.bkwd, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.best10.bkwd, scale = "bic", main = "BIC")
-plot(reg.best10.bkwd, scale = "Cp", main = "CP")
-
-# Sequential Selection 
-reg.best10.seq <- regsubsets(Desert~CensusTract+State+TractLOWI+TractKids+TractSeniors, data= food, nvmax=10, nbest=1, method="seqrep")
-plot(reg.best10.seq, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.best10.seq, scale = "Cp", main = "CP")
-plot(reg.best10.seq, scale = "bic", main = "BIC")
 
 #Correlation Tests on x variables and y 
 cor.test(food$POP2010, food$Desert)
@@ -480,20 +684,111 @@ cor.test(food$PovertyRate, food$Desert)
 cor.test(food$TractSNAP, food$Desert)
 ```
 
+We tried exhaustive method here as an additional part, this method is only available when number of possible predictor variables is less than 20. It might not be very wise for us to follow the suggestions given by exhaustive method, because those variables gave significant p-values in the forward, backward and sequential selection. 
+
+
+Again, we know that our variable Y is desert which is binary, logistic regression should be used, but linear models still deserve a try because it may give us some surprise about variable selection.
+
+We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
 
 # Chapter 3.2: Logisitc Regression and Classification 
 ### Here we are performing a logistical regression and k-NN classifcation test to determine which variables impact whether or not a census tract is located in a food desert. 
 ```{r}
 ### Model Building
-summary(lm(Desert~.-CensusTract-State,data = food))
-glm_1sttry<-glm(Desert~.-CensusTract-State,data = food,family = "binomial")
-summary(glm_1sttry)
-exp(glm_1sttry$coefficients)
+## Change variable 'Desert' to factor variable here and the new dataset is named as newfood now
+newfood<-food
+newfood$Desertfactor<-as.factor(newfood$Desert)
+newfood<-newfood[,-8]
+glm_food_int_Desert<-glm(Desert~.-CensusTract,data = food,family = "binomial")
+summary(glm_food_int_Desert)
+
+glm_newfood_fac_Desert<-glm(Desertfactor~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = newfood,family = "binomial")
+summary(glm_newfood_fac_Desert)
+exp(glm_newfood_fac_Desert$coefficients)
+
+## build an empty and full generalised linear model
+emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
+summary(emptyglm)
+
+fullglm<-glm(Desertfactor~.-CensusTract,data=newfood,family = binomial)
+summary(fullglm)
+
+forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
+formula(forwards)
+summary(forwards)
+### The output of summary(forwards) indicates that variable 'TractNHOPI' has a p-value is 0.136183
+
+forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI + 
+    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
+    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
+    PovertyRate,data=newfood,family = binomial)
+summary(forwards_2)
+
+### Backwards
+backwards<-step(fullglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
+formula(backwards)
+summary(backwards)
+
+### Let's drop the variable 'TractNHOPI' based on the p-value
+backwards_2<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
+    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2)
+
+forwards_2$deviance;backwards_2$deviance
+### the two models gave the same deviance, hence backwards_2 is our best generalized linear model for now
+
+### Multicollinearity
+vif(backwards_2)
+
+plot(newfood$Desertfactor,predict(backwards_2))
+
+plot(backwards_2)
+
+### back2_logit<-glm(Desertfactor~State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
+###    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+###    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+###    TractHUNV + TractSNAP,data=newfood, family = binomial(link = "logit"))
+### summary(back2_logit)
+###
+### No improvements using logit option
+
+### Check Assumptions of logistic regression
+
 ```
 
+We have not changed the variable 'Desert' to factor variable until the model building part since correlation matrix will need variable 'Desert' to be numerical, and all test before gave same results for 'Desert' in factor format and numerical format.
+
+And based on the outputs of the two models above, we saw that: No matter variable 'Desert' is numerical or categorical, we get the same results, but for stringency, we will use variable 'Desertfactor' in the dataset named as 'newfood'.
+
+For the variable selection process, we saw multicollinearity is not good, this is an inborn disadvantage of our dataset, we have mentioned this in Chi-Square test part. Further detections are needed.
+
+
+# Chapter 4: Conclusion 
 
 
 
+res.aov_1 <- aov(Desert ~ Urban, data = my_data)
+res.aov_2 <- aov(Desert ~ State, data = my_data)
+res.aov_3 <- aov(Desert ~ Region, data = my_data)
+res.aov_4 <- aov(Desert ~ OHU2010, data = my_data)
+res.aov_5 <- aov(Desert ~ NUMGQTRS, data = my_data)
+res.aov_6 <- aov(Desert ~ POP2010, data = my_data)
+res.aov_7 <- aov(Desert ~ PovertyRate, data = my_data)
+res.aov_8 <- aov(Desert ~ MedianFamilyIncome, data = my_data)
+res.aov_9 <- aov(Desert ~ TractLOWI, data = my_data)
+res.aov_10 <- aov(Desert ~ TractKids, data = my_data)
+res.aov_11 <- aov(Desert ~ TractSenios, data = my_data)
+res.aov_12 <- aov(Desert ~ TractWhite, data = my_data)
+res.aov_13 <- aov(Desert ~ TractBlack, data = my_data)
+res.aov_14 <- aov(Desert ~ TractAsian, data = my_data)
+res.aov_15 <- aov(Desert ~ TractNHOPI, data = my_data)
+res.aov_16 <- aov(Desert ~ TractAIAN, data = my_data)
+res.aov_17 <- aov(Desert ~ TractOMultir, data = my_data)
+res.aov_18 <- aov(Desert ~ TractHispanic, data = my_data)
+res.aov_19 <- aov(Desert ~ TractHUNV, data = my_data)
+res.aov_20 <- aov(Desert ~ TractSNAP, data = my_data)
 
 
 
