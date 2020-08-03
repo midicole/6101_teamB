@@ -557,6 +557,7 @@ xkabledply(state.tble$expected, title="Cross table for the Expected Frequencies 
 Similarly,  we can conclude that variable 'State' and 'Desert' are not independent.
 
 We want to check if all X-variables have a relationship with y-variable. Let's make this process quicker
+
 ```{R Chi-Square test between Y and X}
 chisq.test(food$Desert,food$POP2010)
 chisq.test(food$Desert,food$OHU2010)
@@ -596,26 +597,79 @@ chisq.test(food$POP2010,food$NUMGQTRS)
 
 TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
 variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
+
+food_coronly<-food[,c("Desert",POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
+cor(food_coronly)
 # Chapter 3: Model Building 
+## Linear Model Try
 ### Here we are disceting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
-```{r Using Model Building}
+```{r Forward Variable Selection}
 # Deciding Best Varaible with Forward Selection and Subsetting
-reg.10.forward <-regsubsets(Desert~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
+reg.10.forward <-regsubsets(Desert ~.-CensusTract-State , data = food, nvmax=19, nbest=1, method="forward")
+plot(reg.10.forward, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.10.forward, scale = "Cp", main = "CP")
+plot(reg.10.forward, scale = "bic", main = "BIC")
+model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
+model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
+model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
+summary(model_forward_adjr2)
+summary(model_forward_Cp)
+summary(model_forward_bic)
+
+anova(model_forward_adjr2,model_forward_Cp)
+anova(model_forward_adjr2,model_forward_bic)
+anova(model_forward_Cp,model_forward_bic)
+```
+
+We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite,
+the summary of model_forward_adjr2 indicated that it should not be included in the mdoel, and anova() function's F test gave the same conclusion, for now, model_forward_Cp is a better choice. Then, we compared model_forward_Cp and model_forward_bic, together with result of summary of Model_forward_Cp, we can conclude that for forward selection, the variables in model_forward_Cp are good for now.
+
+```{R Backward Variable Selection}
+# Backward Selection
+reg.best10.bkwd <- regsubsets(Desert~.-CensusTract-State, data= food, nvmax=19, nbest=1, method="backward")
+plot(reg.best10.bkwd, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.best10.bkwd, scale = "Cp", main = "CP")
+plot(reg.best10.bkwd, scale = "bic", main = "BIC")
+
+model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
+model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
+summary(model_backward_adjr2)
+summary(model_backward_BIC)
+
+anova(model_backward_adjr2,model_backward_BIC)
+```
+
+
+Cp and Adjusted R-square gave the same results, we only compare with BIC. 
+
+Based on the results, model_backward_adjr2 is a better choice. And to make the sequential seleciton easier, we removed variable 'TractBlack', 'TractWhite' and 'TractHispanic'
+
+```{R Sequential Variable Selection}
+# Sequential Selection 
+reg.best10.seq <- regsubsets(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food, nvmax=19, nbest=1, method="seqrep")
+plot(reg.best10.seq, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.best10.seq, scale = "Cp", main = "CP")
+plot(reg.best10.seq, scale = "bic", main = "BIC")
+
+model_seq_adjr2<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food)
+model_seq_BIC<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP, data= food)
+
+summary(model_seq_adjr2)
+summary(model_seq_BIC)
+
+anova(model_seq_adjr2,model_seq_BIC)
+```
+
+Cp and adjusted R-square gave the same result, so we only compare it with the model from BIC
+
+We got a p-value larger than 0.05 from output of F test but not very obviously significant, and from summary of model_seq_adjr2, we can see that variable 'TractAsian' should be excluded. 
+
+```{R Exhaustive Variable Selection}
+reg.10.forward <-regsubsets(Desert~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="exhaustive")
 plot(reg.10.forward, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.10.forward, scale = "Cp", main = "CP")
 plot(reg.10.forward, scale = "bic", main = "BIC")
 
-# Backward Selection
-reg.best10.bkwd <- regsubsets(Desert~.-CensusTract-State-TractLOWI-TractKids-TractSeniors, data= food, nvmax=10, nbest=1, method="backward")
-plot(reg.best10.bkwd, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.best10.bkwd, scale = "bic", main = "BIC")
-plot(reg.best10.bkwd, scale = "Cp", main = "CP")
-
-# Sequential Selection 
-reg.best10.seq <- regsubsets(Desert~CensusTract+State+TractLOWI+TractKids+TractSeniors, data= food, nvmax=10, nbest=1, method="seqrep")
-plot(reg.best10.seq, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.best10.seq, scale = "Cp", main = "CP")
-plot(reg.best10.seq, scale = "bic", main = "BIC")
 
 #Correlation Tests on x variables and y 
 cor.test(food$POP2010, food$Desert)
@@ -624,16 +678,86 @@ cor.test(food$PovertyRate, food$Desert)
 cor.test(food$TractSNAP, food$Desert)
 ```
 
+We tried exhaustive method here as an additional part, this method is only available when number of possible predictor variables is less than 20. It might not be very wise for us to follow the suggestions given by exhaustive method, because those variables gave significant p-values in the forward, backward and sequential selection. 
+
+
+Again, we know that our variable Y is desert which is binary, logistic regression should be used, but linear models still deserve a try because it may give us some surprise about variable selection.
+
+We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
 
 # Chapter 3.2: Logisitc Regression and Classification 
 ### Here we are performing a logistical regression and k-NN classifcation test to determine which variables impact whether or not a census tract is located in a food desert. 
 ```{r}
 ### Model Building
-summary(lm(Desert~.-CensusTract-State,data = food))
-glm_1sttry<-glm(Desert~.-CensusTract-State,data = food,family = "binomial")
-summary(glm_1sttry)
-exp(glm_1sttry$coefficients)
+## Change variable 'Desert' to factor variable here and the new dataset is named as newfood now
+newfood<-food
+newfood$Desertfactor<-as.factor(newfood$Desert)
+newfood<-newfood[,-8]
+glm_food_int_Desert<-glm(Desert~.-CensusTract,data = food,family = "binomial")
+summary(glm_food_int_Desert)
+
+glm_newfood_fac_Desert<-glm(Desertfactor~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = newfood,family = "binomial")
+summary(glm_newfood_fac_Desert)
+exp(glm_newfood_fac_Desert$coefficients)
+
+## build an empty and full generalised linear model
+emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
+summary(emptyglm)
+
+fullglm<-glm(Desertfactor~.-CensusTract,data=newfood,family = binomial)
+summary(fullglm)
+
+forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
+formula(forwards)
+summary(forwards)
+### The output of summary(forwards) indicates that variable 'TractNHOPI' has a p-value is 0.136183
+
+forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI + 
+    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
+    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
+    PovertyRate,data=newfood,family = binomial)
+summary(forwards_2)
+
+### Backwards
+backwards<-step(fullglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
+formula(backwards)
+summary(backwards)
+
+### Let's drop the variable 'TractNHOPI' based on the p-value
+backwards_2<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
+    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2)
+
+forwards_2$deviance;backwards_2$deviance
+### the two models gave the same deviance, hence backwards_2 is our best generalized linear model for now
+
+### Multicollinearity
+vif(backwards_2)
+
+plot(newfood$Desertfactor,predict(backwards_2))
+
+plot(backwards_2)
+
+### back2_logit<-glm(Desertfactor~State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
+###    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+###    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+###    TractHUNV + TractSNAP,data=newfood, family = binomial(link = "logit"))
+### summary(back2_logit)
+###
+### No improvements using logit option
+
+### Check Assumptions of logistic regression
+
 ```
+
+We have not changed the variable 'Desert' to factor variable until the model building part since correlation matrix will need variable 'Desert' to be numerical, and all test before gave same results for 'Desert' in factor format and numerical format.
+
+And based on the outputs of the two models above, we saw that: No matter variable 'Desert' is numerical or categorical, we get the same results, but for stringency, we will use variable 'Desertfactor' in the dataset named as 'newfood'.
+
+For the variable selection process, we saw multicollinearity is not good, this is an inborn disadvantage of our dataset, we have mentioned this in Chi-Square test part. Further detections are needed.
+
 
 # Chapter 4: Conclusion 
 
