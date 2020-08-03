@@ -45,6 +45,7 @@ loadPkg("ggpubr")
 loadPkg("dplyr")
 loadPkg("leaps")
 loadPkg("MASS")
+loadPkg("corrplot")
 
 xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bso="striped", wide=FALSE) { 
   #' Combining base::summary, xtable, and kableExtra, to easily display model summary. 
@@ -274,7 +275,6 @@ qqline(food.desert$OHU2010)
 outlierKD2(food, NUMGQTRS, rm=FALSE)
 outlierKD2(food.desert, NUMGQTRS, rm=FALSE)
 # When we look at the group housing outliers in the data frame there are 831. The mean of the data with the outliers is 110 and without the outliers the mean is 24. This is a pretty big drop in the mean than from the other variables that we have seen, but nonetheless the data still has a right-skewed distribution and would yield the same results. When we are looking at the outliers from the subset of group housing units in food deserts the mean also has a big drop. With the outliers the mean is 200 and without outliers the mean is 42. However, the distribution is still right-skewed and would yield the same results. 
-
 ```
 
 ```{r Median Family Income Normality Test}
@@ -511,7 +511,6 @@ qqline(food.desert$TractSNAP)
 #Finding Outliers 
 outlierKD2(food,TractSNAP,rm=FALSE)
 outlierKD2(food.desert,TractSNAP, rm=FALSE)
-
 ```
 
 
@@ -577,8 +576,6 @@ chisq.test(food$Desert,food$TractOMultir)
 chisq.test(food$Desert,food$TractHispanic)
 chisq.test(food$Desert,food$TractHUNV)
 chisq.test(food$Desert,food$TractSNAP)
-
-
 ```
 
 We chose to use 0.05 as the significance level, thus, for now, we can say that variable 'POP2010', 'OHU2010','MedianFamilyIncome','TractKids','TractSeniors','TractWhite','TractAsian','TractNHOPI' might not be good to use because there are no relationships between them and dependent variable 'Desert' based on the outputs of Chi-Square tests. But correlation matrix may give different results. It is better to make a final decision while building model.
@@ -599,27 +596,35 @@ chisq.test(food$POP2010,food$NUMGQTRS)
 TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
 variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
 
-food_coronly<-food[,c("Desert",POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
-cor(food_coronly)
+
+
+```{r Correaltion of Variables on Desert Variable}
+food_coronly <- food[c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
+corr.food <- cor(food_coronly)
+corrplot(corr.food)
+```
+
+
+
 # Chapter 3: Model Building 
 ## Linear Model Try
 ### Here we are disceting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
 ```{r Forward Variable Selection}
 # Deciding Best Varaible with Forward Selection and Subsetting
-reg.10.forward <-regsubsets(Desert ~.-CensusTract-State , data = food, nvmax=19, nbest=1, method="forward")
-plot(reg.10.forward, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.10.forward, scale = "Cp", main = "CP")
-plot(reg.10.forward, scale = "bic", main = "BIC")
-model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
-model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
-model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
-summary(model_forward_adjr2)
-summary(model_forward_Cp)
-summary(model_forward_bic)
+reg.forward <-regsubsets(Desert ~.-CensusTract-State , data = food, nvmax=19, nbest=1, method="forward")
+plot(reg.forward, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.forward, scale = "Cp", main = "CP")
+plot(reg.forward, scale = "bic", main = "BIC")
+#model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
+#model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
+#model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
+#summary(model_forward_adjr2)
+#summary(model_forward_Cp)
+#summary(model_forward_bic)
 
-anova(model_forward_adjr2,model_forward_Cp)
-anova(model_forward_adjr2,model_forward_bic)
-anova(model_forward_Cp,model_forward_bic)
+#anova(model_forward_adjr2,model_forward_Cp)
+#anova(model_forward_adjr2,model_forward_bic)
+#anova(model_forward_Cp,model_forward_bic)
 ```
 
 We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite,
