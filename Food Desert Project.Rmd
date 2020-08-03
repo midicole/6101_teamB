@@ -555,46 +555,32 @@ state.tble$p.value
 xkabledply(state.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in U.S. Staes")
 ```
 
-Similarly,  we can conclude that variable 'State' and 'Desert' are not independent.
+### Here we are performing two-sample t test to determine if there exists a difference between groups.
+```{R unpaired two-sample t test}
+food_0<-subset(food,Desert==0)
+food_1<-subset(food,Desert==1)
+### for variable 'POP2010'
+t.test(food_0$POP2010,food_1$POP2010)
 
-We want to check if all X-variables have a relationship with y-variable. Let's make this process quicker
-
-```{R Chi-Square test between Y and X}
-chisq.test(food$Desert,food$POP2010)
-chisq.test(food$Desert,food$OHU2010)
-chisq.test(food$Desert,food$NUMGQTRS)
-chisq.test(food$Desert,food$PovertyRate)
-chisq.test(food$Desert,food$MedianFamilyIncome)
-chisq.test(food$Desert,food$TractLOWI)
-chisq.test(food$Desert,food$TractKids)
-chisq.test(food$Desert,food$TractSeniors)
-chisq.test(food$Desert,food$TractWhite)
-chisq.test(food$Desert,food$TractBlack)
-chisq.test(food$Desert,food$TractAsian)
-chisq.test(food$Desert,food$TractNHOPI)
-chisq.test(food$Desert,food$TractAIAN)
-chisq.test(food$Desert,food$TractOMultir)
-chisq.test(food$Desert,food$TractHispanic)
-chisq.test(food$Desert,food$TractHUNV)
-chisq.test(food$Desert,food$TractSNAP)
-
-
+### for the rest variables
+t.test(food_0$OHU2010,food_1$OHU2010)
+t.test(food_0$NUMGQTRS,food_1$NUMGQTRS)
+t.test(food_0$PovertyRate,food_1$PovertyRate)
+t.test(food_0$MedianFamilyIncome,food_1$MedianFamilyIncome)
+t.test(food_0$TractLOWI,food_1$TractLOWI)
+t.test(food_0$TractKids,food_1$TractKids)
+t.test(food_0$TractSeniors,food_1$TractSeniors)
+t.test(food_0$TractWhite,food_1$TractWhite)
+t.test(food_0$TractBlack,food_1$TractBlack)
+t.test(food_0$TractAsian,food_1$TractAsian)
+t.test(food_0$TractNHOPI,food_1$TractNHOPI)
+t.test(food_0$TractAIAN,food_1$TractAIAN)
+t.test(food_0$TractOMultir,food_1$TractOMultir)
+t.test(food_0$TractHispanic,food_1$TractHispanic)
+t.test(food_0$TractHUNV,food_1$TractHUNV)
+t.test(food_0$TractSNAP,food_1$TractSNAP)
 ```
 
-We chose to use 0.05 as the significance level, thus, for now, we can say that variable 'POP2010', 'OHU2010','MedianFamilyIncome','TractKids','TractSeniors','TractWhite','TractAsian','TractNHOPI' might not be good to use because there are no relationships between them and dependent variable 'Desert' based on the outputs of Chi-Square tests. But correlation matrix may give different results. It is better to make a final decision while building model.
-
-After detecting relationship between Y and X, we need to see if all X are independent of each other, if we choose to do this one by one, it will be very time consuming (approximately 210 combinations) and hard to interpret, so we only pick out the variables that are possible to have relationship with others in common sense, for example, 'POP2010' and 'Urban' might not be independent.
-
-```{R Chi-Square test between X's}
-chisq.test(food$Urban,food$POP2010)
-chisq.test(food$Region,food$POP2010)
-chisq.test(food$State,food$POP2010)
-chisq.test(food$OHU2010,food$POP2010)
-chisq.test(food$Region,food$Urban)
-chisq.test(food$PovertyRate,food$Urban)
-chisq.test(food$PovertyRate,food$MedianFamilyIncome)
-chisq.test(food$POP2010,food$NUMGQTRS)
-```
 
 TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
 variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
