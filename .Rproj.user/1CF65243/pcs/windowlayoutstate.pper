@@ -1,5 +1,6 @@
 {
     "left" : {
+<<<<<<< Updated upstream
         "panelheight" : 609,
         "splitterpos" : 64,
         "topwindowstate" : "HIDE",
@@ -10,5 +11,17 @@
         "splitterpos" : 382,
         "topwindowstate" : "NORMAL",
         "windowheight" : 653
+=======
+        "panelheight" : 615,
+        "splitterpos" : 64,
+        "topwindowstate" : "MAXIMIZE",
+        "windowheight" : 653
+    },
+    "right" : {
+        "panelheight" : 629,
+        "splitterpos" : 391,
+        "topwindowstate" : "NORMAL",
+        "windowheight" : 667
+>>>>>>> Stashed changes
     }
 }
