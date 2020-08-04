@@ -514,6 +514,83 @@ outlierKD2(food.desert,TractSNAP, rm=FALSE)
 
 ```
 
+To make the results of normality test more clear, we tried an another method, K-S test
+```{R Kolmogorov-Smirnov Test}
+ks.test(food$PovertyRate+runif(length(food$PovertyRate),-0.05,0.05),"pnorm",mean=mean(food$PovertyRate),sd=sd(food$PovertyRate))
+
+ks.test(food$POP2010+runif(length(food$POP2010),-0.05,0.05),"pnorm",mean=mean(food$POP2010),sd=sd(food$POP2010))
+
+ks.test(food$OHU2010+runif(length(food$OHU2010),-0.05,0.05),"pnorm",mean=mean(food$OHU2010),sd=sd(food$OHU2010))
+
+ks.test(food$NUMGQTRS+runif(length(food$NUMGQTRS),-0.05,0.05),"pnorm",mean=mean(food$NUMGQTRS),sd=sd(food$NUMGQTRS))
+
+ks.test(food$MedianFamilyIncome+runif(length(food$MedianFamilyIncome),-0.05,0.05),"pnorm",mean=mean(food$MedianFamilyIncome),sd=sd(food$MedianFamilyIncome))
+
+ks.test(food$TractLOWI+runif(length(food$TractLOWI),-0.05,0.05),"pnorm",mean=mean(food$TractLOWI),sd=sd(food$TractLOWI))
+
+ks.test(food$TractKids+runif(length(food$TractKids),-0.05,0.05),"pnorm",mean=mean(food$TractKids),sd=sd(food$TractKids))
+
+ks.test(food$TractSeniors+runif(length(food$TractSeniors),-0.05,0.05),"pnorm",mean=mean(food$TractSeniors),sd=sd(food$TractSeniors))
+
+ks.test(food$TractWhite+runif(length(food$TractWhite),-0.05,0.05),"pnorm",mean=mean(food$TractWhite),sd=sd(food$TractWhite))
+
+ks.test(food$TractBlack+runif(length(food$TractBlack),-0.05,0.05),"pnorm",mean=mean(food$TractBlack),sd=sd(food$TractBlack))
+
+ks.test(food$TractAsian+runif(length(food$TractAsian),-0.05,0.05),"pnorm",mean=mean(food$TractAsian),sd=sd(food$TractAsian))
+
+ks.test(food$TractNHOPI+runif(length(food$TractNHOPI),-0.05,0.05),"pnorm",mean=mean(food$TractNHOPI),sd=sd(food$TractNHOPI))
+
+ks.test(food$TractAIAN+runif(length(food$TractAIAN),-0.05,0.05),"pnorm",mean=mean(food$TractAIAN),sd=sd(food$TractAIAN))
+
+ks.test(food$TractOMultir+runif(length(food$TractOMultir),-0.05,0.05),"pnorm",mean=mean(food$TractOMultir),sd=sd(food$TractOMultir))
+
+ks.test(food$TractHispanic+runif(length(food$TractHispanic),-0.05,0.05),"pnorm",mean=mean(food$TractHispanic),sd=sd(food$TractHispanic))
+
+ks.test(food$TractHUNV+runif(length(food$TractHUNV),-0.05,0.05),"pnorm",mean=mean(food$TractHUNV),sd=sd(food$TractHUNV))
+
+ks.test(food$TractSNAP+runif(length(food$TractSNAP),-0.05,0.05),"pnorm",mean=mean(food$TractSNAP),sd=sd(food$TractSNAP))
+
+### For dataset food.desert
+ks.test(food.desert$PovertyRate+runif(length(food.desert$PovertyRate),-0.05,0.05),"pnorm",mean=mean(food.desert$PovertyRate),sd=sd(food.desert$PovertyRate))
+
+ks.test(food.desert$POP2010+runif(length(food.desert$POP2010),-0.05,0.05),"pnorm",mean=mean(food.desert$POP2010),sd=sd(food.desert$POP2010))
+
+ks.test(food.desert$OHU2010+runif(length(food.desert$OHU2010),-0.05,0.05),"pnorm",mean=mean(food.desert$OHU2010),sd=sd(food.desert$OHU2010))
+
+ks.test(food.desert$NUMGQTRS+runif(length(food.desert$NUMGQTRS),-0.05,0.05),"pnorm",mean=mean(food.desert$NUMGQTRS),sd=sd(food.desert$NUMGQTRS))
+
+ks.test(food.desert$MedianFamilyIncome+runif(length(food.desert$MedianFamilyIncome),-0.05,0.05),"pnorm",mean=mean(food.desert$MedianFamilyIncome),sd=sd(food.desert$MedianFamilyIncome))
+
+ks.test(food.desert$TractLOWI+runif(length(food.desert$TractLOWI),-0.05,0.05),"pnorm",mean=mean(food.desert$TractLOWI),sd=sd(food.desert$TractLOWI))
+
+ks.test(food.desert$TractKids+runif(length(food.desert$TractKids),-0.05,0.05),"pnorm",mean=mean(food.desert$TractKids),sd=sd(food.desert$TractKids))
+
+ks.test(food.desert$TractSeniors+runif(length(food.desert$TractSeniors),-0.05,0.05),"pnorm",mean=mean(food.desert$TractSeniors),sd=sd(food.desert$TractSeniors))
+
+ks.test(food.desert$TractWhite+runif(length(food.desert$TractWhite),-0.05,0.05),"pnorm",mean=mean(food.desert$TractWhite),sd=sd(food.desert$TractWhite))
+
+ks.test(food.desert$TractBlack+runif(length(food.desert$TractBlack),-0.05,0.05),"pnorm",mean=mean(food.desert$TractBlack),sd=sd(food.desert$TractBlack))
+
+ks.test(food.desert$TractAsian+runif(length(food.desert$TractAsian),-0.05,0.05),"pnorm",mean=mean(food.desert$TractAsian),sd=sd(food.desert$TractAsian))
+
+ks.test(food.desert$TractNHOPI+runif(length(food.desert$TractNHOPI),-0.05,0.05),"pnorm",mean=mean(food.desert$TractNHOPI),sd=sd(food.desert$TractNHOPI))
+
+ks.test(food.desert$TractAIAN+runif(length(food.desert$TractAIAN),-0.05,0.05),"pnorm",mean=mean(food.desert$TractAIAN),sd=sd(food.desert$TractAIAN))
+
+ks.test(food.desert$TractOMultir+runif(length(food.desert$TractOMultir),-0.05,0.05),"pnorm",mean=mean(food.desert$TractOMultir),sd=sd(food.desert$TractOMultir))
+
+ks.test(food.desert$TractHispanic+runif(length(food.desert$TractHispanic),-0.05,0.05),"pnorm",mean=mean(food.desert$TractHispanic),sd=sd(food.desert$TractHispanic))
+
+ks.test(food.desert$TractHUNV+runif(length(food.desert$TractHUNV),-0.05,0.05),"pnorm",mean=mean(food.desert$TractHUNV),sd=sd(food.desert$TractHUNV))
+
+ks.test(food.desert$TractSNAP+runif(length(food.desert$TractSNAP),-0.05,0.05),"pnorm",mean=mean(food.desert$TractSNAP),sd=sd(food.desert$TractSNAP))
+
+```
+
+Here we added runif function to avoid repeat of numbers in variables, repear will lead to an error of K-S test. And since we are using random number generater from uniform distribution, it will not affect our result
+
+In summary,  only variable 'OHU2010' and 'TractWhite' in dataset food.desert showed p-values larger than 0.05, so we can say the two variables are normally distributed but we may not conclude that the other variables here are not normally distributed directly, we still need to combine plots to make a final conclusion.
+
 
 # Chapter 2.1 Exploratory Data Analysis 
 ### Here we are performing Chi-Square test on  to determine whether there is a relationship between the categorical variables. 
@@ -585,7 +662,7 @@ t.test(food_0$TractSNAP,food_1$TractSNAP)
 TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
 variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
 
-food_coronly<-food[,c("Desert",POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
+food_coronly<-food[,c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
 cor(food_coronly)
 # Chapter 3: Model Building 
 ## Linear Model Try
@@ -735,6 +812,31 @@ plot(backwards_2)
 ###
 ### No improvements using logit option
 
+### Let's remove variables according to the corrleation matrix, to simplify the process, we chose to set our criterion as 0.8
+backwards_2_withoutOHU2010<-glm(Desertfactor ~ State + Urban + POP2010 + NUMGQTRS + 
+    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2_withoutOHU2010)
+backwards_2_withoutOHU2010$deviance
+
+backwards_2_withoutPOP2010<-glm(Desertfactor ~ State + Urban + OHU2010 + NUMGQTRS + 
+    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2_withoutPOP2010)
+backwards_2_withoutPOP2010$deviance
+
+
+backwards_2_withoutTkids<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
+    PovertyRate + MedianFamilyIncome + TractLOWI + TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2_withoutTkids)
+backwards_2_withoutTkids$deviance
+
+### Based on the deviance, the lowest one is for backwards_2_withoutTkids
+
+
 ### Check Assumptions of logistic regression
 
 ```
@@ -744,6 +846,39 @@ We have not changed the variable 'Desert' to factor variable until the model bui
 And based on the outputs of the two models above, we saw that: No matter variable 'Desert' is numerical or categorical, we get the same results, but for stringency, we will use variable 'Desertfactor' in the dataset named as 'newfood'.
 
 For the variable selection process, we saw multicollinearity is not good, this is an inborn disadvantage of our dataset, we have mentioned this in Chi-Square test part. Further detections are needed.
+
+
+
+## Chapter 3.3 Heatmap
+```{R Heatmap for population sum for different states}
+### install.packages("usmap")
+loadPkg("usmap")
+dataforheatmap<-read.csv("E:/gwu/Courses/DATS 6101/project/dataforheatmap.csv")
+
+### map for population of different states in dataset 'food'
+plot_usmap(data = dataforheatmap, values = "sumpop", color = "red") + 
+  scale_fill_continuous(name = "Population (2010)", label = scales::comma) + 
+  theme(legend.position = "right")
+
+### map for proportion of Desert of different states in dataset 'food'
+plot_usmap(data = dataforheatmap, values = "Desertp", color = "red") + 
+  scale_fill_continuous(name = "Food Desert Proportion", label = scales::comma) + 
+  theme(legend.position = "right")
+
+plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + labs(fill = 'Food Desert Proportion') +   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90",
+                       guide = guide_colourbar(barwidth = 25, barheight = 0.4,
+                                               #put legend title on top of legend
+                                               title.position = "top")) +theme(legend.position = "bottom",
+        legend.title=element_text(size=12), 
+        legend.text=element_text(size=10))
+
+```
+
+
+
+
+
+
 
 
 # Chapter 4: Conclusion 
