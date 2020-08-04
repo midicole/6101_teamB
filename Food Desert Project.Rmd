@@ -819,6 +819,7 @@ backwards_2_withoutOHU2010<-glm(Desertfactor ~ State + Urban + POP2010 + NUMGQTR
     TractHUNV + TractSNAP,data=newfood,family = binomial)
 summary(backwards_2_withoutOHU2010)
 backwards_2_withoutOHU2010$deviance
+anova(backwards_2,backwards_2_withoutOHU2010,test = "Chisq")
 
 backwards_2_withoutPOP2010<-glm(Desertfactor ~ State + Urban + OHU2010 + NUMGQTRS + 
     PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
@@ -826,15 +827,21 @@ backwards_2_withoutPOP2010<-glm(Desertfactor ~ State + Urban + OHU2010 + NUMGQTR
     TractHUNV + TractSNAP,data=newfood,family = binomial)
 summary(backwards_2_withoutPOP2010)
 backwards_2_withoutPOP2010$deviance
-
+anova(backwards_2,backwards_2_withoutPOP2010,test = "Chisq")
 
 backwards_2_withoutTkids<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
     PovertyRate + MedianFamilyIncome + TractLOWI + TractSeniors + TractAsian + TractAIAN + TractHispanic + 
     TractHUNV + TractSNAP,data=newfood,family = binomial)
 summary(backwards_2_withoutTkids)
 backwards_2_withoutTkids$deviance
+anova(backwards_2,backwards_2_withoutTkids,test = "Chisq")
+vcov(backwards_2)
+vcov(backwards_2_withoutTkids)
 
-### Based on the deviance, the lowest one is for backwards_2_withoutTkids
+vif(backwards_2_withoutTkids)
+### still not showing good vif's
+
+### Based on the deviance, the lowest one is for backwards_2_withoutTkids, we may choose it, but if we check anova()'s result, we see that variable 'TractKids' is good to be kept, our decision depends on the priority comparison between collinearity and model evaluation. 
 
 
 ### Check Assumptions of logistic regression
@@ -852,7 +859,10 @@ For the variable selection process, we saw multicollinearity is not good, this i
 ## Chapter 3.3 Heatmap
 ```{R Heatmap for population sum for different states}
 ### install.packages("usmap")
+### install.packages("ggplot2")
+
 loadPkg("usmap")
+loadPkg("ggplot2")
 dataforheatmap<-read.csv("E:/gwu/Courses/DATS 6101/project/dataforheatmap.csv")
 
 ### map for population of different states in dataset 'food'
