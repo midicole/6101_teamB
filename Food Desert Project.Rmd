@@ -951,7 +951,7 @@ food.trainLabels <- food[food_sample==1, 22]
 food.testLabels <- food[food_sample==2, 22]
 
 
-food_pred <- knn(train = food_test, test = food_test, cl=food.trainLabels, k = 3)
+food_pred <- knn(train = food_training, test = food_test, cl=food.trainLabels, k = 7)
 
 ```
 
