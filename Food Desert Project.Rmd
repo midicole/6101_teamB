@@ -953,8 +953,8 @@ food_training <- food_k[food_sample==1, 1:22]
 food_test <- food_k[food_sample==2, 1:22]
 
 #Create Y variables used to put in KNN function
-food.trainLabels <- food[food_sample==1, 3]
-food.testLabels <- food[food_sample==2, 3]
+food.trainLabels <- food[food_sample==1, 22]
+food.testLabels <- food[food_sample==2, 22]
 
 #Should deploy model but reading back error message
 food_pred <- knn(train = food_training, test = food_test, cl=food.trainLabels, k = 7)
