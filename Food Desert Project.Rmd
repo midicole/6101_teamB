@@ -927,7 +927,7 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
 
 
 
-#START OF NEXT PART
+#KNN Portion
 
 ```{r}
 #Loading the data set
