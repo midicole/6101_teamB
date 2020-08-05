@@ -886,9 +886,35 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
 
 
 
+#NNK Outlier Detection Using Kth Nearest Neighbour Distance Method
+#Takes a dataset and finds its outliers using distance-based method
 
 
 
+#START OF NEXT PART
+
+```{r}
+# Loading the data set
+food_K <- read.csv("food.csv") 
+
+#Bind Data
+library(dplyr)
+#food_K <- bind_rows(Desertfactor, State, Urban, POP2010,NUMGQTRS, 
+#    PovertyRate,MedianFamilyIncome,TractLOWI,TractKids,
+#   TractSeniors,TractAsian,TractAIAN,TractHispanic, 
+#    TractHUNV,TractSNAP)
+summary(food_K)
+
+library(VIM)
+
+aggr(food_K)
+
+
+```
+
+
+
+```
 
 
 # Chapter 4: Conclusion 
