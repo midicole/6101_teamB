@@ -46,6 +46,7 @@ loadPkg("dplyr")
 loadPkg("leaps")
 loadPkg("MASS")
 loadPkg("corrplot")
+loadPkg("AICcmodavg")
 
 xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bso="striped", wide=FALSE) { 
   #' Combining base::summary, xtable, and kableExtra, to easily display model summary. 
@@ -179,12 +180,6 @@ outlierKD2 <- function(df, var, rm=FALSE) {
         return(invisible(df))
     }
 }
-
-# sample usage
-# mlb2 = outlierKD2(mlb, weight, TRUE) # This will remove weight outliers, replace those values by NA, then save it as a new dataframe mlb2
-# mlb = outlierKD2(mlb, weight, TRUE) # This will remove weight outliers, replace those values by NA, then REPLACE the dataframe mlb with the new one.
-# outlierKD2(mlb, weight, FALSE) # This will NOT remove weight outliers, but it will show the charts with and without outliers nonetheless. 
-# outlierKD2(mlb, weight) # same as above, as the last argument is optional, default = FALSE 
 ```
 
 
@@ -215,8 +210,7 @@ hist(food.desert$PovertyRate, main="Histogram of the Percentage of Tract at or B
 qqnorm(food.desert$PovertyRate, main="Percentage of Tract in Food Desert at or Below Poverty Rate")
 qqline(food.desert$PovertyRate)
 outlierKD2(food.desert, PovertyRate, FALSE)
-# When we subset our data to only census tracts that are located in food deserts the mean is 26.97 which means about 27% of households located in a food desert   are at or below the federal poverty rate. Furthermore, when we use this subset to take out outliers we only have 36 outliers and the mean changes from 26.97 to 25.42 so there is no signifcant change in removing outliers within this subset. However, within this subset after we move the outliers we can see that our   histogram is more normally distributed. With outliers our distribution is skewed to the right like it is without subsetting the data. 
-
+#When we subset our data to only census tracts that are located in food deserts the mean is 26.97 which means about 27% of households located in a food desert   are at or below the federal poverty rate. Furthermore, when we use this subset to take out outliers we only have 36 outliers and the mean changes from 26.97 to 25.42 so there is no signifcant change in removing outliers within this subset. However, within this subset after we move the outliers we can see that our   histogram is more normally distributed. With outliers our distribution is skewed to the right like it is without subsetting the data. 
 ```
 
 ```{r Population Normality }
@@ -225,7 +219,7 @@ summary(food$POP2010)
 hist(food$POP2010, main="Histogram of Population in Tract", xlab="Population", col="red")
 qqnorm(food$POP2010, main="Q-Q Plot of Tract Population")
 qqline(food$POP2010)
-# We can tell from our Histogram and Q-Q plot that the distributon of the population is skewed to righly skewed and does not have any since of normality. 
+# We can tell from our Histogram and Q-Q plot that the distributon of the population is right-skewed or positive.
 
 # Population Normality Test of only areas with Food Deserts 
 hist(food.desert$POP2010, main="Histogram of Population of Tract in Food Desert", xlab="Population", col="yellow")
@@ -677,11 +671,18 @@ cor(food_coronly)
 ## Linear Model Try
 ### Here we are disceting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
 ```{r Forward Variable Selection}
-# Deciding Best Varaible with Forward Selection and Subsetting
-reg.forward <-regsubsets(Desert ~.-CensusTract-State , data = food, nvmax=19, nbest=1, method="forward")
-plot(reg.forward, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.forward, scale = "Cp", main = "CP")
-plot(reg.forward, scale = "bic", main = "BIC")
+# Deciding Best Varaible with Forward Selection and Subsetting 
+reg.forward.1 <-regsubsets(Desert ~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
+plot(reg.forward.1, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.forward.1, scale = "Cp", main = "CP")
+plot(reg.forward.1, scale = "bic", main = "BIC")
+
+# Deciding Best Variable with Forward Selection Not including Highly Correlated Variables 
+reg.forward.2 <- regsubsets(Desert~.-CensusTract-State-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, nvmax=19, nbest=1, method="forward")
+plot(reg.forward.2, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.forward.2, scale = "Cp", main = "CP")
+plot(reg.forward.2, scale = "bic", main = "BIC")
+
 #model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
 #model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
 #model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
@@ -699,17 +700,23 @@ the summary of model_forward_adjr2 indicated that it should not be included in t
 
 ```{R Backward Variable Selection}
 # Backward Selection
-reg.best10.bkwd <- regsubsets(Desert~.-CensusTract-State, data= food, nvmax=19, nbest=1, method="backward")
-plot(reg.best10.bkwd, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.best10.bkwd, scale = "Cp", main = "CP")
-plot(reg.best10.bkwd, scale = "bic", main = "BIC")
+reg.bkwd.1 <- regsubsets(Desert~.-CensusTract-State, data= food, nvmax=19, nbest=1, method="backward")
+plot(reg.bkwd.1, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.bkwd.1, scale = "Cp", main = "CP")
+plot(reg.bkwd.1, scale = "bic", main = "BIC")
 
-model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
-model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
-summary(model_backward_adjr2)
-summary(model_backward_BIC)
+# Deciding Best Variables with Backward Selection Not including Highly Correlated Variables 
+reg.bkwd.2 <- regsubsets(Desert~.-CensusTract-State-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data= food, nvmax=19, nbest=1, method="backward")
+plot(reg.bkwd.2, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.bkwd.2, scale = "Cp", main = "CP")
+plot(reg.bkwd.2, scale = "bic", main = "BIC")
 
-anova(model_backward_adjr2,model_backward_BIC)
+#model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
+#model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
+#summary(model_backward_adjr2)
+#summary(model_backward_BIC)
+
+#anova(model_backward_adjr2,model_backward_BIC)
 ```
 
 
@@ -719,18 +726,23 @@ Based on the results, model_backward_adjr2 is a better choice. And to make the s
 
 ```{R Sequential Variable Selection}
 # Sequential Selection 
-reg.best10.seq <- regsubsets(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food, nvmax=19, nbest=1, method="seqrep")
-plot(reg.best10.seq, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.best10.seq, scale = "Cp", main = "CP")
-plot(reg.best10.seq, scale = "bic", main = "BIC")
+reg.seq.1 <- regsubsets(Desert~.-CensusTract-State-TractBlack-TractHispanic, data= food, nvmax=19, nbest=1, method="seqrep")
+plot(reg.seq.1, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.seq.1, scale = "Cp", main = "CP")
+plot(reg.seq.1, scale = "bic", main = "BIC")
 
-model_seq_adjr2<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food)
-model_seq_BIC<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP, data= food)
+reg.seq.2 <- regsubsets(Desert~.-CensusTract-State-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data= food, nvmax=19, nbest=1, method="seqrep")
+plot(reg.seq.2, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.seq.2, scale = "Cp", main = "CP")
+plot(reg.seq.2, scale = "bic", main = "BIC")
 
-summary(model_seq_adjr2)
-summary(model_seq_BIC)
+#model_seq_adjr2<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food)
+#model_seq_BIC<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP, data= food)
 
-anova(model_seq_adjr2,model_seq_BIC)
+#summary(model_seq_adjr2)
+#summary(model_seq_BIC)
+
+#anova(model_seq_adjr2,model_seq_BIC)
 ```
 
 Cp and adjusted R-square gave the same result, so we only compare it with the model from BIC
@@ -738,17 +750,12 @@ Cp and adjusted R-square gave the same result, so we only compare it with the mo
 We got a p-value larger than 0.05 from output of F test but not very obviously significant, and from summary of model_seq_adjr2, we can see that variable 'TractAsian' should be excluded. 
 
 ```{R Exhaustive Variable Selection}
-reg.10.forward <-regsubsets(Desert~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="exhaustive")
-plot(reg.10.forward, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.10.forward, scale = "Cp", main = "CP")
-plot(reg.10.forward, scale = "bic", main = "BIC")
+reg.exhaustive <-regsubsets(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractSNAP, data = food, nvmax=19, nbest=1, method="exhaustive")
+plot(reg.exhaustive, scale = "adjr2", main = "Adjusted R^2")
+plot(reg.exhaustive, scale = "Cp", main = "CP")
+plot(reg.exhaustive, scale = "bic", main = "BIC")
 
 
-#Correlation Tests on x variables and y 
-cor.test(food$POP2010, food$Desert)
-cor.test(food$TractBlack, food$Desert)
-cor.test(food$PovertyRate, food$Desert)
-cor.test(food$TractSNAP, food$Desert)
 ```
 
 We tried exhaustive method here as an additional part, this method is only available when number of possible predictor variables is less than 20. It might not be very wise for us to follow the suggestions given by exhaustive method, because those variables gave significant p-values in the forward, backward and sequential selection. 
@@ -761,57 +768,74 @@ We did not include variable 'State' in our model because there are too many leve
 # Chapter 3.2: Logisitc Regression and Classification 
 ### Here we are performing a logistical regression and k-NN classifcation test to determine which variables impact whether or not a census tract is located in a food desert. 
 ```{r}
+# Model Building Logistic Regression Based on Featured Selection 
+
+model.a <- glm(Desert~.-CensusTract, data=food, family="binomial")
+#summary(model.a)
+#exp(model.a$coefficients)
+model.b <- glm(Desert~.-CensusTract-State, data=food, family="binomial")
+model.exhausitve <- glm(Desert~.-CensusTract-TractSNAP-TractBlack-TractHispanic, data=food, family="binomial")
+model.corr <- glm(Desert~.-CensusTract-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, family="binomial")
+models <- list(model.a, model.b, model.exhausitve, model.corr)
+model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr')
+aictab(cand.set=models, modnames=model.names)
+```
+
+
+
+
+```{r}
 ### Model Building
 ## Change variable 'Desert' to factor variable here and the new dataset is named as newfood now
-newfood<-food
-newfood$Desertfactor<-as.factor(newfood$Desert)
-newfood<-newfood[,-8]
-glm_food_int_Desert<-glm(Desert~.-CensusTract,data = food,family = "binomial")
-summary(glm_food_int_Desert)
+#newfood<-food
+#newfood$Desertfactor<-as.factor(newfood$Desert)
+#newfood<-newfood[,-8]
+#glm_food_int_Desert<-glm(Desert~.-CensusTract,data = food,family = "binomial")
+#summary(glm_food_int_Desert)
 
-glm_newfood_fac_Desert<-glm(Desertfactor~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = newfood,family = "binomial")
-summary(glm_newfood_fac_Desert)
-exp(glm_newfood_fac_Desert$coefficients)
+#glm_newfood_fac_Desert<-glm(Desertfactor~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = newfood,family = "binomial")
+#summary(glm_newfood_fac_Desert)
+#exp(glm_newfood_fac_Desert$coefficients)
 
 ## build an empty and full generalised linear model
-emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
-summary(emptyglm)
+#emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
+#summary(emptyglm)
 
-fullglm<-glm(Desertfactor~.-CensusTract,data=newfood,family = binomial)
-summary(fullglm)
+#fullglm<-glm(Desertfactor~.-CensusTract,data=newfood,family = binomial)
+#summary(fullglm)
 
-forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
-formula(forwards)
-summary(forwards)
+#forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
+#formula(forwards)
+#summary(forwards)
 ### The output of summary(forwards) indicates that variable 'TractNHOPI' has a p-value is 0.136183
 
-forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI + 
-    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
-    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
-    PovertyRate,data=newfood,family = binomial)
-summary(forwards_2)
+#forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI + 
+#    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
+#    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
+#    PovertyRate,data=newfood,family = binomial)
+#summary(forwards_2)
 
 ### Backwards
-backwards<-step(fullglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
+#backwards<-step(fullglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
 formula(backwards)
 summary(backwards)
 
 ### Let's drop the variable 'TractNHOPI' based on the p-value
-backwards_2<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
-    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
-    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-    TractHUNV + TractSNAP,data=newfood,family = binomial)
-summary(backwards_2)
+#backwards_2<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
+#    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+#    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+#    TractHUNV + TractSNAP,data=newfood,family = binomial)
+#summary(backwards_2)
 
-forwards_2$deviance;backwards_2$deviance
+#forwards_2$deviance;backwards_2$deviance
 ### the two models gave the same deviance, hence backwards_2 is our best generalized linear model for now
 
 ### Multicollinearity
-vif(backwards_2)
+#vif(backwards_2)
 
-plot(newfood$Desertfactor,predict(backwards_2))
+#plot(newfood$Desertfactor,predict(backwards_2))
 
-plot(backwards_2)
+#plot(backwards_2)
 
 ### back2_logit<-glm(Desertfactor~State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
 ###    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
@@ -822,39 +846,38 @@ plot(backwards_2)
 ### No improvements using logit option
 
 ### Let's remove variables according to the corrleation matrix, to simplify the process, we chose to set our criterion as 0.8
-backwards_2_withoutOHU2010<-glm(Desertfactor ~ State + Urban + POP2010 + NUMGQTRS + 
-    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
-    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-    TractHUNV + TractSNAP,data=newfood,family = binomial)
-summary(backwards_2_withoutOHU2010)
-backwards_2_withoutOHU2010$deviance
-anova(backwards_2,backwards_2_withoutOHU2010,test = "Chisq")
+#backwards_2_withoutOHU2010<-glm(Desertfactor ~ State + Urban + POP2010 + NUMGQTRS + 
+#    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+#    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+#    TractHUNV + TractSNAP,data=newfood,family = binomial)
+#summary(backwards_2_withoutOHU2010)
+#backwards_2_withoutOHU2010$deviance
+#anova(backwards_2,backwards_2_withoutOHU2010,test = "Chisq")
 
-backwards_2_withoutPOP2010<-glm(Desertfactor ~ State + Urban + OHU2010 + NUMGQTRS + 
-    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
-    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-    TractHUNV + TractSNAP,data=newfood,family = binomial)
-summary(backwards_2_withoutPOP2010)
-backwards_2_withoutPOP2010$deviance
-anova(backwards_2,backwards_2_withoutPOP2010,test = "Chisq")
+#backwards_2_withoutPOP2010<-glm(Desertfactor ~ State + Urban + OHU2010 + NUMGQTRS + 
+#   PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+#   TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+#    TractHUNV + TractSNAP,data=newfood,family = binomial)
+#summary(backwards_2_withoutPOP2010)
+#backwards_2_withoutPOP2010$deviance
+#anova(backwards_2,backwards_2_withoutPOP2010,test = "Chisq")
 
-backwards_2_withoutTkids<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
-    PovertyRate + MedianFamilyIncome + TractLOWI + TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-    TractHUNV + TractSNAP,data=newfood,family = binomial)
-summary(backwards_2_withoutTkids)
-backwards_2_withoutTkids$deviance
-anova(backwards_2,backwards_2_withoutTkids,test = "Chisq")
-vcov(backwards_2)
-vcov(backwards_2_withoutTkids)
+#backwards_2_withoutTkids<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + #NUMGQTRS + 
+#    PovertyRate + MedianFamilyIncome + TractLOWI + TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+#    TractHUNV + TractSNAP,data=newfood,family = binomial)
+#summary(backwards_2_withoutTkids)
+#backwards_2_withoutTkids$deviance
+#anova(backwards_2,backwards_2_withoutTkids,test = "Chisq")
+#vcov(backwards_2)
+#vcov(backwards_2_withoutTkids)
 
-vif(backwards_2_withoutTkids)
+#vif(backwards_2_withoutTkids)
 ### still not showing good vif's
 
 ### Based on the deviance, the lowest one is for backwards_2_withoutTkids, we may choose it, but if we check anova()'s result, we see that variable 'TractKids' is good to be kept, our decision depends on the priority comparison between collinearity and model evaluation. 
 
 
 ### Check Assumptions of logistic regression
-
 ```
 
 We have not changed the variable 'Desert' to factor variable until the model building part since correlation matrix will need variable 'Desert' to be numerical, and all test before gave same results for 'Desert' in factor format and numerical format.
