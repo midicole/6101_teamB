@@ -930,20 +930,31 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
 #START OF NEXT PART
 
 ```{r}
-# Loading the data set
-food_K <- read.csv("food.csv") 
+#Loading the data set
 
-#Bind Data
-library(dplyr)
-#food_K <- bind_rows(Desertfactor, State, Urban, POP2010,NUMGQTRS, 
-#    PovertyRate,MedianFamilyIncome,TractLOWI,TractKids,
-#   TractSeniors,TractAsian,TractAIAN,TractHispanic, 
-#    TractHUNV,TractSNAP)
-summary(food_K)
+food_k <- read.csv("food.csv") 
 
-library(VIM)
+food_k <- food
 
-aggr(food_K)
+loadPkg("FNN")
+
+food_k <- as.data.frame(scale(food[1:22], center = TRUE, scale = TRUE))
+
+set.seed(1000)
+
+food_sample <- sample(2, nrow(food_k), replace=TRUE, prob=c(0.67, 0.33))
+
+food_training <- food_k[food_sample==1, 1:22]
+food_test <- food_k[food_sample==2, 1:22]
+
+food.trainLabels <- food[food_sample==1, 22]
+food.testLabels <- food[food_sample==2, 22]
+
+
+food_pred <- knn(train = food_test, test = food_test, cl=food.trainLabels, k = 3)
+
+```
+
 
 
 ```
