@@ -192,6 +192,12 @@ food$Region <- as.factor(food$Region)
 food$Urban <- as.factor(food$Urban)
 colnames(food)[8] <- c("Desert")
 str(food)
+#plot(food$TractBlack, food$Desert, xlab="Black Population",ylab="Probability of being located in Food Desert")
+#lines(food$TractBlack,food$Desert)
+#plot(Desert~TractBlack, data=food, col = "red")
+#fit =glm(Desert~TractBlack, data=food, family="binomial") 
+#predicted= predict(fit, data=food, type="response")
+
 ```
 
 # Chapter 2: Exploratory Data Analysis
@@ -769,20 +775,51 @@ We did not include variable 'State' in our model because there are too many leve
 ### Here we are performing a logistical regression and k-NN classifcation test to determine which variables impact whether or not a census tract is located in a food desert. 
 ```{r}
 # Model Building Logistic Regression Based on Featured Selection 
-
+#Model A everything except CensusTract
 model.a <- glm(Desert~.-CensusTract, data=food, family="binomial")
 #summary(model.a)
 #exp(model.a$coefficients)
+# Everything except CensusTract and State
 model.b <- glm(Desert~.-CensusTract-State, data=food, family="binomial")
+# Using Exhaustive Feature Selection Model 
 model.exhausitve <- glm(Desert~.-CensusTract-TractSNAP-TractBlack-TractHispanic, data=food, family="binomial")
+# Taking out variables that were highly correlated with other variables 
 model.corr <- glm(Desert~.-CensusTract-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, family="binomial")
-models <- list(model.a, model.b, model.exhausitve, model.corr)
-model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr')
+# Taking out Racial indicators 
+glm_newfood_fac_Desert<-glm(Desert~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = food,family = "binomial")
+emptyglm<-glm(Desert~1,data=food,family = binomial)
+# Using Forward Selection Model Not worrying about correlated Variables 
+forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI + 
+    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
+    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
+    PovertyRate,data=food,family = binomial)
+# Using Forward Selection Taking Out Correlated Variables 
+forwards2_corr<-glm(Desert ~ MedianFamilyIncome + State + Urban + 
+    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
+      TractSNAP + TractSeniors + POP2010  + 
+    PovertyRate,data=food,family = binomial)
+# Using Backwards Selection Model not worrying about correlated variables
+backwards_2<-glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
+#Using Backwards Selection Taking out Correlated Variables 
+backwards2_corr <- glm(Desert~.-CensusTract-TractLOWI-TractKids-OHU2010-TractHispanic,data=food,family = binomial)
+# Using Selection Based on Literature
+model.lit <- glm(Desert~State + Urban + Region + TractBlack + TractAsian + TractLOWI + PovertyRate + TractAIAN + TractHispanic +TractOMultir+ TractNHOPI+TractHUNV+MedianFamilyIncome+POP2010, data=food, family="binomial")
+# Model AIC Levels 
+models <- list(model.a, model.b, model.exhausitve, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, backwards_2, backwards2_corr, model.lit)
+model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newfood_fac_Desert', 'emptyglm','forwards_2', 'forwards2_corr', 'backwards_2', 'backwards2_corr','model.lit')
 aictab(cand.set=models, modnames=model.names)
 ```
 
-
-
+### Results from best model 
+```{r}
+forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI + 
+    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
+    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
+    PovertyRate,data=food,family = binomial)
+summary(forwards_2)
+exp(forwards2_corr$coefficients)
+plot(forwards_2)
+```
 
 ```{r}
 ###Model Building
@@ -790,7 +827,7 @@ aictab(cand.set=models, modnames=model.names)
 newfood<-food
 newfood$Desertfactor<-as.factor(newfood$Desert)
 newfood<-newfood[,-8]
-glm_food_int_Desert<-glm(Desertfactor~.-CensusTract,data = newfood,family = "binomial")
+#glm_food_int_Desert<-glm(Desertfactor~.-CensusTract,data = newfood,family = "binomial")
 #summary(glm_food_int_Desert)
 
 glm_newfood_fac_Desert<-glm(Desertfactor~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = newfood,family = "binomial")
@@ -804,12 +841,12 @@ emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
 fullglm<-glm(Desertfactor~.-CensusTract,data=newfood,family = binomial)
 #summary(fullglm)
 
-#forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
-#formula(forwards)
-#summary(forwards)
+forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
+formula(forwards)
+summary(forwards)
 ### The output of summary(forwards) indicates that variable 'TractNHOPI' has a p-value is 0.136183
 
-forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI + 
+forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI +
     TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
     TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
     PovertyRate,data=newfood,family = binomial)
@@ -825,57 +862,53 @@ backwards_2<-glm(Desertfactor~ State + Urban + POP2010 + OHU2010 + NUMGQTRS +
   PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
     TractSeniors + TractAsian + TractAIAN + TractHispanic + 
     TractHUNV + TractSNAP,data=newfood,family = binomial)
-#summary(backwards_2)
+summary(backwards_2)
 
-#forwards_2$deviance;backwards_2$deviance
+forwards_2$deviance;backwards_2$deviance
 ### the two models gave the same deviance, hence backwards_2 is our best generalized linear model for now
 
 ### Multicollinearity
-#vif(backwards_2)
-new.models <- list(glm_food_int_Desert, glm_newfood_fac_Desert, emptyglm, fullglm, forwards_2, backwards_2)
-new.models.name <- c('glm_food_int_Desert', 'glm_newfood_fac_Desert', 'emptyglm', 'fullglm', 'forwards_2', 'backwards_2')
-aictab(cand.set = new.models, modnames = new.models.name)
+vif(backwards_2)
 
-```
-#plot(newfood$Desertfactor,predict(backwards_2))
 
-#plot(backwards_2)
+plot(newfood$Desertfactor,predict(backwards_2))
 
-### back2_logit<-glm(Desertfactor~State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
-###    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
-###    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-###    TractHUNV + TractSNAP,data=newfood, family = binomial(link = "logit"))
-### summary(back2_logit)
-###
+plot(backwards_2)
+
+back2_logit<-glm(Desertfactor~State + Urban + POP2010 + OHU2010 + NUMGQTRS +    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+TractHUNV + TractSNAP,data=newfood, family = binomial(link = "logit"))
+summary(back2_logit)
+
 ### No improvements using logit option
 
 ### Let's remove variables according to the corrleation matrix, to simplify the process, we chose to set our criterion as 0.8
-#backwards_2_withoutOHU2010<-glm(Desertfactor ~ State + Urban + POP2010 + NUMGQTRS + 
-#    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
-#    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-#    TractHUNV + TractSNAP,data=newfood,family = binomial)
-#summary(backwards_2_withoutOHU2010)
-#backwards_2_withoutOHU2010$deviance
-#anova(backwards_2,backwards_2_withoutOHU2010,test = "Chisq")
+backwards_2_withoutOHU2010<-glm(Desertfactor ~ State + Urban + POP2010 + NUMGQTRS + 
+    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2_withoutOHU2010)
+backwards_2_withoutOHU2010$deviance
+anova(backwards_2,backwards_2_withoutOHU2010,test = "Chisq")
 
-#backwards_2_withoutPOP2010<-glm(Desertfactor ~ State + Urban + OHU2010 + NUMGQTRS + 
-#   PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
-#   TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-#    TractHUNV + TractSNAP,data=newfood,family = binomial)
-#summary(backwards_2_withoutPOP2010)
-#backwards_2_withoutPOP2010$deviance
-#anova(backwards_2,backwards_2_withoutPOP2010,test = "Chisq")
+backwards_2_withoutPOP2010<-glm(Desertfactor ~ State + Urban + OHU2010 + NUMGQTRS + 
+   PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+   TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2_withoutPOP2010)
+backwards_2_withoutPOP2010$deviance
+anova(backwards_2,backwards_2_withoutPOP2010,test = "Chisq")
 
-#backwards_2_withoutTkids<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + #NUMGQTRS + 
-#    PovertyRate + MedianFamilyIncome + TractLOWI + TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-#    TractHUNV + TractSNAP,data=newfood,family = binomial)
-#summary(backwards_2_withoutTkids)
-#backwards_2_withoutTkids$deviance
-#anova(backwards_2,backwards_2_withoutTkids,test = "Chisq")
-#vcov(backwards_2)
-#vcov(backwards_2_withoutTkids)
+backwards_2_withoutTkids<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + #NUMGQTRS + 
+    PovertyRate + MedianFamilyIncome + TractLOWI + TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
+summary(backwards_2_withoutTkids)
+backwards_2_withoutTkids$deviance
+anova(backwards_2,backwards_2_withoutTkids,test = "Chisq")
+vcov(backwards_2)
+vcov(backwards_2_withoutTkids)
 
-#vif(backwards_2_withoutTkids)
+vif(backwards_2_withoutTkids)
 ### still not showing good vif's
 
 ### Based on the deviance, the lowest one is for backwards_2_withoutTkids, we may choose it, but if we check anova()'s result, we see that variable 'TractKids' is good to be kept, our decision depends on the priority comparison between collinearity and model evaluation. 
