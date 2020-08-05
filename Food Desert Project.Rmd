@@ -785,23 +785,23 @@ aictab(cand.set=models, modnames=model.names)
 
 
 ```{r}
-### Model Building
+###Model Building
 ## Change variable 'Desert' to factor variable here and the new dataset is named as newfood now
-#newfood<-food
-#newfood$Desertfactor<-as.factor(newfood$Desert)
-#newfood<-newfood[,-8]
-#glm_food_int_Desert<-glm(Desert~.-CensusTract,data = food,family = "binomial")
+newfood<-food
+newfood$Desertfactor<-as.factor(newfood$Desert)
+newfood<-newfood[,-8]
+glm_food_int_Desert<-glm(Desertfactor~.-CensusTract,data = newfood,family = "binomial")
 #summary(glm_food_int_Desert)
 
-#glm_newfood_fac_Desert<-glm(Desertfactor~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = newfood,family = "binomial")
+glm_newfood_fac_Desert<-glm(Desertfactor~.-CensusTract-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP,data = newfood,family = "binomial")
 #summary(glm_newfood_fac_Desert)
 #exp(glm_newfood_fac_Desert$coefficients)
 
 ## build an empty and full generalised linear model
-#emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
+emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
 #summary(emptyglm)
 
-#fullglm<-glm(Desertfactor~.-CensusTract,data=newfood,family = binomial)
+fullglm<-glm(Desertfactor~.-CensusTract,data=newfood,family = binomial)
 #summary(fullglm)
 
 #forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
@@ -809,22 +809,22 @@ aictab(cand.set=models, modnames=model.names)
 #summary(forwards)
 ### The output of summary(forwards) indicates that variable 'TractNHOPI' has a p-value is 0.136183
 
-#forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI + 
-#    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
-#    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
-#    PovertyRate,data=newfood,family = binomial)
+forwards_2<-glm(Desertfactor ~ MedianFamilyIncome + State + Urban + TractLOWI + 
+    TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
+    TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
+    PovertyRate,data=newfood,family = binomial)
 #summary(forwards_2)
 
 ### Backwards
 #backwards<-step(fullglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
-formula(backwards)
-summary(backwards)
+#formula(backwards)
+#summary(backwards)
 
 ### Let's drop the variable 'TractNHOPI' based on the p-value
-#backwards_2<-glm(Desertfactor ~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
-#    PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
-#    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
-#    TractHUNV + TractSNAP,data=newfood,family = binomial)
+backwards_2<-glm(Desertfactor~ State + Urban + POP2010 + OHU2010 + NUMGQTRS + 
+  PovertyRate + MedianFamilyIncome + TractLOWI + TractKids + 
+    TractSeniors + TractAsian + TractAIAN + TractHispanic + 
+    TractHUNV + TractSNAP,data=newfood,family = binomial)
 #summary(backwards_2)
 
 #forwards_2$deviance;backwards_2$deviance
@@ -832,7 +832,11 @@ summary(backwards)
 
 ### Multicollinearity
 #vif(backwards_2)
+new.models <- list(glm_food_int_Desert, glm_newfood_fac_Desert, emptyglm, fullglm, forwards_2, backwards_2)
+new.models.name <- c('glm_food_int_Desert', 'glm_newfood_fac_Desert', 'emptyglm', 'fullglm', 'forwards_2', 'backwards_2')
+aictab(cand.set = new.models, modnames = new.models.name)
 
+```
 #plot(newfood$Desertfactor,predict(backwards_2))
 
 #plot(backwards_2)
