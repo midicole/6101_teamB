@@ -588,7 +588,7 @@ ks.test(food.desert$TractSNAP+runif(length(food.desert$TractSNAP),-0.05,0.05),"p
 
 Here we added runif function to avoid repeat of numbers in variables, repear will lead to an error of K-S test. And since we are using random number generater from uniform distribution, it will not affect our result
 
-In summary,  only variable 'OHU2010' and 'TractWhite' in dataset food.desert showed p-values larger than 0.05, so we can say the two variables are normally distributed but we may not conclude that the other variables here are not normally distributed directly, we still need to combine plots to make a final conclusion.
+In summary,  only variable 'OHU2010' and 'TractWhite' in dataset food.desert showed p-values larger than 0.01, so we can say the two variables are normally distributed but we may not conclude that the other variables here are not normally distributed directly, we still need to combine plots to make a final conclusion.
 
 
 # Chapter 2.1 Exploratory Data Analysis 
@@ -895,9 +895,35 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
 
 
 
+#NNK Outlier Detection Using Kth Nearest Neighbour Distance Method
+#Takes a dataset and finds its outliers using distance-based method
 
 
 
+#START OF NEXT PART
+
+```{r}
+# Loading the data set
+food_K <- read.csv("food.csv") 
+
+#Bind Data
+library(dplyr)
+#food_K <- bind_rows(Desertfactor, State, Urban, POP2010,NUMGQTRS, 
+#    PovertyRate,MedianFamilyIncome,TractLOWI,TractKids,
+#   TractSeniors,TractAsian,TractAIAN,TractHispanic, 
+#    TractHUNV,TractSNAP)
+summary(food_K)
+
+library(VIM)
+
+aggr(food_K)
+
+
+```
+
+
+
+```
 
 
 # Chapter 4: Conclusion 
