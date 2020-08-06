@@ -760,8 +760,6 @@ reg.exhaustive <-regsubsets(Desert~.-CensusTract-State-TractHispanic-TractBlack-
 plot(reg.exhaustive, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.exhaustive, scale = "Cp", main = "CP")
 plot(reg.exhaustive, scale = "bic", main = "BIC")
-
-
 ```
 
 We tried exhaustive method here as an additional part, this method is only available when number of possible predictor variables is less than 20. It might not be very wise for us to follow the suggestions given by exhaustive method, because those variables gave significant p-values in the forward, backward and sequential selection. 
@@ -770,6 +768,39 @@ We tried exhaustive method here as an additional part, this method is only avail
 Again, we know that our variable Y is desert which is binary, logistic regression should be used, but linear models still deserve a try because it may give us some surprise about variable selection.
 
 We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
+
+
+```{r bestglm Method}
+library(bestglm)
+best.glm <- within(food, {
+  CensusTract <- NULL 
+  TractLOWI <- NULL 
+  OHU2010 <- NULL 
+  TractOMultir <- NULL 
+  TractWhite <- NULL 
+  TractKids <- NULL 
+  Region <- NULL 
+  State <- NULL 
+  y <-  Desert
+  Desert <- NULL
+})
+best.glm.nopop <- within(food, {
+  CensusTract <- NULL 
+  POP2010 <- NULL 
+  TractWhite <- NULL 
+  TractKids <- NULL 
+  Region <- NULL 
+  State <- NULL 
+  y <-  Desert
+  Desert <- NULL
+})
+
+#best.glm
+res.best.glm <- bestglm(Xy = best.glm) 
+res.best.glm$BestModels
+nopop.glm <- bestglm(Xy=best.glm.nopop)
+nopop.glm$BestModels
+```
 
 # Chapter 3.2: Logisitc Regression and Classification 
 ### Here we are performing a logistical regression and k-NN classifcation test to determine which variables impact whether or not a census tract is located in a food desert. 
@@ -804,9 +835,17 @@ backwards_2<-glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial
 backwards2_corr <- glm(Desert~.-CensusTract-TractLOWI-TractKids-OHU2010-TractHispanic,data=food,family = binomial)
 # Using Selection Based on Literature
 model.lit <- glm(Desert~State + Urban + Region + TractBlack + TractAsian + TractLOWI + PovertyRate + TractAIAN + TractHispanic +TractOMultir+ TractNHOPI+TractHUNV+MedianFamilyIncome+POP2010, data=food, family="binomial")
+# Model from bestglm() 
+bestglm.1 <- glm(Desert~Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractBlack+TractAsian+TractNHOPI+TractOMultir+TractHUNV, data=food, family= binomial)
+# Model from bestglm() 2 
+bestglm.2 <- glm(Desert~ Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractSeniors+TractBlack+TractAsian+TractAIAN+TractHispanic+TractHUNV+TractSNAP, data=food, family=binomial)
+# Model from bestglm() 3 
+bestglm.3 <- glm(Desert~ State+Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractNHOPI+TractAIAN+TractOMultir+TractHUNV, data=food, family= binomial)
+# Model from bestglm() 4 
+bestglm.4 <- glm(Desert~ Urban+OHU2010+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractAIAN+TractOMultir+TractHispanic+TractHUNV, data=food, family=binomial)
 # Model AIC Levels 
-models <- list(model.a, model.b, model.exhausitve, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, backwards_2, backwards2_corr, model.lit)
-model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newfood_fac_Desert', 'emptyglm','forwards_2', 'forwards2_corr', 'backwards_2', 'backwards2_corr','model.lit')
+models <- list(model.a, model.b, model.exhausitve, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, backwards_2, backwards2_corr, model.lit, bestglm.1, bestglm.2, bestglm.3, bestglm.4)
+model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newfood_fac_Desert', 'emptyglm','forwards_2', 'forwards2_corr', 'backwards_2', 'backwards2_corr','model.lit','bestglm.1', 'bestglm.2', 'bestglm.3','besglm.4')
 aictab(cand.set=models, modnames=model.names)
 ```
 
