@@ -54,7 +54,7 @@ xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bs
   #' Can also use as head for better display
   #' ELo 202004 GWU DATS
   #' version 1.2
-  #' @param modelsmmrytable This can be a generic table, a model object such as lm(), or the summary of a model object summary(lm()) 
+  #' @param modelsmmrytable This can be a generic table, a model object such as lm(), or the      summary of a model object summary(lm()) 
   #' @param title Title of table. 
   #' @param digits Number of digits to display
   #' @param pos Position of table, c("left","center","right") 
@@ -799,8 +799,8 @@ best.glm.nopop <- within(food, {
 res.best.glm <- bestglm(Xy = best.glm) 
 #res.best.glm$BestModels
 nopop.glm <- bestglm(Xy=best.glm.nopop)
-res.best.glm
-nopop.glm
+res.best.glm$BestModel
+nopop.glm$BestModel
 #nopop.glm$BestModels
 ```
 
@@ -808,14 +808,17 @@ nopop.glm
 ### Here we are performing a logistical regression and k-NN classifcation test to determine which variables impact whether or not a census tract is located in a food desert. 
 ```{r}
 # Model Building Logistic Regression Based on Featured Selection 
-#Model A everything except CensusTract
-model.a <- glm(Desert~.-CensusTract, data=food, family="binomial")
+#Model F - Forward Selection Best Model 
+model.f <- glm(Desert~.-CensusTract-TractBlack, data=food, family=binomial)
+#model.f.corr <- Desert~.-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, family=binomial)
 #summary(model.a)
 #exp(model.a$coefficients)
 # Everything except CensusTract and State
-model.b <- glm(Desert~.-CensusTract-State, data=food, family="binomial")
+model.b <- glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
+#model.b.corr <- glm(Desert~.-CensusTract-OHU2010-TractWhite-TractKids-TractLOWI-Tract0Multir, data=food, family=binomial)
 # Using Exhaustive Feature Selection Model 
-model.exhausitve <- glm(Desert~.-CensusTract-TractSNAP-TractBlack-TractHispanic, data=food, family="binomial")
+model.seq <- glm(Desert~.-CensusTract-TractSNAP, data=food, family=binomial)
+model.exhaustive <- glm(Desert~.-CensusTract-TractSNAP-TractBlack-TractHispanic, data=food, family="binomial")
 # Taking out variables that were highly correlated with other variables 
 model.corr <- glm(Desert~.-CensusTract-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, family="binomial")
 # Taking out Racial indicators 
@@ -829,12 +832,12 @@ forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI +
 # Using Forward Selection Taking Out Correlated Variables 
 forwards2_corr<-glm(Desert ~ MedianFamilyIncome + State + Urban + 
     TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
-      TractSNAP + TractSeniors + POP2010  + 
+     TractSNAP + TractSeniors + POP2010  + 
     PovertyRate,data=food,family = binomial)
 # Using Backwards Selection Model not worrying about correlated variables
-backwards_2<-glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
+#backwards_2<-glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
 #Using Backwards Selection Taking out Correlated Variables 
-backwards2_corr <- glm(Desert~.-CensusTract-TractLOWI-TractKids-OHU2010-TractHispanic,data=food,family = binomial)
+#backwards2_corr <- glm(Desert~.-CensusTract-TractLOWI-TractKids-OHU2010-TractHispanic,data=food,family = binomial)
 # Using Selection Based on Literature
 model.lit <- glm(Desert~State + Urban + Region + TractBlack + TractAsian + TractLOWI + PovertyRate + TractAIAN + TractHispanic +TractOMultir+ TractNHOPI+TractHUNV+MedianFamilyIncome+POP2010, data=food, family="binomial")
 # Model from bestglm() 
@@ -842,9 +845,21 @@ bestglm.1 <- glm(Desert~Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractBlack
 # Model from bestglm() 2 
 bestglm.2 <- glm(Desert~ Urban+OHU2010+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractAIAN+TractHispanic+TractOMultir+TractHUNV, data=food, family=binomial)
 # Model AIC Levels 
-models <- list(model.a, model.b, model.exhausitve, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, backwards_2, backwards2_corr, model.lit, bestglm.1, bestglm.2)
-model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newfood_fac_Desert', 'emptyglm','forwards_2', 'forwards2_corr', 'backwards_2', 'backwards2_corr','model.lit','bestglm.1', 'bestglm.2')
+models <- list(model.f, model.b, model.seq, model.exhaustive, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, model.lit, bestglm.1, bestglm.2)
+model.names <- c("model.f", "model.b", "model.seq", "model.exhaustive", "model.corr", "glm_newfood_fac_Desert", "emptyglm","forwards_2", "forwards2_corr", "model.lit", "bestglm.1", "bestglm.2")
 aictab(cand.set=models, modnames=model.names)
+forwards_2$deviance
+model.f$deviance
+model.seq$deviance
+model.b$deviance
+model.exhaustive$deviance
+glm_newfood_fac_Desert$deviance
+model.lit$deviance
+bestglm.2$deviance
+forwards2_corr$deviance
+model.corr$deviance
+bestglm.1$deviance
+emptyglm$deviance
 ```
 
 ### Results from best model 
