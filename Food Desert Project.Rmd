@@ -952,7 +952,22 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
         legend.text=element_text(size=10))
 
 ```
+### Logistic Regression Model Diagnostics
+```{R Model Diagnostics}
+loadPkg("pROC")
+loadPkg("caret")
+index<-sample(1:nrow(food),0.6*nrow(food))
+food_train<-food[index,]
+food_test<-food[-index,]
+food_test$Desert<-as.factor(food_test$Desert)
+predicted<-predict(forwards_2,food_test,type = "response")
 
+plot.roc(food_test$Desert,predicted, show.stats = TRUE,lty = "solid",legend="topright")
+summary(plot.roc(food_test$Desert,predicted))
+unloadPkg("caret")
+loadPkg("ModelMetrics")
+confusionMatrix(food_test$Desert,predicted)
+```
 
 
 #NNK Outlier Detection Using Kth Nearest Neighbour Distance Method
