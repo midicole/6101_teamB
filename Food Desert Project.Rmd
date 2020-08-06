@@ -838,16 +838,12 @@ backwards2_corr <- glm(Desert~.-CensusTract-TractLOWI-TractKids-OHU2010-TractHis
 # Using Selection Based on Literature
 model.lit <- glm(Desert~State + Urban + Region + TractBlack + TractAsian + TractLOWI + PovertyRate + TractAIAN + TractHispanic +TractOMultir+ TractNHOPI+TractHUNV+MedianFamilyIncome+POP2010, data=food, family="binomial")
 # Model from bestglm() 
-bestglm.1 <- glm(Desert~Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractBlack+TractAsian+TractNHOPI+TractOMultir+TractHUNV, data=food, family= binomial)
+bestglm.1 <- glm(Desert~Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractBlack+TractAsian+TractHispanic+TractHUNV+TractSNAP+TractSeniors+TractAIAN, data=food, family= binomial)
 # Model from bestglm() 2 
-bestglm.2 <- glm(Desert~ Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractSeniors+TractBlack+TractAsian+TractAIAN+TractHispanic+TractHUNV+TractSNAP, data=food, family=binomial)
-# Model from bestglm() 3 
-bestglm.3 <- glm(Desert~ State+Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractNHOPI+TractAIAN+TractOMultir+TractHUNV, data=food, family= binomial)
-# Model from bestglm() 4 
-bestglm.4 <- glm(Desert~ Urban+OHU2010+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractAIAN+TractOMultir+TractHispanic+TractHUNV, data=food, family=binomial)
+bestglm.2 <- glm(Desert~ Urban+OHU2010+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractAIAN+TractHispanic+TractOMultir+TractHUNV, data=food, family=binomial)
 # Model AIC Levels 
-models <- list(model.a, model.b, model.exhausitve, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, backwards_2, backwards2_corr, model.lit, bestglm.1, bestglm.2, bestglm.3, bestglm.4)
-model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newfood_fac_Desert', 'emptyglm','forwards_2', 'forwards2_corr', 'backwards_2', 'backwards2_corr','model.lit','bestglm.1', 'bestglm.2', 'bestglm.3','besglm.4')
+models <- list(model.a, model.b, model.exhausitve, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, backwards_2, backwards2_corr, model.lit, bestglm.1, bestglm.2)
+model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newfood_fac_Desert', 'emptyglm','forwards_2', 'forwards2_corr', 'backwards_2', 'backwards2_corr','model.lit','bestglm.1', 'bestglm.2')
 aictab(cand.set=models, modnames=model.names)
 ```
 
