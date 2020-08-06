@@ -769,7 +769,7 @@ Again, we know that our variable Y is desert which is binary, logistic regressio
 
 We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
 
-
+# GLM Best fucntion for logisitc regression -- Variable Selection 
 ```{r bestglm Method}
 library(bestglm)
 best.glm <- within(food, {
@@ -797,9 +797,11 @@ best.glm.nopop <- within(food, {
 
 #best.glm
 res.best.glm <- bestglm(Xy = best.glm) 
-res.best.glm$BestModels
+#res.best.glm$BestModels
 nopop.glm <- bestglm(Xy=best.glm.nopop)
-nopop.glm$BestModels
+res.best.glm
+nopop.glm
+#nopop.glm$BestModels
 ```
 
 # Chapter 3.2: Logisitc Regression and Classification 
