@@ -787,7 +787,7 @@ The chi-square test showed us that we should be able to use the 'Region', 'Urban
 ## Exploratorday Data Analysis: Two Sample T-Test 
 Here we are performing two-sample t test. This part of the report seeks to answer this question: Are the means of the continuous or quantitative variables different based on whether or a census tract is a food desert? 
 
-To answer this question the first step was to subset our data to include two samples: one with food deserts and the other with no food deserts. This is similiar to the earlier EDA that we did, but we need a data frame that has no food deserts in order to execute the analysis. 
+To answer this question the first step was to subset our data to include two samples: one with food deserts and the other with no food deserts. This is similiar to the earlier EDA that we did, but we need a data frame that has excludes any food deserts in order to execute the analysis. 
 ```{R unpaired two-sample t test}
 food_0<-subset(food,Desert==0)
 food_1<-subset(food,Desert==1)
@@ -818,7 +818,8 @@ TO simplify the process and protect information from dataset, we chose to use 0.
 variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
 
 
-
+# Chapter 2.3 Exploratory Data Analysis
+## Correlation Matrix 
 ```{r Correaltion of Variables on Desert Variable}
 food_coronly <- food[c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
 corr.food <- cor(food_coronly)
