@@ -1016,7 +1016,7 @@ The biggest take-away from the the feature selection is that the Region variable
 
 ## Chapter 4.1 
 ### Best GLM function for logisitc regression - Variable Selection 
-Now that we have looked at variable selection throught feature selection and the 'leaps' package, we are now going to look into the bestglm method to find the best fit models for logisitc regression. The glmbest () function does have limits. There is a 15 variable max and categorical varaibles designated as factors are only allowed to have two levels. Therefore, when deciding which variables to use we are automatically excluding 'CensusTract', 'State', and 'Region'. Additionally, we will decide the rest of the variable selection based off the multicollinearity piece of our data. By controlling for multicollinearity will we be taking out the variables that are highly correlated to one another based off the correlation matrix. The first model that we are building will have the population variable in it, as such we will exclude all the variables that were highly correlated with population - such as occupied housing units, total white population, and total kid population. Additionally, our correlation matrix told us that the 'TractSNAP' variable was highly correlated with the 'TractLOWI' variable. Due to the sequential selection suggesting the removal of 'TRACTSNAP' we will take out this variable in replace of the total amount of low-income people in a census tract. Furthermore, the 'TractHispanic' variable was highly correlated with 'TractOMultir' or the total population of multi-racial individuals. However, because this variable is not well-defined we will exclude to have 'TractHispanic.' Then for our second model we will be using the variables we excluded in our first model and exclude the variables that were included to maintain control over multicollinearity and test for the best fit model. 
+Now that we have looked at variable selection throught feature selection and the 'leaps' package, we are now going to look into the bestglm method to find the best fit models for logisitc regression. The glmbest () function does have limits. There is a 15 variable max and categorical varaibles designated as factors are only allowed to have two levels. Therefore, when deciding which variables to use we are automatically excluding 'CensusTract', 'State', and 'Region'. Additionally, we will decide the rest of the variable selection based off the multicollinearity piece of our data. By controlling for multicollinearity will we be taking out the variables that are highly correlated to one another based off the correlation matrix. The first model that we are building will have the population variable in it, as such we will exclude all the variables that were highly correlated with population$$-$$such as occupied housing units, total white population, and total kid population. Additionally, our correlation matrix told us that the 'TractSNAP' variable was highly correlated with the 'TractLOWI' variable. Due to the sequential selection suggesting the removal of 'TRACTSNAP' we will take out this variable in replace of the total amount of low-income people in a census tract. Furthermore, the 'TractHispanic' variable was highly correlated with 'TractOMultir' or the total population of multi-racial individuals. However, because this variable is not well-defined we will exclude to have 'TractHispanic.' Then for our second model we will be using the variables we excluded in our first model and exclude the variables that were included to maintain control over multicollinearity and test for the best fit model. 
 
 ```{r bestglm Method}
 library(bestglm)
@@ -1067,6 +1067,14 @@ fullglm <- glm(Desertfactor~.-CensusTract, data=newfood, family= binomial)
 forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
 formula(forwards)
 summary(forwards)
+
+backwards <-step(fullglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
+formula(backwards)
+summary(backwards)
+
+both <- step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "both")
+formula(both)
+summary(both)
 ```
 
 The results of the step-wise function for the forwards and backwards directions showed us different models. However, the forwards direction showed that the variable 'TractNHOPI' is not statistically singnificant with a p-value of 0.136183. Thus, we will use this model but take out this variable and this will match the resutls from the backwards direction. Furthermore, the results from classifying the direction as 'both' ways still ended up with the same results as the forwards direction. Moving to the next step of model building will we only be using the forwards model withouth TractNHOPI variable and we will call this forwards_2.
@@ -1104,6 +1112,18 @@ model.lit <- glm(Desert~State + Urban + Region + TractBlack + TractAsian + Tract
 models <- list(model.f, model.b, model.seq, emptyglm, bestglm.1, bestglm.1_state, bestglm.2, bestglm.2_state, forwards_2, forwards2_corr, model.lit)
 model.names <- c("model.f", "model.b", "model.seq", "emptyglm", "bestglm.1", "bestglm.1_state", "bestglm.2", "bestglm.2_state", "forwards_2", "forwards2_corr", "model.lit")
 aictab(cand.set=models, modnames=model.names)
+#forwards_2$deviance
+#model.f$deviance
+#model.seq$deviance
+#model.b$deviance
+#model.exhaustive$deviance
+#glm_newfood_fac_Desert$deviance
+#model.lit$deviance
+#bestglm.2$deviance
+#forwards2_corr$deviance
+#model.corr$deviance
+#bestglm.1$deviance
+#emptyglm$deviance
 ```
 
 # Chapter 4.4: Logistic Regression 
