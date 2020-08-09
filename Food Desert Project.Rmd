@@ -1160,10 +1160,6 @@ For the variable selection process, we saw multicollinearity is not good, this i
 
 
 
-```
-
-
-# Chapter 4: Conclusion 
 
 
 
