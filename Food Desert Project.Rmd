@@ -899,10 +899,10 @@ plot(reg.bkwd.1, scale = "bic", main = "BIC")
 model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
 model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
 
-#summary(model_backward_adjr2)
-#summary(model_backward_BIC)
+summary(model_backward_adjr2)
+summary(model_backward_BIC)
 
-#anova(model_backward_adjr2,model_backward_BIC)
+anova(model_backward_adjr2,model_backward_BIC)
 ```
 The results from backwards selection based on the adjsuted R-squared and Cp criterion show that the best fit model would not include the total Hispanic population in a census tract.  The BIC model also shows not to include the total Hispanic population. However, the best BIC model also says not to include median family income, the total Asian popualtion, the total Black population, the total Native Hawaiian population,total White popualtion, and the total multiple racial or other populations in a census tract. So because adjusted R-squared and Cp are the same we are only comparing the adjusted R-squared and BIC models. Based on the results, model_backward_adjr2 is a better choice.
 
