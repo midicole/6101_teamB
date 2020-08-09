@@ -819,7 +819,7 @@ Overall, the results of our t-test align with the literature around food deserts
 
 # Chapter 2.3 Exploratory Data Analysis
 ## Correlation Matrix 
-Here we are plotting a correlation matrix to determine which of our variables are highly correlated with one antoher. We will use the matrix to help us determine what variables to use and control for multicollinearity.  The dependent variable in our data is a 0 or 1 indicator variable that determines whether or not a census tract is in a food desert, because we are running a logisitical regression we knew that it is not necessary for us to turn the variable into a factor. Thus, we use it here in the correlation matrix, but realize that this does not tell us much based on the nature of the variable.  
+Here we are plotting a correlation matrix to determine which of our variables are highly correlated with one another. We will use the matrix to help us determine what variables to use and control for multicollinearity.  The dependent variable in our data is a 0 or 1 indicator variable that determines whether or not a census tract is in a food desert, because we are running a logisitical regression we knew that it is not necessary for us to turn the variable into a factor. Thus, we use it here in the correlation matrix, but realize that this does not tell us much based on the nature of the variable.  
 ```{r Correaltion of Variables on Desert Variable}
 food_coronly <- food[c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
 corr.food <- cor(food_coronly)
