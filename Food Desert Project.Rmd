@@ -1153,6 +1153,12 @@ For the variable selection process, we saw multicollinearity is not good, this i
 
 # Chapter 5: Conclusion
 
+To conclude, we were able to reject our null hypothesis because we have sufficient evidence that there are multiple indicators of whether or not a food desert is located in a Census Tract. Our null suggests that the given variables are independent of each other. Clearly, in the analysis portion of our work, it was evident that we were able to reject this as there was significance between many of the variables within the logistic model. As it so happens, this is what we did predict given the background information we have researched on food deserts. And so, as a result, our alternate hypothesis made more sense; there is a relationship between the variables assessed. 
+
+The data suggests that some confounding factors are to be accounted for during future research if necessary. To begin with, our original dataset (sample size roughly ~ 72,000) was retrieved from USDA- this can be considered as sampling. We then conducted stratified sampling again to retrieve an even smaller data set (sample size is 7,280) to use, which was more manageable in R. At this point, we have done sampling twice already to the original dataset of n = 72,000. And so, although we tried our best to keep information from the original dataset complete and sufficient, bias issues cannot be avoided or even worse in some cases, are not detected. 
+
+Likewise, non-sampling errors will lead to sampling bias as well. It may be wise, then, to generate more heatmaps for different variables, and compare these results to published literature looking at heatmaps generated from much larger datasets found like those found on USDA 
+
 
 
 
