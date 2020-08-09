@@ -1060,6 +1060,22 @@ summary(forwards_2)
 exp(forwards2_corr$coefficients)
 plot(forwards_2)
 ```
+### Logistic Regression Model Diagnostics
+```{R Model Diagnostics}
+loadPkg("pROC")
+loadPkg("caret")
+index<-sample(1:nrow(food),0.6*nrow(food))
+food_train<-food[index,]
+food_test<-food[-index,]
+food_test$Desert<-as.factor(food_test$Desert)
+predicted<-predict(forwards_2,food_test,type = "response")
+
+plot.roc(food_test$Desert,predicted, show.stats = TRUE,lty = "solid",legend="topright")
+summary(plot.roc(food_test$Desert,predicted))
+unloadPkg("caret")
+loadPkg("ModelMetrics")
+confusionMatrix(food_test$Desert,predicted)
+```
 
 ```{r}
 ###Model Building
@@ -1167,30 +1183,7 @@ For the variable selection process, we saw multicollinearity is not good, this i
 
 
 
-plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + labs(fill = 'Food Desert Proportion') +   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90",
-                       guide = guide_colourbar(barwidth = 25, barheight = 0.4,
-                                               #put legend title on top of legend
-                                               title.position = "top")) +theme(legend.position = "bottom",
-        legend.title=element_text(size=12), 
-        legend.text=element_text(size=10))
 
-```
-### Logistic Regression Model Diagnostics
-```{R Model Diagnostics}
-loadPkg("pROC")
-loadPkg("caret")
-index<-sample(1:nrow(food),0.6*nrow(food))
-food_train<-food[index,]
-food_test<-food[-index,]
-food_test$Desert<-as.factor(food_test$Desert)
-predicted<-predict(forwards_2,food_test,type = "response")
-
-plot.roc(food_test$Desert,predicted, show.stats = TRUE,lty = "solid",legend="topright")
-summary(plot.roc(food_test$Desert,predicted))
-unloadPkg("caret")
-loadPkg("ModelMetrics")
-confusionMatrix(food_test$Desert,predicted)
-```
 
 
 #NNK Outlier Detection Using Kth Nearest Neighbor Distance Method
