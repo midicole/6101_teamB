@@ -827,25 +827,48 @@ corrplot(corr.food)
 ```
 From the correlation matrix we will look at variables that are at .7 or above to assess their correlation with one another. From this criteria, we can see that the population variables is higly correlated with the occupied housing units, the white population, and the total amount of kids in a census tract. Furthermore, the occupied housing variable is also highly correlated with the white population and total amoutn of kids in a census tract. The low-income population variable is highly correlated with the amount of people receiving SNAP benefits in a census tract. The multiple race/other variable is highly correlated with Hispanic$-$this is interesting because it seems that this variable would be correlated with all the other races, but it is only strongly correlated with the Hispanic tract variable. As such, we will be sure to keep this in mind as we are building our models for the logisitic regression. 
 
-# Chapter 3: Model Building 
+# Chapter 3: Geographic Location of Data and  Heatmap
+```{R Heatmap for population sum for different states}
+### install.packages("usmap")
+### install.packages("ggplot2")
+
+loadPkg("usmap")
+loadPkg("ggplot2")
+dataforheatmap<-read.csv("E:/gwu/Courses/DATS 6101/project/dataforheatmap.csv")
+
+### map for population of different states in dataset 'food'
+plot_usmap(data = dataforheatmap, values = "sumpop", color = "red") + 
+  scale_fill_continuous(name = "Population (2010)", label = scales::comma) + 
+  theme(legend.position = "right")
+
+### map for proportion of Desert of different states in dataset 'food'
+plot_usmap(data = dataforheatmap, values = "Desertp", color = "red") + 
+  scale_fill_continuous(name = "Food Desert Proportion", label = scales::comma) + 
+  theme(legend.position = "right")
+
+plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + labs(fill = 'Food Desert Proportion') +   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90",
+                       guide = guide_colourbar(barwidth = 25, barheight = 0.4,
+                                               #put legend title on top of legend
+                                               title.position = "top")) +theme(legend.position = "bottom",
+        legend.title=element_text(size=12), 
+        legend.text=element_text(size=10))
+
+```
+
+# Chapter 4: Model Building
 ## Variable Selection$-$Feature Selection 
-Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
+Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levles for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. 
+### Forward Selection 
 ```{r Forward Variable Selection}
-# Deciding Best Varaible with Forward Selection and Subsetting 
 reg.forward.1 <-regsubsets(Desert ~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
 plot(reg.forward.1, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.forward.1, scale = "Cp", main = "CP")
 plot(reg.forward.1, scale = "bic", main = "BIC")
 
-# Deciding Best Variable with Forward Selection Not including Highly Correlated Variables 
-reg.forward.2 <- regsubsets(Desert~.-CensusTract-State-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, nvmax=19, nbest=1, method="forward")
-plot(reg.forward.2, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.forward.2, scale = "Cp", main = "CP")
-plot(reg.forward.2, scale = "bic", main = "BIC")
 
 #model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
-#model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
-#model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
+model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
+model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
 #summary(model_forward_adjr2)
 #summary(model_forward_Cp)
 #summary(model_forward_bic)
@@ -854,10 +877,10 @@ plot(reg.forward.2, scale = "bic", main = "BIC")
 #anova(model_forward_adjr2,model_forward_bic)
 #anova(model_forward_Cp,model_forward_bic)
 ```
-
 We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite,
 the summary of model_forward_adjr2 indicated that it should not be included in the model, and anova() function's F test gave the same conclusion, for now, model_forward_Cp is a better choice. Then, we compared model_forward_Cp and model_forward_bic, together with result of summary of Model_forward_Cp, we can conclude that for forward selection, the variables in model_forward_Cp are good for now.
 
+### Backwards Selection 
 ```{R Backward Variable Selection}
 # Backward Selection
 reg.bkwd.1 <- regsubsets(Desert~.-CensusTract-State, data= food, nvmax=19, nbest=1, method="backward")
@@ -884,6 +907,7 @@ Cp and Adjusted R-square gave the same results, we only compare with BIC.
 
 Based on the results, model_backward_adjr2 is a better choice. And to make the sequential selection easier, we removed variable 'TractBlack', 'TractWhite' and 'TractHispanic'
 
+### Sequential Selection 
 ```{R Sequential Variable Selection}
 # Sequential Selection 
 reg.seq.1 <- regsubsets(Desert~.-CensusTract-State-TractBlack-TractHispanic, data= food, nvmax=19, nbest=1, method="seqrep")
@@ -909,6 +933,7 @@ Cp and adjusted R-square gave the same result, so we only compare it with the mo
 
 We got a p-value larger than 0.05 from output of F test but not very obviously significant, and from summary of model_seq_adjr2, we can see that variable 'TractAsian' should be excluded. 
 
+### Exhaustive Selection
 ```{R Exhaustive Variable Selection}
 reg.exhaustive <-regsubsets(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractSNAP, data = food, nvmax=19, nbest=1, method="exhaustive")
 plot(reg.exhaustive, scale = "adjr2", main = "Adjusted R^2")
@@ -926,7 +951,7 @@ We did not include variable 'State' in our model because there are too many leve
 TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
 variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
 
-
+### Bestglm Variable Selection 
 ```{r bestglm Method}
 library(bestglm)
 best.glm <- within(food, {
@@ -959,8 +984,10 @@ nopop.glm <- bestglm(Xy=best.glm.nopop)
 nopop.glm$BestModels
 ```
 
-# Chapter 3.2: Logistic Regression and Classification 
-### Here we are performing a logistical regression and k-NN classification test to determine which variables impact whether or not a census tract is located in a food desert. 
+# Chapter 4.1: Model Selection 
+## AIC Table$-$Best Fit Model 
+Logistic Regression and Classification 
+Here we are using AIC levels to determine the best fit model to use for our logisitcal regression. 
 ```{r}
 # Model Building Logistic Regression Based on Featured Selection 
 #Model A everything except CensusTract
@@ -1006,7 +1033,8 @@ model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newf
 aictab(cand.set=models, modnames=model.names)
 ```
 
-### Results from best model 
+#Chapter 4.2: Logistic Regression 
+Here we are running the logistic regression on the best fit model as well as a model to control for multicollinearity on the best fit model.
 ```{r}
 forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI + 
     TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
@@ -1119,63 +1147,14 @@ And based on the outputs of the two models above, we saw that: No matter variabl
 
 For the variable selection process, we saw multicollinearity is not good, this is an inborn disadvantage of our dataset, we have mentioned this in Chi-Square test part. Further detection is needed.
 
-
-
-## Chapter 3.3 Heatmap
-```{R Heatmap for population sum for different states}
-### install.packages("usmap")
-### install.packages("ggplot2")
-
-loadPkg("usmap")
-loadPkg("ggplot2")
-dataforheatmap<-read.csv("E:/gwu/Courses/DATS 6101/project/dataforheatmap.csv")
-
-### map for population of different states in dataset 'food'
-plot_usmap(data = dataforheatmap, values = "sumpop", color = "red") + 
-  scale_fill_continuous(name = "Population (2010)", label = scales::comma) + 
-  theme(legend.position = "right")
-
-### map for proportion of Desert of different states in dataset 'food'
-plot_usmap(data = dataforheatmap, values = "Desertp", color = "red") + 
-  scale_fill_continuous(name = "Food Desert Proportion", label = scales::comma) + 
-  theme(legend.position = "right")
-
-plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + labs(fill = 'Food Desert Proportion') +   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90",
-                       guide = guide_colourbar(barwidth = 25, barheight = 0.4,
-                                               #put legend title on top of legend
-                                               title.position = "top")) +theme(legend.position = "bottom",
-        legend.title=element_text(size=12), 
-        legend.text=element_text(size=10))
-
-```
+# Chapter 5: Conclusion
 
 
 
-#NNK Outlier Detection Using Kth Nearest Neighbor Distance Method
-#Takes a dataset and finds its outliers using distance-based method
 
 
 
-#START OF NEXT PART
 
-```{r}
-# Loading the data set
-food_K <- read.csv("food.csv") 
-
-#Bind Data
-library(dplyr)
-#food_K <- bind_rows(Desertfactor, State, Urban, POP2010,NUMGQTRS, 
-#    PovertyRate,MedianFamilyIncome,TractLOWI,TractKids,
-#   TractSeniors,TractAsian,TractAIAN,TractHispanic, 
-#    TractHUNV,TractSNAP)
-summary(food_K)
-
-library(VIM)
-
-aggr(food_K)
-
-
-```
 
 
 
@@ -1185,27 +1164,6 @@ aggr(food_K)
 # Chapter 4: Conclusion 
 
 
-
-res.aov_1 <- aov(Desert ~ Urban, data = my_data)
-res.aov_2 <- aov(Desert ~ State, data = my_data)
-res.aov_3 <- aov(Desert ~ Region, data = my_data)
-res.aov_4 <- aov(Desert ~ OHU2010, data = my_data)
-res.aov_5 <- aov(Desert ~ NUMGQTRS, data = my_data)
-res.aov_6 <- aov(Desert ~ POP2010, data = my_data)
-res.aov_7 <- aov(Desert ~ PovertyRate, data = my_data)
-res.aov_8 <- aov(Desert ~ MedianFamilyIncome, data = my_data)
-res.aov_9 <- aov(Desert ~ TractLOWI, data = my_data)
-res.aov_10 <- aov(Desert ~ TractKids, data = my_data)
-res.aov_11 <- aov(Desert ~ TractSenios, data = my_data)
-res.aov_12 <- aov(Desert ~ TractWhite, data = my_data)
-res.aov_13 <- aov(Desert ~ TractBlack, data = my_data)
-res.aov_14 <- aov(Desert ~ TractAsian, data = my_data)
-res.aov_15 <- aov(Desert ~ TractNHOPI, data = my_data)
-res.aov_16 <- aov(Desert ~ TractAIAN, data = my_data)
-res.aov_17 <- aov(Desert ~ TractOMultir, data = my_data)
-res.aov_18 <- aov(Desert ~ TractHispanic, data = my_data)
-res.aov_19 <- aov(Desert ~ TractHUNV, data = my_data)
-res.aov_20 <- aov(Desert ~ TractSNAP, data = my_data)
 
 
 
