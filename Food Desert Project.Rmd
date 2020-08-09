@@ -50,7 +50,7 @@ xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bs
   #' Can also use as head for better display
   #' ELo 202004 GWU DATS
   #' version 1.2
-  #' @param modelsmmrytable This can be a generic table, a model object such as lm(), or the summary of a model object summary(lm()) 
+  #' @param modelsmmrytable This can be a generic table, a model object such as lm(), or the      summary of a model object summary(lm()) 
   #' @param title Title of table. 
   #' @param digits Number of digits to display
   #' @param pos Position of table, c("left","center","right") 
@@ -950,6 +950,7 @@ Again, we know that our variable Y is desert which is binary, logistic regressio
 
 We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
 
+# GLM Best fucntion for logisitc regression -- Variable Selection 
 TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
 variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
 
@@ -981,9 +982,11 @@ best.glm.nopop <- within(food, {
 
 #best.glm
 res.best.glm <- bestglm(Xy = best.glm) 
-res.best.glm$BestModels
+#res.best.glm$BestModels
 nopop.glm <- bestglm(Xy=best.glm.nopop)
-nopop.glm$BestModels
+res.best.glm$BestModel
+nopop.glm$BestModel
+#nopop.glm$BestModels
 ```
 
 # Chapter 4.1: Model Selection 
@@ -992,14 +995,17 @@ Logistic Regression and Classification
 Here we are using AIC levels to determine the best fit model to use for our logisitcal regression. 
 ```{r}
 # Model Building Logistic Regression Based on Featured Selection 
-#Model A everything except CensusTract
-model.a <- glm(Desert~.-CensusTract, data=food, family="binomial")
+#Model F - Forward Selection Best Model 
+model.f <- glm(Desert~.-CensusTract-TractBlack, data=food, family=binomial)
+#model.f.corr <- Desert~.-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, family=binomial)
 #summary(model.a)
 #exp(model.a$coefficients)
 # Everything except CensusTract and State
-model.b <- glm(Desert~.-CensusTract-State, data=food, family="binomial")
+model.b <- glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
+#model.b.corr <- glm(Desert~.-CensusTract-OHU2010-TractWhite-TractKids-TractLOWI-Tract0Multir, data=food, family=binomial)
 # Using Exhaustive Feature Selection Model 
-model.exhausitve <- glm(Desert~.-CensusTract-TractSNAP-TractBlack-TractHispanic, data=food, family="binomial")
+model.seq <- glm(Desert~.-CensusTract-TractSNAP, data=food, family=binomial)
+model.exhaustive <- glm(Desert~.-CensusTract-TractSNAP-TractBlack-TractHispanic, data=food, family="binomial")
 # Taking out variables that were highly correlated with other variables 
 model.corr <- glm(Desert~.-CensusTract-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data=food, family="binomial")
 # Taking out Racial indicators 
@@ -1013,26 +1019,34 @@ forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI +
 # Using Forward Selection Taking Out Correlated Variables 
 forwards2_corr<-glm(Desert ~ MedianFamilyIncome + State + Urban + 
     TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
-      TractSNAP + TractSeniors + POP2010  + 
+     TractSNAP + TractSeniors + POP2010  + 
     PovertyRate,data=food,family = binomial)
 # Using Backwards Selection Model not worrying about correlated variables
-backwards_2<-glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
+#backwards_2<-glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
 #Using Backwards Selection Taking out Correlated Variables 
-backwards2_corr <- glm(Desert~.-CensusTract-TractLOWI-TractKids-OHU2010-TractHispanic,data=food,family = binomial)
+#backwards2_corr <- glm(Desert~.-CensusTract-TractLOWI-TractKids-OHU2010-TractHispanic,data=food,family = binomial)
 # Using Selection Based on Literature
 model.lit <- glm(Desert~State + Urban + Region + TractBlack + TractAsian + TractLOWI + PovertyRate + TractAIAN + TractHispanic +TractOMultir+ TractNHOPI+TractHUNV+MedianFamilyIncome+POP2010, data=food, family="binomial")
 # Model from bestglm() 
-bestglm.1 <- glm(Desert~Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractBlack+TractAsian+TractNHOPI+TractOMultir+TractHUNV, data=food, family= binomial)
+bestglm.1 <- glm(Desert~Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractBlack+TractAsian+TractHispanic+TractHUNV+TractSNAP+TractSeniors+TractAIAN, data=food, family= binomial)
 # Model from bestglm() 2 
-bestglm.2 <- glm(Desert~ Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractSeniors+TractBlack+TractAsian+TractAIAN+TractHispanic+TractHUNV+TractSNAP, data=food, family=binomial)
-# Model from bestglm() 3 
-bestglm.3 <- glm(Desert~ State+Urban+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractNHOPI+TractAIAN+TractOMultir+TractHUNV, data=food, family= binomial)
-# Model from bestglm() 4 
-bestglm.4 <- glm(Desert~ Urban+OHU2010+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractAIAN+TractOMultir+TractHispanic+TractHUNV, data=food, family=binomial)
+bestglm.2 <- glm(Desert~ Urban+OHU2010+NUMGQTRS+PovertyRate+MedianFamilyIncome+TractLOWI+TractAsian+TractAIAN+TractHispanic+TractOMultir+TractHUNV, data=food, family=binomial)
 # Model AIC Levels 
-models <- list(model.a, model.b, model.exhausitve, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, backwards_2, backwards2_corr, model.lit, bestglm.1, bestglm.2, bestglm.3, bestglm.4)
-model.names <- c('model.a', 'model.b', 'model.exhaustive','model.corr','glm_newfood_fac_Desert', 'emptyglm','forwards_2', 'forwards2_corr', 'backwards_2', 'backwards2_corr','model.lit','bestglm.1', 'bestglm.2', 'bestglm.3','besglm.4')
+models <- list(model.f, model.b, model.seq, model.exhaustive, model.corr, glm_newfood_fac_Desert, emptyglm,forwards_2, forwards2_corr, model.lit, bestglm.1, bestglm.2)
+model.names <- c("model.f", "model.b", "model.seq", "model.exhaustive", "model.corr", "glm_newfood_fac_Desert", "emptyglm","forwards_2", "forwards2_corr", "model.lit", "bestglm.1", "bestglm.2")
 aictab(cand.set=models, modnames=model.names)
+forwards_2$deviance
+model.f$deviance
+model.seq$deviance
+model.b$deviance
+model.exhaustive$deviance
+glm_newfood_fac_Desert$deviance
+model.lit$deviance
+bestglm.2$deviance
+forwards2_corr$deviance
+model.corr$deviance
+bestglm.1$deviance
+emptyglm$deviance
 ```
 
 #Chapter 4.2: Logistic Regression 
@@ -1153,10 +1167,74 @@ For the variable selection process, we saw multicollinearity is not good, this i
 
 
 
+plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + labs(fill = 'Food Desert Proportion') +   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90",
+                       guide = guide_colourbar(barwidth = 25, barheight = 0.4,
+                                               #put legend title on top of legend
+                                               title.position = "top")) +theme(legend.position = "bottom",
+        legend.title=element_text(size=12), 
+        legend.text=element_text(size=10))
+
+```
+### Logistic Regression Model Diagnostics
+```{R Model Diagnostics}
+loadPkg("pROC")
+loadPkg("caret")
+index<-sample(1:nrow(food),0.6*nrow(food))
+food_train<-food[index,]
+food_test<-food[-index,]
+food_test$Desert<-as.factor(food_test$Desert)
+predicted<-predict(forwards_2,food_test,type = "response")
+
+plot.roc(food_test$Desert,predicted, show.stats = TRUE,lty = "solid",legend="topright")
+summary(plot.roc(food_test$Desert,predicted))
+unloadPkg("caret")
+loadPkg("ModelMetrics")
+confusionMatrix(food_test$Desert,predicted)
+```
+
+
+#NNK Outlier Detection Using Kth Nearest Neighbor Distance Method
+#Takes a dataset and finds its outliers using distance-based method
 
 
 
+#KNN Portion
 
+```{r}
+#Loading the data set
+
+food_k <- read.csv("food.csv") 
+
+#K mean dataframe (food)
+food_k <- food
+
+#make State factor?
+food_k$State <- factor(food_k$State)
+loadPkg("FNN")
+
+#seperate dataframes
+food_k <- as.data.frame(scale(food[1:22], center = TRUE, scale = TRUE))
+
+set.seed(1000)
+#Need to create test and training datasets so must create a sample set ecompassing two sets of data.
+food_sample <- sample(2, nrow(food_k), replace=TRUE, prob=c(0.67, 0.33))
+
+#Use new variable to create the new test/train outputs.
+food_training <- food_k[food_sample==1, 1:22]
+food_test <- food_k[food_sample==2, 1:22]
+
+#Create Y variables used to put in KNN function
+food.trainLabels <- food[food_sample==1, 22]
+food.testLabels <- food[food_sample==2, 22]
+
+#Should deploy model but reading back error message
+food_pred <- knn(train = food_training, test = food_test, cl=food.trainLabels, k = 7)
+
+```
+
+
+
+```
 
 
 
