@@ -895,7 +895,6 @@ plot(reg.bkwd.1, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.bkwd.1, scale = "Cp", main = "CP")
 plot(reg.bkwd.1, scale = "bic", main = "BIC")
 
-
 model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
 model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
 
@@ -943,11 +942,8 @@ Again, we know that our variable Y is desert which is binary, logistic regressio
 
 We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
 
-# GLM Best fucntion for logisitc regression -- Variable Selection 
-TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
-variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
-
-### Bestglm Variable Selection 
+## Chapter 4.1 
+### Best GLM fucntion for logisitc regression$$-$$Variable Selection 
 ```{r bestglm Method}
 library(bestglm)
 best.glm <- within(food, {
