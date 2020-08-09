@@ -205,14 +205,13 @@ The report is organized as follows:
 # Chapter 1.1: Description of Data
 The USDA’s dataset originally consisted of 147 variables and 72,864 observations of data on food deserts using the Census 2010 results. For us to both manage and  work effectively with the data, we chose to use 22 variables. However, cutting the variables did not change our total observations. So, we extracted a sample from the overall dataset so R would be able to process the data efficiently and with efficacy. Though we want a smaller sample of data, we have ensure that the information from the original dataset is not lost due to the sampling process. Therefore, we chose to draw our sample data proportionally based on the strata of the State variable. 
 
-We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below:  $$n_{i}$$  is the number of observations for State level i; ceil stands for ceiling functions
+We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below: $$n_{i}$$  is the number of observations for State level i; ceil stands for ceiling functions
 
 $$a_i = ceil\left(\frac{n_i}{100}\right) x 10$$
 $$N = \sum_{i=1}^{51}n_i = 71,864$$
-         
 $$A = \sum_{i=1}^{51}a_i = 7,280$$ 
          
-We used the ceiling function because $$(a_i)$$ is not integers; we take ceiling values for $$(a_i)$$ to protect the integrality of levels with few rows. After this, “Sampling” package was installed loaded, strata() function was used to get stratified samples named as food. (See below for a readout of the dataset’s structure and variable names). However, once we extracted the sample food from the original dataset, we realized that we had 47 observations where all of our variables were zero. To mend this issue in our analysis, we subsetted the *food* data frame to only include variables greater than zero (0>). As expected, this further decreased the data frame to 7,232 variables. For further analysis, we chose Desert as our single dependent variable. 
+We used the ceiling function because $$a_{i}$$ is not integers; we take ceiling values for $$a_{i}$$ to protect the integrality of levels with few rows. After this, “Sampling” package was installed loaded, strata() function was used to get stratified samples named as food. (See below for a readout of the dataset’s structure and variable names). However, once we extracted the sample food from the original dataset, we realized that we had 47 observations where all of our variables were zero. To mend this issue in our analysis, we subsetted the *food* data frame to only include variables greater than zero (0>). As expected, this further decreased the data frame to 7,232 variables. For further analysis, we chose Desert as our single dependent variable. 
 
 As per the USDA’s guidelines and definitions, this variable indicates whether a “Census Tract Location” is classified as a food desert. Specifically, this variables measures whether or not there is a full service grocery store in a rural or urban census tract. If an urban census tract does not have a full service grocery store within one mile of the tract then it is a food desert. As such, if a rural census tract does not have  a full service grocery store within 10 miles of the tract then it is a food desert. To ensure that our new dataset was representative of the original data, we looked at the proportions of the data. The original USDA dataset had approximately 12% of it’s observations classified as food deserts, and our extracted data also has only 12% of it’s observations classified as food deserts. This report uses the variable Desert to classify a specific tract as a food desert to run an appropriate analysis to test our hypothesis regarding the causes of food deserts. All of the information in our dataset came from the 2010 Census. Now that we have simplified our dataset and chose to only work with 22 variables, the variable definitons are below. 
 
@@ -676,8 +675,8 @@ When we look at the *food* data we can see that the distribution is still slight
 ### Housing Units Without a Vehicle Normality Test 
 ```{r Housing units without access to a vehicle Normality Test, results='hide'}
 summary(food$TractHUNV)
-hist(food$TractHUNV, main="Histogram of housing units without access to a vehicle", xlab="Total Hosuing Units without a Vehicle", col="orange")
-qqnorm(food$TractHUNV, main="Q-Q Plot of housing units without access to a vehicle")
+hist(food$TractHUNV, main="Histogram of Housing Units w/o a Vehicle", xlab="Total Hosuing Units w/o a Vehicle", col="orange")
+qqnorm(food$TractHUNV, main="Q-Q Plot of Housing Units w/o a Vehicle")
 qqline(food$TractHUNV)
 ```
 
@@ -812,7 +811,7 @@ Here we added runif function to avoid repeat of numbers in variables, repear wil
 ## Chi-Square Test of Independence 
 Here we are performing Chi-Square test on the categorical variables in our dataset to determine whether there is a relationship between our indpendent variables and dependent variable. 
 
-```{r Categorical Variable Analysis_1}
+```{r Categorical Variable Analysis_1, results='hide'}
 # Contigency Table of Food Deserts and Urban Tract
 contable.urban <- table(food$Urban, food$Desert)
 xkabledply(contable.urban, title="Contingency Table for Food Deserts in Urban Tracts")
@@ -821,9 +820,10 @@ urban.tble
 urban.tble$expected
 xkabledply(urban.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in Urban Tracts")
 ```
+
 Here, we mainly focus on the output of Chi-Square test, we got a test statistic of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), and the corresponding p-value is lower than 0.05. Thus, we have enough evidence to reject the null hypothesis. This means that the variables 'Urban' and 'Desert' are not independent of one another and in fact are related. As such, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed. Now, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
 
-```{r Categorical Variable Analysis_2}
+```{r Categorical Variable Analysis_2, results='hide'}
 # Contingency Table of Food Deserts and Geographical Region 
 contable.region <- table(food$Region, food$Desert)
 xkabledply(contable.region, title="Contingency Table for Food Deserts located in Geographical Regions")
@@ -832,10 +832,10 @@ region.tble
 region.tble$expected
 xkabledply(region.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in Geographical Regions")
 ```
+
 Focusing on the chi-square test results we can once again reject the null hypothesis that Region and Desert are independent. The output here shows us that the test statistic is 213.41 which is much large than the critical chi-square value for 5 degrees of freedom of 11.07. Additionally, the p-value is smaller than .05 so these results are statistically significant at the 95% probability level. 
 
-
-```{r Categorical Variable Analysis_3}
+```{r Categorical Variable Analysis_3, results='hide'}
 # Contingency Table of Food Deserts and States
 contable.state <- table(food$State, food$Desert)
 xkabledply(contable.state, title="Contingency Table for Food Deserts located in U.S. States")
@@ -1014,13 +1014,14 @@ We did not include variable 'State' in our model because there are too many leve
 
 The biggest take-away from the the feature selection is that the Region variable is pretty useless in any analysis and we should not consider it in a logistic regression. However, we will look at what the bestglm () function tells us in the next chapter. 
 ## Chapter 4.1 
-### Best GLM fucntion for logisitc regression$$-$$Variable Selection 
+### Best GLM function for logisitc regression - Variable Selection 
+Now that we have looked at variable selection throught feature selection and the 'leaps' package, we are now going to look into the bestglm method to find the best fit models for logisitc regression. The glmbest () function does have limits. There is a 15 variable max and categorical varaibles designated as factors are only allowed to have two levels. Therefore, when deciding which variables to use we are automatically excluding 'CensusTract', 'State', and 'Region'. Additionally, we will decide the rest of the variable selection based off the multicollinearity piece of our data. By controlling for multicollinearity will we be taking out the variables that are highly correlated to one another based off the correlation matrix. The first model that we are building will have the population variable in it, as such we will exclude all the variables that were highly correlated with population$$-$$such as occupied housing units, total white population, and total kid population. Additionally, our correlation matrix told us that the 'TractSNAP' variable was highly correlated with the 'TractLOWI' variable. Due to the sequential selection suggesting the removal of 'TRACTSNAP' we will take out this variable in replace of the total amount of low-income people in a census tract. Furthermore, the 'TractHispanic' variable was highly correlated with 'TractOMultir' or the total population of multi-racial individuals. However, because this variable is not well-defined we will exclude to have 'TractHispanic.' Then for our second model we will be using the variables we excluded in our first model and exclude the variables that were included to maintain control over multicollinearity and test for the best fit model. 
 
 ```{r bestglm Method}
 library(bestglm)
 best.glm <- within(food, {
   CensusTract <- NULL 
-  TractLOWI <- NULL 
+  TractSNAP <- NULL 
   OHU2010 <- NULL 
   TractOMultir <- NULL 
   TractWhite <- NULL 
@@ -1037,17 +1038,19 @@ best.glm.nopop <- within(food, {
   TractKids <- NULL 
   Region <- NULL 
   State <- NULL 
+  TractLOWI <- NULL
+  TractHispanic <- NULL
   y <-  Desert
   Desert <- NULL
 })
 
-#best.glm
 res.best.glm <- bestglm(Xy = best.glm) 
-res.best.glm$BestModel
+res.best.glm$BestModels
 nopop.glm <- bestglm(Xy=best.glm.nopop)
-nopop.glm$BestModel
+nopop.glm$BestModels
 ```
 
+The results above give us the top five models based on the criteria we selected. The next chapter will break down each model along with the models chosen from forwards selection to determine the best fit model from the AIC level. 
 # Chapter 4.1: Model Selection 
 ## AIC Table$-$Best Fit Model 
 Logistic Regression and Classification 
