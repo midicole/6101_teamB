@@ -1067,6 +1067,12 @@ fullglm <- glm(Desertfactor~.-CensusTract, data=newfood, family= binomial)
 forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
 formula(forwards)
 summary(forwards)
+
+### backwards<-step(fullglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
+### summary(backwards)
+
+### both<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "both")
+### summary(both)
 ```
 
 The results of the step-wise function for the forwards and backwards directions showed us different models. However, the forwards direction showed that the variable 'TractNHOPI' is not statistically singnificant with a p-value of 0.136183. Thus, we will use this model but take out this variable and this will match the resutls from the backwards direction. Furthermore, the results from classifying the direction as 'both' ways still ended up with the same results as the forwards direction. Moving to the next step of model building will we only be using the forwards model withouth TractNHOPI variable and we will call this forwards_2.
@@ -1108,15 +1114,19 @@ aictab(cand.set=models, modnames=model.names)
 
 # Chapter 4.4: Logistic Regression 
 Here we are running the logistic regression on the best fit model as well as a model to control for multicollinearity on the best fit model.
-```{r}
+```{r results='markup'}
 forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI + 
     TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
     TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
     PovertyRate,data=food,family = binomial)
 summary(forwards_2)
 exp(forwards2_corr$coefficients)
-plot(forwards_2)
+```
 
+
+
+Below you can see the ROC curve of the forwards_2 logisitic regression. The curve reflects the fact that we could not control for multicollinearity. 
+```{r}
 loadPkg("pROC")
 loadPkg("caret")
 index<-sample(1:nrow(food),0.6*nrow(food))
@@ -1131,6 +1141,9 @@ unloadPkg("caret")
 loadPkg("ModelMetrics")
 confusionMatrix(food_test$Desert,predicted)
 ```
+
+# Chapter 4.5 Optimization 
+
 
 # Chapter 5: Conclusion
 To conclude, we were able to reject our null hypothesis because we have sufficient evidence that there are multiple indicators of whether or not a food desert is located in a Census Tract. Our null suggests that the given variables are independent of each other. Clearly, in the analysis portion of our work, it was evident that we were able to reject this as there was significance between many of the variables within the logistic model. As it so happens, this is what we did predict given the background information we have researched on food deserts. And so, as a result, our alternate hypothesis made more sense; there is a relationship between the variables assessed. 
