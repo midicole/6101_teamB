@@ -812,11 +812,10 @@ t.test(food_0$TractHispanic,food_1$TractHispanic)
 t.test(food_0$TractHUNV,food_1$TractHUNV)
 t.test(food_0$TractSNAP,food_1$TractSNAP)
 ```
+The result of the two sample t-test showed us a myriad of things: 
+The population mean was higher in food deserts. The occupied housing units were higher in tracts that are not classified as food deserts. The occupied group housing units mean were about twice as high in food deserts. The poverty rate mean is higher in food deserts. The median family income mean is 63% higher in tracts not classified as food deserts. The low income population is six times larger in food deserts. The mean of the number of kids is also higher in food deserts but not by too much. The mean of the number of senior residents in a tract is actually higher in areas not classified as food deserts. The mean of the White population is higher in non-food deserts, and the mean of the Black population is higher in food-deserts. The mean of Native Hawaiian and other Pacific Islander populations is higher in food deserts. This matches what we saw during our normality test at the first part of the EDA. The mean of the American Indian and Alaskan Native population is significantly higher in food deserts. We saw this in the first part of the EDA, and will explore this further throughout the report. The mean of multiracial population is higher in food deserts, we saw this in the first part of the EDA, but again the multiracial/other population variable does not tell us much. The mean of the Hispanic population is higher in food deserts. The mean of houses without a car is only slightly larger in food deserts. The mean of people on SNAP benefits is significantly higher in food deserts. 
 
-
-TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
-variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
-
+Overall, the results of our t-test align with the literature around food deserts showing that racial minority populations are more likely to be in a census tract without access to a full-service grocery store along with low-income people who are at or below the federal poverty rate. We have multiple indicators of these populations and the results are aligned with what past research has said. The results of our t-test warrant further investigation into racial disparities, as well as the systemic and institutionalized  racism that has plagued the United States and led to food insecurity along racial lines. 
 
 # Chapter 2.3 Exploratory Data Analysis
 ## Correlation Matrix 
@@ -828,8 +827,7 @@ corrplot(corr.food)
 
 
 
-food_coronly<-food[,c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
-cor(food_coronly)
+
 # Chapter 3: Model Building 
 ## Linear Model Try
 ### Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
@@ -925,6 +923,9 @@ We tried exhaustive method here as an additional part, this method is only avail
 Again, we know that our variable Y is desert which is binary, logistic regression should be used, but linear models still deserve a try because it may give us some surprise about variable selection.
 
 We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
+
+TO simplify the process and protect information from dataset, we chose to use 0.01 as the significance level. Now, variable 'OHU2010' and 'POP2010', variable '$Region' and 'Urban', 
+variable 'PovertyRate' and 'Urban', variable 'PovertyRate' and 'MedianFamilyIncome', variable 'POP2010' and 'NUMGQTRS' are not independent of each other. And it is not necessary for us to do the same test for the rest variables starting with 'Tract' since all of them are numbers of different group in the tract, in common sense, they are certainly not independent. Basically, we are required to remove these variables, however, if we really do that, we may only have five or six variables left in total, so, in order to proceed to model building part, we did not make big changes here, but this part will benefit optimization and future research if necessary.
 
 
 ```{r bestglm Method}
