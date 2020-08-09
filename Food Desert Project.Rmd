@@ -189,7 +189,7 @@ outlierKD2 <- function(df, var, rm=FALSE) {
 }
 ```
 # Chapter 1: Introduction 
-Food insecurity continues to be a pressing issue across the United States. The terminology of ‘food deserts’ has consistently been used to describe neighborhoods with limited access to grocery stores or supermarkets. Studies have shown that the most vulnerable populations reside in areas with limited access to full-service grocery outlets. The literature around food insecurity suggests that food deserts emerge from numerous sources including: urban sprawl, residents’ socioeconomic status, racial disparities, and neighborhood density. Research shows that communities in food deserts are at higher risk of health issues including obesity and diabetes. While food deserts have become a legislative priority to address health inequities, there is no concrete evidence suggesting that increasing access to food retail would improve health issues in these communities. 
+Food insecurity continues to be a pressing issue across the United States. The terminology of ‘food deserts’ has consistently been used to describe neighborhoods with limited access to grocery stores or supermarkets. Studies have shown that the most vulnerable populations reside in areas with limited access to full-service grocery outlets (Walker, 2012). The literature around food insecurity suggests that food deserts emerge from numerous sources including: urban sprawl, residents’ socioeconomic status, racial disparities, and neighborhood density (Dutko et al., 2012). Research shows that communities in food deserts are at higher risk of health issues including obesity and diabetes. While food deserts have become a legislative priority to address health inequities, there is no concrete evidence suggesting that increasing access to food retail would improve health issues in these communities (Block & Subramanian, 2015). 
 
 The United States Department of Agriculture (USDA) has provided a dataset using Census data from 2010 to identify whether a census tract is in a food desert. Given the abundance of research surrounding food deserts and their impact on the quality of life, our project aims to understand the underlying causes of food deserts. Simply put, it boils down to one question: *what variables impact whether or not a census tract is located in a food desert?* To understand why populations experience health inequities and food insecurity, the underlying causes of food deserts in the United States manifests itself as a focal point of the research conducted. Our analyses will lay the foundation for assessing the root causes of food insecurity. 
 
@@ -200,10 +200,11 @@ The report is organized as follows:
 3. Heatmaps and Geographic Layout of the Data 
 4. Model Building and Logistic Regression 
 5. Conclusion 
+6. Bibliography
 
 
 # Chapter 1.1: Description of Data
-The USDA’s dataset originally consisted of 147 variables and 72,864 observations of data on food deserts using the Census 2010 results. For us to both manage and  work effectively with the data, we chose to use 22 variables. However, cutting the variables did not change our total observations. So, we extracted a sample from the overall dataset so R would be able to process the data efficiently and with efficacy. Though we want a smaller sample of data, we have ensure that the information from the original dataset is not lost due to the sampling process. Therefore, we chose to draw our sample data proportionally based on the strata of the State variable. 
+The USDA’s [dataset](https://www.ers.usda.gov/data-products/food-access-research-atlas/download-the-data/) originally consisted of 147 variables and 72,864 observations of data on food deserts using the Census 2010 results. For us to both manage and  work effectively with the data, we chose to use 22 variables. However, cutting the variables did not change our total observations. So, we extracted a sample from the overall dataset so R would be able to process the data efficiently and with efficacy. Though we want a smaller sample of data, we have ensure that the information from the original dataset is not lost due to the sampling process. Therefore, we chose to draw our sample data proportionally based on the strata of the State variable. 
 
 We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below: ni is the number of observations for State level i; ceil stands for ceiling functions
 
@@ -250,7 +251,7 @@ str(food)
 
 # Chapter 2: Exploratory Data Analysis 
 ## Histograms and Q-Q Plots
-Here we are looking at the normality of our quantitative independent variables to assess whether or not we should exclude outliers when we build our model. We are assesisng the normality of our variables from histograms and Q-Q plots. 
+The following data analyses are separated by testing the normality of each one of the independent quantitative variables in our dataset. The literature regarding food deserts explains that low-income factors and racial minorities are related to food deserts because of urban sprawl and gentrification (Hamidi,2019). We are assessing the normality of these data points to ensure that when we run the respective analyses, our data is sufficient, and outliers have been normalized in scale to our data set. We are assesisng the normality of our variables from histograms, Q-Q plots, and Kolmogorov-Smirnov test. 
 
 ### Poverty Rate Normality Test 
 ```{r Poverty Rate Normality, results= "hide"}
@@ -1153,9 +1154,17 @@ The data suggests that some confounding factors are to be accounted for during f
 Likewise, non-sampling errors will lead to sampling bias as well. It may be wise, then, to generate more heatmaps for different variables, and compare these results to published literature looking at heatmaps generated from much larger datasets found like those found on USDA 
 
 
+# Chapter 6: Bibliography 
 
+Block, Jason., & S.V. Subramanian. (2015). Moving Beyond ‘Food Deserts’: Reorienting United States Policies to Reduce Disparities in Diet Quality. *PLOS Medicine, 12(12):* 1-9.  
 
+Dutko, P.,Ploeg, M.V., & Farrigan, T. (2012, August) Characteristics and Influential Factors of Food Desserts. *Report from the Economic Research Team at USDA.* https://www.ers.usda.gov/webdocs/publications/45014/30940_err140.pdf
 
+Hamidi, Shima. (2019). Urban sprawl and the emergence of food deserts in the USA. *Urban Studies* :1-16.
+
+USDA. (2017) Food Access Research Atlas. https://www.ers.usda.gov/data-products/food-access-research-atlas/download-the-data/
+
+Walker, R., Keane, C., & Burke, J. (2010). Disparities and access to healthy food in the United States: A review of food deserts literature. *Health & Place. 16(5):* 878-884. 
 
 
 
