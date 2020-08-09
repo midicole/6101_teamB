@@ -15,12 +15,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-# use this function to conveniently load libraries and work smoothly with knitting
-# can add quietly=T option to the require() function
-# the loadPkg function essentially replaced/substituted two functions install.packages() and library() in one step.
 loadPkg = function(x) { if (!require(x,character.only=T, quietly =T)) { install.packages(x,dep=T,repos="http://cran.us.r-project.org"); if(!require(x,character.only=T)) stop("Package not found") } }
 
-# unload/detact package when done using it
 unloadPkg = function(pkg, character.only = FALSE) { 
   if(!character.only) { pkg <- as.character(substitute(pkg)) } 
   search_item <- paste("package", pkg,sep = ":") 
@@ -29,7 +25,7 @@ unloadPkg = function(pkg, character.only = FALSE) {
 ```
 
 
-```{r xkablesummary}
+```{r base_lib, include=FALSE}
 loadPkg("xtable")
 loadPkg("kableExtra")
 loadPkg("stringi")
@@ -129,7 +125,7 @@ xkablevif = function(model, title="VIFs of the model", digits = 3, pos="left", b
 }
 ```
 
-```{r outlierKD2}
+```{r outlierKD2, include=FALSE}
 # Fix outliers
 # Fix outliers
 outlierKD2 <- function(df, var, rm=FALSE) { 
@@ -181,10 +177,55 @@ outlierKD2 <- function(df, var, rm=FALSE) {
     }
 }
 ```
-
-
 # Chapter 1: Introduction 
-```{r}
+Food insecurity continues to be a pressing issue across the United States. The terminology of ‘food deserts’ has consistently been used to describe neighborhoods with limited access to grocery stores or supermarkets. Studies have shown that the most vulnerable populations reside in areas with limited access to full-service grocery outlets. The literature around food insecurity suggests that food deserts emerge from numerous sources including: urban sprawl, residents’ socioeconomic status, racial disparities, and neighborhood density. Research shows that communities in food deserts are at higher risk of health issues including obesity and diabetes. While food deserts have become a legislative priority to address health inequities, there is no concrete evidence suggesting that increasing access to food retail would improve health issues in these communities. 
+
+The United States Department of Agriculture (USDA) has provided a dataset using Census data from 2010 to identify whether a census tract is in a food desert. Given the abundance of research surrounding food deserts and their impact on the quality of life, our project aims to understand the underlying causes of food deserts. Simply put, it boils down to one question: *what variables impact whether or not a census tract is located in a food desert?* To understand why populations experience health inequities and food insecurity, the underlying causes of food deserts in the United States manifests itself as a focal point of the research conducted. Our analyses will lay the foundation for assessing the root causes of food insecurity. 
+
+The report is organized as follows: 
+
+1. Description of dataset 
+2. Exploratory Data Analysis  
+3. Heatmaps and Geographic Layout of the Data 
+4. Model Building and Logistic Regression 
+5. Conclusion 
+
+
+# Chapter 1.1: Description of Data
+The USDA’s dataset originally consisted of 147 variables and 72,864 observations of data on food deserts using the Census 2010 results. For us to both manage and  work effectively with the data, we chose to use 22 variables. However, cutting the variables did not change our total observations. So, we extracted a sample from the overall dataset so R would be able to process the data efficiently and with efficacy. Though we want a smaller sample of data, we have ensure that the information from the original dataset is not lost due to the sampling process. Therefore, we chose to draw our sample data proportionally based on the strata of the State variable. 
+
+We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below: ($$n_i$$ is the number of observations for State level i; ceil stands for ceiling function): 
+         $$a_i = ceil \left(\frac{n_i}{100}\right) x 10$$
+         *N* = $$\sum_{i=1}^{51}n_i = 71,864$$ 
+         *A* = $$\sum_{i=1}^{51}a_i = 7,280$$ 
+We used the ceiling function because $$a_i$$ not integers; we take ceiling values for $$a_i$$ to protect the integrality of levels with few rows. After this, “Sampling” package was installed loaded, strata() function was used to get stratified samples named as food. (See below for a readout of the dataset’s structure and variable names). However, once we extracted the sample food from the original dataset, we realized that we had 47 observations where all of our variables were zero. To mend this issue in our analysis, we subsetted the *food* data frame to only include variables greater than zero (0>). As expected, this further decreased the data frame to 7,232 variables. For further analysis, we chose Desert as our single dependent variable. 
+
+As per the USDA’s guidelines and definitions, this variable indicates whether a “Census Tract Location” is classified as a food desert. Specifically, this variables measures whether or not there is a full service grocery store in a rural or urban census tract. If an urban census tract does not have a full service grocery store within one mile of the tract then it is a food desert. As such, if a rural census tract does not have  a full service grocery store within 10 miles of the tract then it is a food desert. To ensure that our new dataset was representative of the original data, we looked at the proportions of the data. The original USDA dataset had approximately 12% of it’s observations classified as food deserts, and our extracted data also has only 12% of it’s observations classified as food deserts. This report uses the variable Desert to classify a specific tract as a food desert to run an appropriate analysis to test our hypothesis regarding the causes of food deserts. All of the information in our dataset came from the 2010 Census. Now that we have simplified our dataset and chose to only work with 22 variables, the variable definitons are below. 
+
+1. CensusTract: The Census GEO ID tract number
+2. State: The name of the state that census tract is in 
+3. Region: The region of the United States that the state is in DC is its own region 
+4. Urban: When a census tract has population >= 2,500 people it is recognized as an urban area
+5. POP2010: Population count of census tract from 2010 census 
+6. OHU2010: Number of occupied housing units in a census tract
+7. NUMGQTRS: Number of total population in tract living in group housing quarters
+8. Desert: Indicates whether or not census tract is in a food desert (For urban areas a grocery store is not within 1 mile and non-urban or rural areas a grocery store is not within 10 miles) 
+9. PovertyRate: The tract population living at or below the poverty rate 
+10. MedianFamilyIncome: The tract’s median family income
+11. TractLOWI: Total number of the low-income population in the tract 
+12. TractKids: Total number of children ages 0-17 in the tract 
+13. TractSeniors: Total number of seniors ages 65+ in the tract 
+14. TractWhite: Total number of white people in the tract 
+15. TractBlack: Total number of black people in the tract 
+16. TractAsian: Total number of Asian people in the tract
+17. TractNHOPI: Total number of Native Hawaiin or Other Pacific Islander in the tract 
+18. TractAIAN: Total number of American Indian and Alaskan Native in tract 
+19. Tract0Multir: Total number of multiple race/other race population in tract 
+20. TractHispanic: Total number of Hispanic or Latinx population in tract
+21. TractHUNV: Total number of housing units without access to a vehicle in tract 
+22. TractSNAP: Total number of housing units receiving SNAP benefits in tract
+
+```{r clean data, include= FALSE}
 food <- data.frame(read.csv("food.csv"))
 food <- subset(food, POP2010 > 1)
 food$State<-as.factor(food$State)
@@ -192,328 +233,441 @@ food$Region <- as.factor(food$Region)
 food$Urban <- as.factor(food$Urban)
 colnames(food)[8] <- c("Desert")
 str(food)
-#plot(food$TractBlack, food$Desert, xlab="Black Population",ylab="Probability of being located in Food Desert")
-#lines(food$TractBlack,food$Desert)
-#plot(Desert~TractBlack, data=food, col = "red")
-#fit =glm(Desert~TractBlack, data=food, family="binomial") 
-#predicted= predict(fit, data=food, type="response")
-
 ```
 
-# Chapter 2: Exploratory Data Analysis
-### Here we are looking at the normality of our quantitative independent variables to assess whether or not we should exclude outliers when we build our model.
+# Chapter 2: Exploratory Data Analysis 
+## Histograms and Q-Q Plots
+Here we are looking at the normality of our quantitative independent variables to assess whether or not we should exclude outliers when we build our model. We are assesisng the normality of our variables from histograms and Q-Q plots. 
+
+### Poverty Rate Normality Test 
 ```{r Poverty Rate Normality}
-# Poverty Rate Normality of Tracts
+summary(food$PovertyRate)
 hist(food$PovertyRate, main="Histogram of Percentage of Tract at or Below Federal Poverty Rate", xlab="Poverty Rate", col="purple")
 qqnorm(food$PovertyRate, main="Q-Q plot of Percentage of Tract at or Below Poverty Rate")
 qqline(food$PovertyRate)
-outlierKD2(food, PovertyRate, FALSE)
-# The Poverty Rate is still slightly skewed to the right with and without outliers and the mean with outliers is about 16% and without outliers it is about 15% so this did not change much.
+```
+The Poverty Rate variable shows a right-skewed distribution which matches our statistical summary of the data points with the mean being larger than the median. This distribution shows us that our data points for this variable are positive. 
 
-# Poverty Rate Normality of Tracts in Food Desert 
+### Poverty Rate Normality Test of only Food Deserts
+```{r}
 food.desert <- subset(food, Desert==1)
 hist(food.desert$PovertyRate, main="Histogram of the Percentage of Tract at or Below Poverty Rate in a Food Desert", xlab= "Poverty Rate", col="blue")
 qqnorm(food.desert$PovertyRate, main="Percentage of Tract in Food Desert at or Below Poverty Rate")
 qqline(food.desert$PovertyRate)
-outlierKD2(food.desert, PovertyRate, FALSE)
-#When we subset our data to only census tracts that are located in food deserts the mean is 26.97 which means about 27% of households located in a food desert   are at or below the federal poverty rate. Furthermore, when we use this subset to take out outliers we only have 36 outliers and the mean changes from 26.97 to 25.42 so there is no signifcant change in removing outliers within this subset. However, within this subset after we move the outliers we can see that our   histogram is more normally distributed. With outliers our distribution is skewed to the right like it is without subsetting the data. 
 ```
+When we subset our data to only census tracts that are located in food deserts the mean is 26.97 which means about 27% of households located in a food desert are at or below the federal poverty rate. This is interesting to note, because it shows us that people who are located in food deserts are on average are more likely to be at or below the federal poverty rate level than those who are not located in food deserts. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
+### Finding Outliers 
+```{r}
+outlierKD2(food, PovertyRate, FALSE)
+outlierKD2(food.desert, PovertyRate, FALSE)
+```
+When we look at the outliers in our *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 16% and without outliers it is about 15% so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 26.97 to 25.42 so there is no significant change in removing outliers within this subset. After we remove the outliers from both data frames we can see that our Histogram and is still right-skewed or positive. 
+
+### Population Normality Test 
 ```{r Population Normality }
-#Population or POP2010 Normality Test 
 summary(food$POP2010)
 hist(food$POP2010, main="Histogram of Population in Tract", xlab="Population", col="red")
 qqnorm(food$POP2010, main="Q-Q Plot of Tract Population")
 qqline(food$POP2010)
-# We can tell from our Histogram and Q-Q plot that the distributon of the population is right-skewed or positive.
+```
+The Population variable shows a right-skewed distribution from the Histogram and Q-Q plot. This matches our statistical summary of the data points, with the mean being larger than the median. This distribution shows us that our data points for this variable are positive. 
 
-# Population Normality Test of only areas with Food Deserts 
+### Population Normality Test of only Food Deserts 
+```{r}
 hist(food.desert$POP2010, main="Histogram of Population of Tract in Food Desert", xlab="Population", col="yellow")
 qqnorm(food.desert$POP2010, main="Q-Q Plot of Food Desert Population Tract")
 qqline(food.desert$POP2010)
 summary(food.desert$POP2010)
-# When looking at the normality of the population distribution when the tract is located in a food desert the Q-Q plot seems to resemeble more of a straight line but the histogram is still slighly skewed to the right. However, the minimum, maximum, median, and mean values change significanlty when reviewing the population of a tract in a food desert versus not. 
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 4,360 which is actually higher than the population mean of all census tracts. However, the Histogram and Q-Q plot show us that even after subsetting the data it is still right-skewed or positive.
 
-# Finding Outliers
+### Finding Outliers
+```{r}
 outlierKD2(food, POP2010, rm=FALSE)
 outlierKD2(food.desert, POP2010, rm=FALSE)
-# When looking at these results we can see that when we remove our outliers the data become significantly more normally distributed even though our mean with outliers is 4,270 and without otuliers the mean is 4,131. This is not a huge different but the because of the drastic shape in our histogram and bellcurve, it might be worth removing the outliers in our population variable. When looking at the outliers in locations that are considered food deserts our mean with outliers is 4,360 and without outliers is 4,254. Though with and without outliers our distribution is slightly skewed to the right it is a bit more noramlly distributed without outliers just like it is in food deserts and non-deserts. 
 ```
+When looking at the *food* data the results show that when we remove our outliers the data becomes more condensed, but the distribution is still right-skewed or positive. When looking at the outliers in locations that are considered food deserts our mean with outliers is 4,360 and without outliers is 4,254. Though with and without outliers our distribution is still slightly skewed to the right. 
 
+### Occupied Housing Units Normality Test 
 ```{r Occupied Housing Normality Test}
-hist(food$OHU2010, main="Histogram of Housing Units", xlab="Housing", col="orange")
+summary(food$OHU2010)
+hist(food$OHU2010, main="Histogram of Housing Units", xlab="Occupied Housing Units", col="orange")
 qqnorm(food$OHU2010, main="Q-Q Plot of Housing Units")
 qqline(food$OHU2010)
-# When we are looking at our results of the total occupied housing units in the tracts we can see that the data points are righly skewed.  
+```
+The total occupied housing units variable shows a right-skewed distribution which matches our statistical summary of the data points, with the mean being larger than the median. This distribution shows us that our data points for this variable are positive.
 
-# Occupied Housing Normality for only food deserts
-hist(food.desert$OHU2010, main="Histogram of Housing Units in Food Deserts", xlab="Housing in Food Desert", col="pink")
+### Occupied Housing Units Normality Test of only Food Deserts
+```{r}
+summary(food.desert$OHU2010)
+hist(food.desert$OHU2010, main="Histogram of Occupied Housing Units in Food Deserts", xlab="Occupied Housing Units", col="pink")
 qqnorm(food.desert$OHU2010, main="Q-Q Plot of Housing in Food Desert")
 qqline(food.desert$OHU2010)
-# When we are looking at the total occupied housing units in tracts that are classified as food deserts it seems that the distribution is still slightly skewed to the right. However, the Q-Q plot of this data is definetly more normally distributed in the subset of food desert than the whole data frame. 
+```
+When we subset our data to only census tracts that are in food deserts and look at the total occupied housing units  our summary statistics make for an interesring comparison. The max amount of occupied housing in our *food* data is 12,426 but in the subsetted data frame the max amount of occupied housing is only 4,772 this is about a 60% decrease in occupied housing units. Furthermore, when we subsetted the data and are looking at the distribution of occupied housing units in food deserts we can tell from our Q-Q plot and histogram that our variable is now normally distributed. 
 
-# Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food, OHU2010, rm=FALSE)
 outlierKD2(food.desert, OHU2010, rm=FALSE)
-# When we look at the outliers of the data frame there are 115 total outliers and the mean with the outliers is 1,615 and without outliers the mean is 1,571 so nothing really changes by removing the outliers. Also, with and without outliers are distribution is skewed to the right. When looking at the outliers in our subset that only incldues tracts in food deserts we can see that there are only 10 outliers. The mean with the outliers is 1,605 and without outliers is 1,579 so nothing really changes by removing the outliers. However, our Q-Q plot of the subset of occupied housing units in food deserts resembles more of a straight line that the data points in the data frame. Nonetheless, the subset's distribution is still rightly-skewed. 
 ```
+When we look at the outliers of the *food* data the mean with the outliers is 1,615 and without outliers the mean is 1,571 so nothing really changes by removing the outliers. Also, with and without outliers the distribution is skewed to the right. When looking at the outliers in our subset that only incldues tracts in food deserts we can see that there are only 10 outliers. The mean with the outliers is 1,605 and without outliers is 1,579 so nothing really changes by removing the outliers.
 
+### Group Housing Units Normality Test 
 ```{r Group Housing Normality Test}
 summary(food$NUMGQTRS)
-hist(food$NUMGQTRS, main="Histogram of Group Housing Units", xlab="Group Housing", col="dark green")
+hist(food$NUMGQTRS, main="Histogram of Group Housing Units", xlab="Group Housing Units", col="dark green")
 qqnorm(food$NUMGQTRS, main="Q-Q Plot of Group Housing Units")
 qqline(food$NUMGQTRS)
-# Group Housing units distribution is not normal. It is skewed righ, but barely skewed right. The Q-Q Plot does not even slightly resemeble a straight line. 
+```
+The Group Housing units variable shows a right-skewed distribution which matches our statistical summay of the data points with the mean being larger than the median. This histogram and Q-Q Plot show that this variable has a right-skewed or positive distribution. What is interesting to note about this variable in our data is that the range is so big. Our minimum amount of group housing units is zero and then our maximum is 11,777. This seems extreme and likely that we would have outliers within these data points, but we will assess this further when executing the outlier function below. 
 
-# Group Housing Normality for only food deserts
-hist(food.desert$NUMGQTRS, main="Histogram of Group Housing Units in Food Deserts", xlab=" Group Housing in Food Desert", col="light blue ")
+### Group Housing Units Normality Test for only food deserts
+```{r} 
+summary(food.desert$NUMGQTRS)
+hist(food.desert$NUMGQTRS, main="Histogram of Group Housing Units in Food Deserts", xlab=" Group Housing Units", col="light blue ")
 qqnorm(food.desert$OHU2010, main="Q-Q Plot of Housing in Food Desert")
 qqline(food.desert$OHU2010)
-# When we take the subset of group hosuing units only located in food deserts the distribution improves a bit more at least with our Q-Q plot. However, the histogram still resembles a right-skewed distribution. 
+```
+When we subset our data to only census tracts that are located in food deserts the mean increases from 110 in our *food* data to an average of 200 group housing units in food deserts. However, the range for the subsetted data is still 0-11,777 even though the histogram does not do a great job of visualizing the range. Again, we would assume that this variable has outliers that should be taken out. Though the Q-Q plot of the subsetted data resembles a straight line more so than the the Q-Q plot of the *food* data, the histogram still shows a right-skewed or positive distribution.
 
-# Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food, NUMGQTRS, rm=FALSE)
 outlierKD2(food.desert, NUMGQTRS, rm=FALSE)
-# When we look at the group housing outliers in the data frame there are 831. The mean of the data with the outliers is 110 and without the outliers the mean is 24. This is a pretty big drop in the mean than from the other variables that we have seen, but nonetheless the data still has a right-skewed distribution and would yield the same results. When we are looking at the outliers from the subset of group housing units in food deserts the mean also has a big drop. With the outliers the mean is 200 and without outliers the mean is 42. However, the distribution is still right-skewed and would yield the same results. 
 ```
+When we look at the group housing outliers in the *food* data there are 831. The mean of the data with the outliers is 110 and without the outliers the mean is 24. This is a pretty big drop in the mean than from the other variables that we have seen, but nonetheless the data still has a right-skewed distribution and would yield the same results before and after the removal of outliers. When we are looking at the outliers from the subset of group housing units in food deserts the mean also has a big drop. With the outliers the mean is 200 and without outliers the mean is 42. However, the distribution is still right-skewed and would yield the same results. It feels like we should remove the outliers because the range is so long, but because the results of still show a right-skewed or positive distribution, nothing changes with the removal of outliers.
 
+### Median Family Income Normality Test 
 ```{r Median Family Income Normality Test}
 summary(food$MedianFamilyIncome)
-hist(food$MedianFamilyIncome, main="Histogram of Median Family Income", col="dark blue")
+hist(food$MedianFamilyIncome, main="Histogram of Median Family Income", xlab="Median Family Income", col="dark blue")
 qqnorm(food$MedianFamilyIncome, main="Q-Q Plot of Median Family Income")
 qqline(food$MedianFamilyIncome)
-# The median family income for the data frame is right-skewed. Though the Q-Q plot resembles a straight line representing some type of normality in the distribution. 
+```
+The median family income variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. This distribution shows us that our data points for this variable are positive. 
 
-# Median Family Income of only Food Deserts 
-hist(food.desert$MedianFamilyIncome, main="Histogram of Median Family Income in Food Deserts", col="dark red")
+### Median Family Income Normality Test of only Food Deserts 
+```{r}
+summary(food.desert$MedianFamilyIncome)
+hist(food.desert$MedianFamilyIncome, main="Histogram of Median Family Income in Food Deserts", xlab= "Median Family Income", col="dark red")
 qqnorm(food.desert$MedianFamilyIncome, main="Q-Q Plot of Median Family Income in Food Deserts")
 qqline(food.desert$MedianFamilyIncome)
-# When looking at the distribution of the median family income for tracts that are located in food deserts again we can see that the distribution is right-skewed or positive. The Q-Q plot does resemble a striaght line showcasing a resembles of a normal distribution. 
+```
+When we subset our data to only census tracts that are located in food deserts the mean of the median family income decreased by more than \$20,000 showing about a 35% decrease in median family income. Further more, the maximum amount went from \$250,000 to \$140,250. Nonetheless,   the distribution of the median family income for tracts that are located in food deserts is right-skewed or positive. Though, compared to the *food* data, the Q-Q plot does resemble more of a straight line, but is still right-skewed.
 
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food, MedianFamilyIncome, rm=FALSE)
 outlierKD2(food.desert, MedianFamilyIncome, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
-
-
+When we look at the outliers in our *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is \$67,768  and without outliers it is about \$63,630 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from \$43,580 to \$42,882 so there is no significant change in removing outliers within the subset. Therefore, nothing really changes with the removal of outliers. The distribution of the data is still right-skewed and positive, even though it is not as far right-skewed as before the removal. 
+### Low-Income Population Normality Test 
 ```{r Low-Income Population Normality Test}
 summary(food$TractLOWI)
-hist(food$TractLOWI, main="Histogram of Low-Income Population", col="light green")
+hist(food$TractLOWI, main="Histogram of Low-Income Population", xlab= "Low-Income Population", col="light green")
 qqnorm(food$TractLOWI, main="Q-Q Plot of Low-Income Population")
 qqline(food$TractLOWI)
-# The low-income population for the data frame is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+```
+The low-income tract variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. This distribution shows us that our data points for this variable are positive. 
 
-# Low-Income Population of only Food Deserts 
-hist(food.desert$TractLOWI, main="Histogram of Low-Income Population in Food Deserts", col="red")
+### Low-Income Population Normality Test of only Food Deserts 
+```{r}
+summary(food.desert$TractLOWI)
+hist(food.desert$TractLOWI, main="Histogram of Low-Income Population in Food Deserts", xlab="Low-Income Population", col="red")
 qqnorm(food.desert$TractLOWI, main="Q-Q Plot of   Low-Income Population in Food Deserts")
 qqline(food.desert$TractLOWI)
-# The low-income population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+```
+When we subset our data to only census tracts that are located in food deserts the mean of the low-income population is 2,192, which is 719 more than the mean from the *food* data. This is interesting because the subsetted data has fewer data points and a smaller maximum but the mean of low-income people in food deserts is higher. Nonetheless, the histogram and Q-Q plot of this variable shows us that the distribution is still right-skewwed or positive.
 
-#Finding Outliers 
+### Finding Outliers 
+``` {r} 
 outlierKD2(food, TractLOWI, rm=FALSE)
 outlierKD2(food.desert, TractLOWI, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
+When we look at the outliers in our *food* data we can see that the distribution is still right-skewed with and without outliers. Furthermore, the mean with outliers is about 1,472 and  and without outliers it is 1,353 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 2,192 to 2,075 so there is no significant change in removing outliers within this subset. Additionally, before and after the removal of outliers in the *food* data and subsetted data the distribution is still right-skewed or positive. 
 
+### Kid Count Normality Test 
 ```{r Kid Count Normality Test}
-hist(food$TractKids, main="Histogram of Kid Count", col="purple")
+summary(food$TractKids)
+hist(food$TractKids, main="Histogram of Kid Count", xlab="Total Amount of Kids", col="purple")
 qqnorm(food$TractKids, main="Q-Q Plot of Kid Count in Tract")
 qqline(food$TractKids)
-# The number of kids in a census tract for the data frame is right-skewed. The Q-Q plot resembles  the histogram's distribution and is right-skewed or positive.
+```
+The total kid count variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. This distribution shows us that our data points for this variable are positive.
 
-# Kid Count of only Food Deserts 
-hist(food.desert$TractKids, main="Histogram of Kid Count in Food Deserts", col="yellow")
+### Kid Count Normality Test of only Food Deserts 
+```{r}
+summary(food.desert$TractKids)
+hist(food.desert$TractKids, main="Histogram of Kid Count in Food Deserts", xlab="Total Amount of Kids", col="yellow")
 qqnorm(food.desert$TractKids, main="Q-Q Plot of Kid Count Population in Food Deserts")
 qqline(food.desert$TractKids)
-# The kid count for the subset of food deserts is right-skewed. The Q-Q plot resembles  the histogram's distribution and is right-skewed or positive.
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 1,097 and the mean of the *food* data is 1,025 and there is an increase but not a significant increase in the mean of the data. However, the maximum amount of kids in the *food* data is 9,377 and for the subsetted data the total is 5,938 - though this makes sense because the subsetted data has significanlty smaller datapoints than *food*. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
-#Finding Outliers 
+### Finding Outliers 
+```{r} 
 outlierKD2(food, TractKids, rm=FALSE)
 outlierKD2(food.desert, TractKids, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
+When we look at the outliers in our *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is 1,025 and without outliers it is 960 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 1,097 to 1,026 which is definelty not a significant change. After we remove the outliers from both data frames we can see that our data is still right-skewed or positive; so essentially nothing changes. 
 
+### Senior Count Normality Test 
 ```{r Senior Count Normality Test}
-hist(food$TractSeniors, main="Histogram of Seniors in Tract", col="brown")
+summary(food$TractSeniors)
+hist(food$TractSeniors, main="Histogram of Seniors in Tract", xlab="Total Amount of Seniors", col="brown")
 qqnorm(food$TractSeniors, main="Q-Q Plot of Seniors in Tract")
 qqline(food$TractSeniors)
-# The number of seniors in  the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+The variable for the total amount of seniors shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. This distribution shows us that our data points for this variable are positive. 
 
-# Low-Income Population of only Food Deserts 
-hist(food.desert$TractSeniors, main="Histogram of Seniors in Food Deserts", col="pink")
+### Senior Count Normality Test of only Food Deserts 
+```{r}
+summary(food.desert$TractSeniors)
+hist(food.desert$TractSeniors, main="Histogram of Seniors in Food Deserts", xlab="Total Amount of Seniors", col="pink")
 qqnorm(food.desert$TractSeniors, main="Q-Q Plot of Seniors in Food Deserts")
 qqline(food.desert$TractSeniors)
-# The number of seniors for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 538 which is pretty close to the mean of total senior count in the *food* data of 561. As such, one could assume that this variable is not too different based on whether or not a census tract is located in a food desert. However, the only way we can prove this is when run a regression later on in the analysis. Nonetheless, the histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food, TractSeniors, rm=FALSE)
 outlierKD2(food.desert, TractSeniors, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
+When we look at the outliers in our *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. The difference without outliers shows a wider distribution but still right-skewed. Furthermore, the mean with outliers is 561 and without outliers it is 524, so there is essentially no change from the removal of outliers. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 538 to 502 so there is no significant change in removing outliers within this subset. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
-
+### White Population Normality Test 
 ```{r White Population Normality Test}
 summary(food$TractWhite)
-hist(food$TractWhite, main="Histogram of White Population", col="orange")
+hist(food$TractWhite, main="Histogram of White Population", xlab="Total White Population", col="orange")
 qqnorm(food$TractWhite, main="Q-Q Plot of White Population")
 qqline(food$TractWhite)
-# The white population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+The white population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-# White Populatin in only Food Deserts 
-hist(food.desert$TractWhite, main="Histogram of White Population in Food Deserts", col="dark green")
+###  White Populatin Normality Test in only Food Deserts 
+```{r} 
+summary(food.desert$TractWhite) 
+hist(food.desert$TractWhite, main="Histogram of White Population in Food Deserts", xlab="Total White Population", col="dark green")
 qqnorm(food.desert$TractWhite, main="Q-Q Plot of White Population in Food Deserts")
 qqline(food.desert$TractWhite)
-# The white population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
-
-#Finding Outliers 
-outlierKD2(food, TractLOWI, rm=FALSE)
-outlierKD2(food.desert, TractLOWI, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
+When we subset our data to only census tracts that are located in food deserts the mean is 2,782 which is 300 smaller than the mean of the white population in the *food* data. However, what is interesting is to note that the maximum of the white population in our *food* data is about 37% larger than the subsetted data that only includes census tracts in food deserts. Nonetheless, the histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive when looking at only census tracts in food deserts. 
 
+### Finding Outliers 
+```{r} 
+outlierKD2(food, TractWhite, rm=FALSE)
+outlierKD2(food.desert, TractWhite, rm=FALSE)
+```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is 3,081 and without outliers it is 2,984 which is not a large change. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 2,781 to 2,698 so there is no significant change in removing outliers within the subset. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
+### Black Population Normality Test 
 ```{r Black Population Normality Test}
-hist(food$TractBlack, main="Histogram of Black Population", col="dark red")
+summary(food$TractBlack)
+hist(food$TractBlack, main="Histogram of Black Population", xlab="Total Black Population", col="dark red")
 qqnorm(food$TractBlack, main="Q-Q Plot of Black Population")
 qqline(food$TractBlack)
-# The black population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+The black population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-# Black Population of only Food Deserts 
-hist(food.desert$TractBlack, main="Histogram of Black Population in Food Deserts", col="red")
+### Black Population Normality Test of only Food Deserts 
+```{r}
+summary(food.desert$TractBlack)
+hist(food.desert$TractBlack, main="Histogram of Black Population in Food Deserts", xlab="Total Black Population", col="red")
 qqnorm(food.desert$TractBlack, main="Q-Q Plot of Black Population in Food Deserts")
 qqline(food.desert$TractBlack)
-# The black population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 930  which is about 40% larger than the mean of the black population in the *food* data. This is interesting to note, because it shows us that the amount of black people in a census tract increased proportionally when classified as a food desert. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food, TractBlack, rm=FALSE)
 outlierKD2(food.desert, TractBlack, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is 546 and without outliers it is 276 which is a pretty big drop, but it is not sufficient enough for us to see a change in the distribution. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 930 to 742 which is also a big drop, but does not change the distribution. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
+### Asian Population Normality Test 
 ```{r Asian Population Normality Test}
-hist(food$TractAsian, main="Histogram of Asian Population", col="dark orange")
+summary(food$TractAsian)
+hist(food$TractAsian, main="Histogram of Asian Population", xlab="Total Asian Population", col="dark orange")
 qqnorm(food$TractAsian, main="Q-Q Plot of Asian Population")
 qqline(food$TractAsian)
-# The Asian population for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+The asian population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-# Asian Population of only Food Deserts 
-hist(food.desert$TractAsian, main="Histogram of Asian Population in Food Deserts", col="green")
+### Asian Population Normality Test of only Food Deserts 
+```{r} 
+summary(food.desert$TractAsian)
+hist(food.desert$TractAsian, main="Histogram of Asian Population in Food Deserts",xlab="Total Asian Population", col="green")
 qqnorm(food.desert$TractAsian, main="Q-Q Plot of Asian Population in Food Deserts")
 qqline(food.desert$TractAsian)
-# The Asian population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 95 which is only slightly smaller than the mean of the asian population of the *food* data. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food, TractAsian, rm=FALSE)
 outlierKD2(food.desert, TractAsian, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 201 and without outliers it is 88, which seems like a large drop, but it is not sufficient enough to change the distribution. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 95 to 38, but this is not a significant change. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
-
+### Native Hawaiian or Pacific Islander Normality Test 
 ```{r Native Hawaiian and Pacific Islander Normality Test}
-hist(food$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander  Population", col="blue")
+summary(food$TractNHOPI)
+hist(food$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander  Population", xlab="Total Native Hawaiian or Pacific Islander Population", col="blue")
 qqnorm(food$TractNHOPI, main="Q-Q Plot of Native Hawaiian or Pacific Islander Population")
 qqline(food$TractNHOPI)
-# The Native Hawaiian or Pacific Islander population for the data frame is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+```
+The Native Hawaiian or Pacific Islander variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-# Native Hawaiian or Pacific Islander Population in only Food Deserts 
-hist(food.desert$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander Population in Food Deserts", col="light blue")
+### Native Hawaiian or Pacific Islander Population Normality Test for only Food Deserts 
+```{r} 
+summary(food.desert$TractNHOPI)
+hist(food.desert$TractNHOPI, main="Histogram of Native Hawaiian or Pacific Islander Population in Food Deserts", xlab="Total Native Hawaiian or Pacific Islander Population", col="light blue")
 qqnorm(food.desert$TractNHOPI, main="Q-Q Plot of Native Hawaiian or Pacific Islander Population in Food Deserts")
 qqline(food.desert$TractNHOPI)
-# The Native Hawaiian or Pacific Islander population for the subset of food deserts is right-skewed. The Q-Q plot resembles reflects the histogram's distribution and is right-skewed or positive.
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 8 which is higher than the mean of our *food* data but only by two people. However, what is interesting to note about the subsetted data is that the maximum amount for the *food* data and subset is the same at 1,333. This means that there are 1,333 people who identify as Native Hawaiin or Pacific Islander located in a food desert. Native and indigenous people are a minority population in the United States, and yet the maximum amount of this population from our data do not have access to full service grocery stores. Of course, we do not have enough information to determine if this variable is significant in our analysis but we will discuss this later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food, TractNHOPI, rm=FALSE)
 outlierKD2(food.desert, TractNHOPI, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.  
 ```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 6 and without outliers it is only 1, which is not a significant change. When we subset our *food* data to only include food deserts the mean with and without outliers changes from about 8 to about 1, but this is still not a sufficient enough change to impact the distribution. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
+### American Indian or Alaskan Native Population Normality Test 
 ```{r American Indian and Alaskan Native Population Normality Test}
-hist(food$TractAIAN, main="Histogram of American Indian and Alaskan Native Population", col="orange")
+summary(food$TractAIAN)
+hist(food$TractAIAN, main="Histogram of American Indian and Alaskan Native Population", xlab="Total American Indian or Alaskan Native Population", col="orange")
 qqnorm(food$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Native Population")
 qqline(food$TractAIAN)
-# The American Indian and Alaskan Native populatio for the data frame is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+The American Indian or Alaskan Native Population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-# American Indian and Alaskan Native Population in only Food Deserts 
-hist(food.desert$TractAIAN, main="Histogram of American Indian and Alaskan Native Population in Food Deserts", col="red")
+### American Indian and Alaskan Native Population Normality Test for only Food Deserts 
+```{r}
+summary(food.desert$TractAIAN)
+hist(food.desert$TractAIAN, main="Histogram of American Indian and Alaskan Native Population in Food Deserts", xlab="Total American Indian or Alaskan Native Population", col="red")
 qqnorm(food.desert$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Native Population in Food Deserts")
 qqline(food.desert$TractAIAN)
-# The American Indian and Alaskan Native population for the subset of food deserts is right-skewed. The Q-Q plot resembles the histogram's distribution and is right-skewed or positive.
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 105 which is more than double the mean of the American Indian or Alaskan Native population in the *food* data. Furthermore, it is interesting to note that with this population like the Native Hawaiin or Pacific Islander variable, that the maximum total is the same for the *food* data and the subsetted data at 9,009. This means that a minority population, who is unproportinally reprsented with the rest of the country, has a higher propbability of being in a food desert--at least from our dataset. However, we do not have enough information to make this claim and will do further analysis on this later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food,TractAIAN , rm=FALSE)
 outlierKD2(food.desert, TractAIAN, rm=FALSE)
-#By removing the outliers from our data frame and the subset that only includes food deserts nothing changes and our distribution is still right-skewed.
 ```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 42 and without outliers it is about 18 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 105 to 22, which seems like a big change, but it is not significant enoguh to impact the distribution. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
+### Mutliple Races or Other Race Population Normality Test 
 ```{r Multiple race/other race population Normality Test}
-hist(food$TractOMultir, main="Histogram of Multiple race/other race population", col="orange")
+summary(food$TractOMultir)
+hist(food$TractOMultir, main="Histogram of Multiple race/other race population", xlab="Mixed Race or Other Race population", col="orange")
 qqnorm(food$TractOMultir, main="Q-Q Plot of Multiple race/other race population")
 qqline(food$TractOMultir)
+```
+The multiple or other race variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-
-hist(food.desert$TractOMultir, main="Histogram of Multiple race/other race population in Food Deserts", col="red")
+### Multiple Races or Other Race Population Normality Test for only Food Deserts 
+```{r}
+summary(food.desert$TractOMultir)
+hist(food.desert$TractOMultir, main="Histogram of Multiple race/other race population in Food Deserts", xlab="Mixed Race or Other Race population", col="red")
 qqnorm(food.desert$TractOMultir, main="Q-Q Plot of Multiple race/other race population in Food Deserts")
 qqline(food.desert$TractOMultir)
-
-
-#Finding Outliers 
-outlierKD2(food,TractAIAN,rm=FALSE)
-outlierKD2(food.desert, TractAIAN, rm=FALSE)
-
 ```
+When we subset our data to only census tracts that are located in food deserts the mean is about 439 which is only slightly larger than the *food* data mean of people who identify as multiple races or other. The nature of this variable is vague because it doesn't specifiy what races one identifies as, and the data source did not do a great job of explaining what is meant by the other aspect of this variable. As such, this variable might not be useful for the anlaysis. However, we do not have enough information to tell at this point and will decide later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive.   
 
-```{r Hispanic or Latinx population Normality Test}
-hist(food$TractHispanic, main="Histogram of Hispanic or Latinx population", col="orange")
+### Finding Outliers 
+```{r}
+outlierKD2(food, TractOMultir,rm=FALSE)
+outlierKD2(food.desert, TractOMultir, rm=FALSE)
+```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 390 and without outliers, it is about 245 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 439 to 322. Still, there is no significant change in removing outliers within the subset. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
+
+
+### Hispanic Population Normality Test 
+```{r Hispanic population Normality Test}
+summary(food$TractHispanic)
+hist(food$TractHispanic, main="Histogram of Hispanic or Latinx population", xlab="Total Hispanic Population", col="orange")
 qqnorm(food$TractHispanic, main="Q-Q Plot of Hispanic or Latinx population")
 qqline(food$TractHispanic)
+```
+The Hispanic population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. This distribution shows us that our data points for this variable are positive. 
 
-
-hist(food.desert$TractHispanic, main="Histogram of Hispanic or Latinx population in Food Deserts", col="red")
-qqnorm(food.desert$TractHispanic, main="Q-Q Plot of Hispanic or Latinx population in Food Deserts")
+### Hispanic Population Normality Test for only Food Deserts 
+```{r}
+summary(food.desert$TractHispanic)
+hist(food.desert$TractHispanic, main="Histogram of Hispanic population in Food Deserts", col="red")
+qqnorm(food.desert$TractHispanic, main="Q-Q Plot of Hispanic population in Food Deserts")
 qqline(food.desert$TractHispanic)
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 862 which is about 17% larger than the Hispanic population mean in the *food* data. Furthermore, similar to the American Indian and Native Hawaiian population, the maximum amount of the Hispanic population is the same for the *food* data and the subsetted data - meaning that 14,402 people who identify as Hispanic do not have access to a full service grocery store. So far, the exploratory data anlaysis has shown us multiple minority populations with significant increases of population totals in food deserts. We will explore this later on in the report, but just from EDA the literature around food deserts seems to match up with our dat. Nonetheless, the histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive.   
 
-
-#Finding Outliers 
+### Finding Outliers 
+```{R}
 outlierKD2(food,TractHispanic,rm=FALSE)
 outlierKD2(food.desert, TractHispanic, rm=FALSE)
-
 ```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 707 and without outliers it is about 359 which seems like a large drop. However, we can see above that the drop does not change the distribution. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 862 to 420 which is more than 50% of a decrease, but still there is no significant change from the distribution. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
+### Housing Units Without a Vehicle Normality Test 
 ```{r Housing units without access to a vehicle Normality Test}
-hist(food$TractHUNV, main="Histogram of housing units without access to a vehicle", col="orange")
+summary(food$TractHUNV)
+hist(food$TractHUNV, main="Histogram of housing units without access to a vehicle", xlab="Total Hosuing Units without a Vehicle", col="orange")
 qqnorm(food$TractHUNV, main="Q-Q Plot of housing units without access to a vehicle")
 qqline(food$TractHUNV)
+```
+The total housing units without access to a vehicle shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-
-hist(food.desert$TractHUNV, main="Histogram of housing units without access to a vehicle in Food Deserts", col="red")
+### Housing Units Without a Vehicle Normality Test only for Food Deserts  
+```{r}
+summary(food.desert$TractHUNV)
+hist(food.desert$TractHUNV, main="Histogram of Housing Units without access to a Vehicle in Food Deserts", xlab="Housing Units without access to Vehicle", col="red")
 qqnorm(food.desert$TractHUNV, main="Q-Q Plot of housing units without access to a vehicle in Food Deserts")
 qqline(food.desert$TractHUNV)
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 154 which is essentially the same as the mean of the *food* data. Similar to the *food* histogram and Q-Q plot, the histogram and Q-Q plot of this variable in our subsetted data show us that the distribution is still right-skewed or positive.   
 
-
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food,TractHUNV,rm=FALSE)
 outlierKD2(food.desert, TractHUNV, rm=FALSE)
-
 ```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 150 and without outliers, it is 102 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 154 to 138, so there is no significant change in removing outliers within the subset. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
+### Housing Units Receiving SNAP Normality Test 
 ```{r housing units receiving SNAP benefits Normality Test}
-hist(food$TractSNAP, main="Histogram of housing units receiving SNAP benefits", col="orange")
+summary(food$TractSNAP)
+hist(food$TractSNAP, main="Histogram of housing units receiving SNAP benefits", xlab="Housing Units Receiving SNAP", col="orange")
 qqnorm(food$TractSNAP, main="Q-Q Plot of housing units receiving SNAP benefits")
 qqline(food$TractSNAP)
+```
+The variable for the total amount of housing units receiving SNAP benefits  shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. This distribution shows us that our data points for this variable are positive. 
 
-
-hist(food.desert$TractSNAP, main="Histogram of housing units receiving SNAP benefits in Food Deserts", col="red")
+### Housing Units Receiving SNAP Normality Test only for Food Deserts 
+```{R}
+summary(food.desert$TractSNAP)
+hist(food.desert$TractSNAP, main="Histogram of housing units receiving SNAP benefits in Food Deserts", xlab= "Housing Units Receiving SNAP", col="red")
 qqnorm(food.desert$TractSNAP, main="Q-Q Plot of housing units receiving SNAP benefits in Food Deserts")
 qqline(food.desert$TractSNAP)
+```
+When we subset our data to only census tracts that are located in food deserts the mean is 343 which is about a 38% increase in housing units receiving SNAP benefits from the *food* data. This is interesting to note, because it shows that people who get SNAP benefits are more likely to be located in food deserts at least based on this dataset. However, we still do not have enough evidence to make this claim, and will further explore the relationship between food deserts and housing units getting SNAP benefits throughout the analysis. Nonetheless, the histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive.   
 
-
-#Finding Outliers 
+### Finding Outliers 
+```{r}
 outlierKD2(food,TractSNAP,rm=FALSE)
 outlierKD2(food.desert,TractSNAP, rm=FALSE)
 ```
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is 210  and without outliers it is 189 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 343 to 327, so there is no significant change in removing outliers within the subset. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
-To make the results of normality test more clear, we tried an another method, K-S test
+The results of the normality tests show that the distribution for all of our quantitative variables are positive.  This indicates that the mean for our variables will be greater than the median and that all of our data points are positive.
+
+## Kolmogorov-Smirnov Test 
+To make the results of normality test more clear, we tried an another method, the Kolmogorov-Smirnov or K-S test. In addition to the normality tests using graphs, the Kolmogorov Smirnov test is used to give numerical output so we can judge our conclusions above. We did not choose to use the Shapiro Wilk test because it requires the maximum sample size to be less than 5000. The K-S test also has its own restriction, it asks the numbers to be tested are unique (no repeats). So, to avoid warning messages that can affect our outputs in R, we added random numbers from uniform distribution (-0.05, 0.05), since the mean of this distribution is 0, this will not affect our final conclusions about normality tests
 ```{R Kolmogorov-Smirnov Test}
 ks.test(food$PovertyRate+runif(length(food$PovertyRate),-0.05,0.05),"pnorm",mean=mean(food$PovertyRate),sd=sd(food$PovertyRate))
 
@@ -583,17 +737,17 @@ ks.test(food.desert$TractHispanic+runif(length(food.desert$TractHispanic),-0.05,
 ks.test(food.desert$TractHUNV+runif(length(food.desert$TractHUNV),-0.05,0.05),"pnorm",mean=mean(food.desert$TractHUNV),sd=sd(food.desert$TractHUNV))
 
 ks.test(food.desert$TractSNAP+runif(length(food.desert$TractSNAP),-0.05,0.05),"pnorm",mean=mean(food.desert$TractSNAP),sd=sd(food.desert$TractSNAP))
-
 ```
 
-Here we added runif function to avoid repeat of numbers in variables, repear will lead to an error of K-S test. And since we are using random number generater from uniform distribution, it will not affect our result
+Here we added runif function to avoid repeat of numbers in variables, repear will lead to an error of K-S test. And since we are using random number generator from uniform distribution, it will not affect our result
 
-In summary,  only variable 'OHU2010' and 'TractWhite' in dataset food.desert showed p-values larger than 0.01, so we can say the two variables are normally distributed but we may not conclude that the other variables here are not normally distributed directly, we still need to combine plots to make a final conclusion.
+Based on the results of K-S tests, the variables ‘OHU2010’ in the dataset ‘food.desert’ showed p-value larger than 0.01, we can say that the variables are normally distributed, but our final conclusions about the rest variables must be made together with graph results.
 
 
 # Chapter 2.1 Exploratory Data Analysis 
-### Here we are performing Chi-Square test on  to determine whether there is a relationship between the categorical variables. 
-```{r Categorical Variable Analysis}
+## Chi-Square Test of Independence 
+Here we are performing Chi-Square test on the categorical variables in our dataset to determine whether there is a relationship between our indpendent variables and dependent variable. 
+```{r}
 # Contigency Table of Food Deserts and Urban Tract
 contable.urban <- table(food$Urban, food$Desert)
 xkabledply(contable.urban, title="Contingency Table for Food Deserts in Urban Tracts")
@@ -601,14 +755,10 @@ urban.tble <- chisq.test(contable.urban)
 urban.tble
 urban.tble$expected
 xkabledply(urban.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in Urban Tracts")
-exp(urban.tble$p.value)
 ```
+Here, we mainly focus on the output of Chi-Square test, we got a test statistic of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), and the corresponding p-value is lower than 0.05. Thus, we have enough evidence to reject the null hypothesis. This means that the variables 'Urban' and 'Desert' are not independent of one another and in fact are related. As such, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
 
-Here, we mainly focus on the output of Chi-Square test, we got test statistics of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), the corresponding p-value is lower than 0.05 obviously. Hence, we have enough evidence to reject the null hypothesis: variable 'Urban' and 'Desert' are independent.
-
-Now, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
-
-```{r Categorical Variable Analysis}
+```{r}
 # Contingency Table of Food Deserts and Geographical Region 
 contable.region <- table(food$Region, food$Desert)
 xkabledply(contable.region, title="Contingency Table for Food Deserts located in Geographical Regions")
@@ -617,10 +767,9 @@ region.tble
 region.tble$expected
 xkabledply(region.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in Geographical Regions")
 ```
+Focusing on the chi-square test results we can once again reject the null hypothesis that Region and Desert are independent. The output here shows us that the test statistic is 213.41 which is much large than the critical chi-square value for 5 degrees of freedom of 11.07. Additionally, the p-value is smaller than .05 so these results are statistically significant at the 95% probability level. 
 
-Similarly,  we can conclude that variable 'Region' and 'Desert' are not independent.
-
-```{r Categorical Variable Analysis}
+```{r}
 # Contingency Table of Food Deserts and States
 contable.state <- table(food$State, food$Desert)
 xkabledply(contable.state, title="Contingency Table for Food Deserts located in U.S. States")
@@ -628,10 +777,17 @@ state.tble <- chisq.test(contable.state)
 state.tble
 state.tble$expected
 state.tble$p.value
-xkabledply(state.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in U.S. Staes")
+xkabledply(state.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in U.S. States")
 ```
+When running the chi-square test on the state variable and desert variable we can once agian reject the null. The output here shows us that the test statistic is 297.53 which is much large than the critical chi-square value for 50 degrees of freedom at 67.505. The p-value is smaller than .05 so these results are statistically significant. 
 
-### Here we are performing two-sample t test to determine if there exists a difference between groups.
+The chi-square test showed us that we should be able to use the 'Region', 'Urban', and 'State' variables in our model because they will all have a relationship with our dependent variable. However, we will need to assess this further during the model building part of the report. 
+
+# Chapter 2.2 
+## Exploratorday Data Analysis: Two Sample T-Test 
+Here we are performing two-sample t test. This part of the report seeks to answer this question: Are the means of the continuous or quantitative variables different based on whether or a census tract is a food desert? 
+
+To answer this question the first step was to subset our data to include two samples: one with food deserts and the other with no food deserts. This is similiar to the earlier EDA that we did, but we need a data frame that has no food deserts in order to execute the analysis. 
 ```{R unpaired two-sample t test}
 food_0<-subset(food,Desert==0)
 food_1<-subset(food,Desert==1)
@@ -675,7 +831,7 @@ food_coronly<-food[,c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","Med
 cor(food_coronly)
 # Chapter 3: Model Building 
 ## Linear Model Try
-### Here we are disceting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
+### Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
 ```{r Forward Variable Selection}
 # Deciding Best Varaible with Forward Selection and Subsetting 
 reg.forward.1 <-regsubsets(Desert ~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
@@ -702,7 +858,7 @@ plot(reg.forward.2, scale = "bic", main = "BIC")
 ```
 
 We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite,
-the summary of model_forward_adjr2 indicated that it should not be included in the mdoel, and anova() function's F test gave the same conclusion, for now, model_forward_Cp is a better choice. Then, we compared model_forward_Cp and model_forward_bic, together with result of summary of Model_forward_Cp, we can conclude that for forward selection, the variables in model_forward_Cp are good for now.
+the summary of model_forward_adjr2 indicated that it should not be included in the model, and anova() function's F test gave the same conclusion, for now, model_forward_Cp is a better choice. Then, we compared model_forward_Cp and model_forward_bic, together with result of summary of Model_forward_Cp, we can conclude that for forward selection, the variables in model_forward_Cp are good for now.
 
 ```{R Backward Variable Selection}
 # Backward Selection
@@ -728,7 +884,7 @@ plot(reg.bkwd.2, scale = "bic", main = "BIC")
 
 Cp and Adjusted R-square gave the same results, we only compare with BIC. 
 
-Based on the results, model_backward_adjr2 is a better choice. And to make the sequential seleciton easier, we removed variable 'TractBlack', 'TractWhite' and 'TractHispanic'
+Based on the results, model_backward_adjr2 is a better choice. And to make the sequential selection easier, we removed variable 'TractBlack', 'TractWhite' and 'TractHispanic'
 
 ```{R Sequential Variable Selection}
 # Sequential Selection 
@@ -802,8 +958,8 @@ nopop.glm <- bestglm(Xy=best.glm.nopop)
 nopop.glm$BestModels
 ```
 
-# Chapter 3.2: Logisitc Regression and Classification 
-### Here we are performing a logistical regression and k-NN classifcation test to determine which variables impact whether or not a census tract is located in a food desert. 
+# Chapter 3.2: Logistic Regression and Classification 
+### Here we are performing a logistical regression and k-NN classification test to determine which variables impact whether or not a census tract is located in a food desert. 
 ```{r}
 # Model Building Logistic Regression Based on Featured Selection 
 #Model A everything except CensusTract
@@ -960,7 +1116,7 @@ We have not changed the variable 'Desert' to factor variable until the model bui
 
 And based on the outputs of the two models above, we saw that: No matter variable 'Desert' is numerical or categorical, we get the same results, but for stringency, we will use variable 'Desertfactor' in the dataset named as 'newfood'.
 
-For the variable selection process, we saw multicollinearity is not good, this is an inborn disadvantage of our dataset, we have mentioned this in Chi-Square test part. Further detections are needed.
+For the variable selection process, we saw multicollinearity is not good, this is an inborn disadvantage of our dataset, we have mentioned this in Chi-Square test part. Further detection is needed.
 
 
 
@@ -994,7 +1150,7 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
 
 
 
-#NNK Outlier Detection Using Kth Nearest Neighbour Distance Method
+#NNK Outlier Detection Using Kth Nearest Neighbor Distance Method
 #Takes a dataset and finds its outliers using distance-based method
 
 
