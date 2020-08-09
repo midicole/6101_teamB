@@ -447,7 +447,7 @@ qqline(food$TractWhite)
 ```
 The white population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-###  White Populatin Normality Test in only Food Deserts 
+###  White Populatin Normality Test of only Food Deserts 
 ```{r} 
 summary(food.desert$TractWhite) 
 hist(food.desert$TractWhite, main="Histogram of White Population in Food Deserts", xlab="Total White Population", col="dark green")
@@ -858,7 +858,8 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
 
 # Chapter 4: Model Building
 ## Variable Selection$-$Feature Selection 
-Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levles for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. We know that our response variable is variable ‘Desert’ which is binary, but linear models still deserve a try because it may provide us with some ideas about variable selection.
+Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levles for this analysis.
+Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. We know that our response variable is variable ‘Desert’ which is binary, but linear models still deserve a try because it may provide us with some ideas about variable selection. Though we do not include the State variable in our model because of the increased difficulty in the levels. We will keep it in the linear model part because with so many levels, at least some of them will be significant. Additionally, when running the glmbest() function we are unable to include State or Region because they have so many levels, but we will still include them in our logistic regression to test for significance. 
 
 ### Forward Selection 
 ```{r Forward Variable Selection}
@@ -1181,53 +1182,6 @@ For the variable selection process, we saw multicollinearity is not good, this i
 
 # Chapter 5: Conclusion
 
-
-
-
-
-
-#NNK Outlier Detection Using Kth Nearest Neighbor Distance Method
-#Takes a dataset and finds its outliers using distance-based method
-
-
-
-#KNN Portion
-
-```{r}
-#Loading the data set
-
-food_k <- read.csv("food.csv") 
-
-#K mean dataframe (food)
-food_k <- food
-
-#make State factor?
-food_k$State <- factor(food_k$State)
-loadPkg("FNN")
-
-#seperate dataframes
-food_k <- as.data.frame(scale(food[1:22], center = TRUE, scale = TRUE))
-
-set.seed(1000)
-#Need to create test and training datasets so must create a sample set ecompassing two sets of data.
-food_sample <- sample(2, nrow(food_k), replace=TRUE, prob=c(0.67, 0.33))
-
-#Use new variable to create the new test/train outputs.
-food_training <- food_k[food_sample==1, 1:22]
-food_test <- food_k[food_sample==2, 1:22]
-
-#Create Y variables used to put in KNN function
-food.trainLabels <- food[food_sample==1, 22]
-food.testLabels <- food[food_sample==2, 22]
-
-#Should deploy model but reading back error message
-food_pred <- knn(train = food_training, test = food_test, cl=food.trainLabels, k = 7)
-
-```
-
-
-
-```
 
 
 
