@@ -748,6 +748,8 @@ Based on the results of K-S tests, the variables ‘OHU2010’ in the dataset �
 ## Chi-Square Test of Independence 
 Here we are performing Chi-Square test on the categorical variables in our dataset to determine whether there is a relationship between our indpendent variables and dependent variable. 
 ```{r}
+### Here we are performing Chi-Square test on  to determine whether there is a relationship between the categorical variables. 
+```{r Categorical Variable Analysis_1}
 # Contigency Table of Food Deserts and Urban Tract
 contable.urban <- table(food$Urban, food$Desert)
 xkabledply(contable.urban, title="Contingency Table for Food Deserts in Urban Tracts")
@@ -759,6 +761,11 @@ xkabledply(urban.tble$expected, title="Cross table for the Expected Frequencies 
 Here, we mainly focus on the output of Chi-Square test, we got a test statistic of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), and the corresponding p-value is lower than 0.05. Thus, we have enough evidence to reject the null hypothesis. This means that the variables 'Urban' and 'Desert' are not independent of one another and in fact are related. As such, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
 
 ```{r}
+Here, we mainly focus on the output of Chi-Square test, we got test statistics of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), the corresponding p-value is lower than 0.05 obviously. Hence, we have enough evidence to reject the null hypothesis: variable 'Urban' and 'Desert' are independent.
+
+Now, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
+
+```{r Categorical Variable Analysis_2}
 # Contingency Table of Food Deserts and Geographical Region 
 contable.region <- table(food$Region, food$Desert)
 xkabledply(contable.region, title="Contingency Table for Food Deserts located in Geographical Regions")
@@ -770,6 +777,9 @@ xkabledply(region.tble$expected, title="Cross table for the Expected Frequencies
 Focusing on the chi-square test results we can once again reject the null hypothesis that Region and Desert are independent. The output here shows us that the test statistic is 213.41 which is much large than the critical chi-square value for 5 degrees of freedom of 11.07. Additionally, the p-value is smaller than .05 so these results are statistically significant at the 95% probability level. 
 
 ```{r}
+Similarly,  we can conclude that variable 'Region' and 'Desert' are not independent.
+
+```{r Categorical Variable Analysis_3}
 # Contingency Table of Food Deserts and States
 contable.state <- table(food$State, food$Desert)
 xkabledply(contable.state, title="Contingency Table for Food Deserts located in U.S. States")
@@ -1198,47 +1208,7 @@ confusionMatrix(food_test$Desert,predicted)
 
 
 
-#KNN Portion
 
-```{r}
-#Loading the data set
-
-food_k <- read.csv("food.csv") 
-
-#K mean dataframe (food)
-food_k <- food
-
-#make State factor?
-food_k$State <- factor(food_k$State)
-loadPkg("FNN")
-
-#seperate dataframes
-food_k <- as.data.frame(scale(food[1:22], center = TRUE, scale = TRUE))
-
-set.seed(1000)
-#Need to create test and training datasets so must create a sample set ecompassing two sets of data.
-food_sample <- sample(2, nrow(food_k), replace=TRUE, prob=c(0.67, 0.33))
-
-#Use new variable to create the new test/train outputs.
-food_training <- food_k[food_sample==1, 1:22]
-food_test <- food_k[food_sample==2, 1:22]
-
-#Create Y variables used to put in KNN function
-food.trainLabels <- food[food_sample==1, 22]
-food.testLabels <- food[food_sample==2, 22]
-
-#Should deploy model but reading back error message
-food_pred <- knn(train = food_training, test = food_test, cl=food.trainLabels, k = 7)
-
-```
-
-
-
-```
-
-
-
-```
 
 
 # Chapter 4: Conclusion 
