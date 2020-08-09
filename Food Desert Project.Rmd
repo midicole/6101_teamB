@@ -827,7 +827,8 @@ corrplot(corr.food)
 ```
 From the correlation matrix we will look at variables that are at .7 or above to assess their correlation with one another. From this criteria, we can see that the population variables is higly correlated with the occupied housing units, the white population, and the total amount of kids in a census tract. Furthermore, the occupied housing variable is also highly correlated with the white population and total amoutn of kids in a census tract. The low-income population variable is highly correlated with the amount of people receiving SNAP benefits in a census tract. The multiple race/other variable is highly correlated with Hispanic$-$this is interesting because it seems that this variable would be correlated with all the other races, but it is only strongly correlated with the Hispanic tract variable. As such, we will be sure to keep this in mind as we are building our models for the logisitic regression. 
 
-# Chapter 3: Geographic Location of Data and  Heatmap
+# Chapter 3: Geographic Location and Dispersion of Data 
+## Heatmaps 
 ```{R Heatmap for population sum for different states}
 ### install.packages("usmap")
 ### install.packages("ggplot2")
