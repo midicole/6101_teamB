@@ -43,6 +43,8 @@ loadPkg("leaps")
 loadPkg("MASS")
 loadPkg("corrplot")
 loadPkg("AICcmodavg")
+loadPkg("usmap")
+loadPkg("ggplot2")
 
 xkabledply = function(modelsmmrytable, title="Table", digits = 4, pos="left", bso="striped", wide=FALSE) { 
   #' Combining base::summary, xtable, and kableExtra, to easily display model summary. 
@@ -747,8 +749,7 @@ Based on the results of K-S tests, the variables ‘OHU2010’ in the dataset �
 # Chapter 2.1 Exploratory Data Analysis 
 ## Chi-Square Test of Independence 
 Here we are performing Chi-Square test on the categorical variables in our dataset to determine whether there is a relationship between our indpendent variables and dependent variable. 
-```{r}
-### Here we are performing Chi-Square test on  to determine whether there is a relationship between the categorical variables. 
+
 ```{r Categorical Variable Analysis_1}
 # Contigency Table of Food Deserts and Urban Tract
 contable.urban <- table(food$Urban, food$Desert)
@@ -760,7 +761,6 @@ xkabledply(urban.tble$expected, title="Cross table for the Expected Frequencies 
 ```
 Here, we mainly focus on the output of Chi-Square test, we got a test statistic of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), and the corresponding p-value is lower than 0.05. Thus, we have enough evidence to reject the null hypothesis. This means that the variables 'Urban' and 'Desert' are not independent of one another and in fact are related. As such, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
 
-```{r}
 Here, we mainly focus on the output of Chi-Square test, we got test statistics of 53.899 which is larger than 3.84 (95% critical value of 1 df Chi-Square test), the corresponding p-value is lower than 0.05 obviously. Hence, we have enough evidence to reject the null hypothesis: variable 'Urban' and 'Desert' are independent.
 
 Now, we have a good reason to keep variable 'Urban' in our model, but further investigations are needed.
@@ -776,8 +776,6 @@ xkabledply(region.tble$expected, title="Cross table for the Expected Frequencies
 ```
 Focusing on the chi-square test results we can once again reject the null hypothesis that Region and Desert are independent. The output here shows us that the test statistic is 213.41 which is much large than the critical chi-square value for 5 degrees of freedom of 11.07. Additionally, the p-value is smaller than .05 so these results are statistically significant at the 95% probability level. 
 
-```{r}
-Similarly,  we can conclude that variable 'Region' and 'Desert' are not independent.
 
 ```{r Categorical Variable Analysis_3}
 # Contingency Table of Food Deserts and States
@@ -839,12 +837,8 @@ From the correlation matrix we will look at variables that are at .7 or above to
 
 # Chapter 3: Geographic Location and Dispersion of Data 
 ## Heatmaps 
+In generating heatmaps, it is essential that both packages ‘usmap’ and ‘ggplot2’ are loaded within the library for further use. To aid in the process of creating heatmaps, a new dataset was created entitled ‘dataforheatmap’.
 ```{R Heatmap for population sum for different states}
-### install.packages("usmap")
-### install.packages("ggplot2")
-
-loadPkg("usmap")
-loadPkg("ggplot2")
 dataforheatmap<-read.csv("E:/gwu/Courses/DATS 6101/project/dataforheatmap.csv")
 
 ### map for population of different states in dataset 'food'
@@ -863,13 +857,14 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
                                                title.position = "top")) +theme(legend.position = "bottom",
         legend.title=element_text(size=12), 
         legend.text=element_text(size=10))
-
 ```
+The heatmap employs several variables from the set including ‘‘state’, ‘sumpop’ and ‘Desertp’. The ‘sumpop’ variable describes  the cumulative population(POP2010) of different states from our dataset. The ‘Desert’ variable is the proportion of food deserts (number of food deserts in the strata i of state as well as number of observations for each strata i of state), so this variable ranges between 0 and 1. A heatmap was generated for variable ‘POP2010’ in order to do a rough initial check on the accuracy of our data. For the ‘POP2010’ heatmap, it was observed that for states located in coastal areas/regions, these are more likely to have larger populations. Those representing inland parts, it was observed that a lesser population was assigned. Normally, for the Northeast area, we should observe a similar color to that of California and Texas States; however, we did not. Thus, a comparison between this graph and a population heat map from official resources(https://www.mapsofworld.com/usa/thematic-maps/usa-population-map.html) was conducted. It was observed rather obviously that some states have large populations in the USA Population Map (CA, TX, FL, GA, NC, NY, PA, OH, IL) in relation to other states. Our heatmap for variable ‘POP2010’ showed very similar results, yet the only difference is around NY state. The reasonable explanation in this instance is that there is a sampling bias in the sample of NY State, so it can be ignored for now, and discuss potential solutions for this issue later. Overall, our heatmap for population is good, which indicated that we were using the right dataset. We can furthermore deduce from this that our heatmap for Food Desert Proportion is also good. 
+
+The results depicted by the graphs are easy to interpret upon first gaze. However, the data does suggest that some confounding factors are aroused and to be accounted for during future research if necessary. First, since our original dataset (sample size is ~ 72,000) was retrieved from census, which can be considered as sampling. We then conducted stratified sampling again to retrieve an even smaller dataset (sample size is 7,280) to use. Although we tried our best to keep information from the original dataset complete and sufficient, bias issues cannot be avoided or even worse, are not detected. Likewise, non-sampling errors will lead to sampling bias as well. Therefore, we may need to generate more heatmaps for different variables, and compare these results to official heat maps generated from much larger datasets (i.e. datasets from census.gov can be more reliable). 
 
 # Chapter 4: Model Building
 ## Variable Selection$-$Feature Selection 
-Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levles for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. We know that our response variable is variable ‘Desert’ which is binary, but linear models still deserve a try because it may provide us with some ideas about variable selection.
-
+Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levles for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. We know that our response variable is variable ‘Desert’ which is binary, but using forward, backwards, sequential, and exhuastive selection may provide us with some ideas about variable selection.
 ### Forward Selection 
 ```{r Forward Variable Selection}
 reg.forward.1 <-regsubsets(Desert ~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
@@ -877,20 +872,20 @@ plot(reg.forward.1, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.forward.1, scale = "Cp", main = "CP")
 plot(reg.forward.1, scale = "bic", main = "BIC")
 
-
-#model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
+model_forward_adjr2<-lm(Desert~.-TractBlack,data = food)
 model_forward_Cp<-lm(Desert~.-TractBlack-TractWhite,data = food)
 model_forward_bic<-lm(Desert~.-TractBlack-TractWhite-OHU2010-TractKids-TractSeniors-TractNHOPI-TractOMultir,data = food)
-#summary(model_forward_adjr2)
-#summary(model_forward_Cp)
-#summary(model_forward_bic)
 
-#anova(model_forward_adjr2,model_forward_Cp)
-#anova(model_forward_adjr2,model_forward_bic)
-#anova(model_forward_Cp,model_forward_bic)
+summary(model_forward_adjr2)
+summary(model_forward_Cp)
+summary(model_forward_bic)
+
+anova(model_forward_adjr2,model_forward_Cp)
+anova(model_forward_adjr2,model_forward_bic)
+anova(model_forward_Cp,model_forward_bic)
+
 ```
-We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite,
-the summary of model_forward_adjr2 indicated that it should not be included in the model, and anova() function's F test gave the same conclusion, for now, model_forward_Cp is a better choice. Then, we compared model_forward_Cp and model_forward_bic, together with result of summary of Model_forward_Cp, we can conclude that for forward selection, the variables in model_forward_Cp are good for now.
+After running through all linear models the results showed us that the Region variable comes back as NA meaning this variables is useless to the model and does not seem to impact our dependent variable. We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite, the summary of model_forward_adjr2 indicated that TractWhiteshould not be included in the model because it is not statistically significant, and anova() function's F test gave the same conclusion. When comparing model_forward_Cp to to model_forward_bic we can see that  model_forward_Cp is a better fit model based on the anova results. The model_forward_Cp fit uses all the variables except for TractBlack and TractWhite. We will keep this in mind and see how the backwards, sequential, and exhaustive methods align or contradict the results from forwards selection. 
 
 ### Backwards Selection 
 ```{R Backward Variable Selection}
@@ -900,14 +895,10 @@ plot(reg.bkwd.1, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.bkwd.1, scale = "Cp", main = "CP")
 plot(reg.bkwd.1, scale = "bic", main = "BIC")
 
-# Deciding Best Variables with Backward Selection Not including Highly Correlated Variables 
-reg.bkwd.2 <- regsubsets(Desert~.-CensusTract-State-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data= food, nvmax=19, nbest=1, method="backward")
-plot(reg.bkwd.2, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.bkwd.2, scale = "Cp", main = "CP")
-plot(reg.bkwd.2, scale = "bic", main = "BIC")
 
-#model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
-#model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
+model_backward_adjr2<-lm(Desert~.-TractHispanic,data = food)
+model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHispanic-TractBlack-TractWhite-TractOMultir,data = food)
+
 #summary(model_backward_adjr2)
 #summary(model_backward_BIC)
 
@@ -1177,12 +1168,6 @@ For the variable selection process, we saw multicollinearity is not good, this i
 
 
 
-plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + labs(fill = 'Food Desert Proportion') +   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90",
-                       guide = guide_colourbar(barwidth = 25, barheight = 0.4,
-                                               #put legend title on top of legend
-                                               title.position = "top")) +theme(legend.position = "bottom",
-        legend.title=element_text(size=12), 
-        legend.text=element_text(size=10))
 
 ```
 ### Logistic Regression Model Diagnostics
@@ -1203,15 +1188,6 @@ confusionMatrix(food_test$Desert,predicted)
 ```
 
 
-#NNK Outlier Detection Using Kth Nearest Neighbor Distance Method
-#Takes a dataset and finds its outliers using distance-based method
-
-
-
-
-
-
-# Chapter 4: Conclusion 
 
 
 
