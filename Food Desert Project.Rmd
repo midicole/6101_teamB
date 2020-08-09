@@ -883,11 +883,11 @@ summary(model_forward_bic)
 anova(model_forward_adjr2,model_forward_Cp)
 anova(model_forward_adjr2,model_forward_bic)
 anova(model_forward_Cp,model_forward_bic)
-
 ```
-After running through all linear models the results showed us that the Region variable comes back as NA meaning this variables is useless to the model and does not seem to impact our dependent variable. We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite, the summary of model_forward_adjr2 indicated that TractWhiteshould not be included in the model because it is not statistically significant, and anova() function's F test gave the same conclusion. When comparing model_forward_Cp to to model_forward_bic we can see that  model_forward_Cp is a better fit model based on the anova results. The model_forward_Cp fit uses all the variables except for TractBlack and TractWhite. We will keep this in mind and see how the backwards, sequential, and exhaustive methods align or contradict the results from forwards selection. 
+After running through all linear models the results showed us that the Region variable comes back as NA meaning this variable is useless to the model and does not seem to impact our dependent variable. We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite, the summary of model_forward_adjr2 indicated that TractWhiteshould not be included in the model because it is not statistically significant, and anova() function's F test gave the same conclusion. When comparing model_forward_Cp to to model_forward_bic we can see that  model_forward_Cp is a better fit model based on the anova results. The model_forward_Cp fit uses all the variables except for TractBlack and TractWhite. We will keep this in mind and see how the backwards, sequential, and exhaustive methods align or contradict the results from forwards selection. 
 
-### Backwards Selection 
+### Backwards Selection
+Now we will try backwards selection to see what variables are the best fit based on this method. Again, we realize that becuase our dependent variable is binary we will need to run a logisitc regression. However, we want to have a comprehensive overview of the variables and their outcomes; this is why we are using feature selection to find the best fit linear model. 
 ```{R Backward Variable Selection}
 # Backward Selection
 reg.bkwd.1 <- regsubsets(Desert~.-CensusTract-State, data= food, nvmax=19, nbest=1, method="backward")
@@ -904,8 +904,6 @@ model_backward_BIC<-lm(Desert~.-MedianFamilyIncome-TractAsian-TractNHOPI-TractHi
 
 #anova(model_backward_adjr2,model_backward_BIC)
 ```
-
-
 Cp and Adjusted R-square gave the same results, we only compare with BIC. 
 
 Based on the results, model_backward_adjr2 is a better choice. And to make the sequential selection easier, we removed variable 'TractBlack', 'TractWhite' and 'TractHispanic'
