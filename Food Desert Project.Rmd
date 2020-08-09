@@ -205,13 +205,19 @@ The report is organized as follows:
 # Chapter 1.1: Description of Data
 The USDA’s dataset originally consisted of 147 variables and 72,864 observations of data on food deserts using the Census 2010 results. For us to both manage and  work effectively with the data, we chose to use 22 variables. However, cutting the variables did not change our total observations. So, we extracted a sample from the overall dataset so R would be able to process the data efficiently and with efficacy. Though we want a smaller sample of data, we have ensure that the information from the original dataset is not lost due to the sampling process. Therefore, we chose to draw our sample data proportionally based on the strata of the State variable. 
 
-We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below: $$n_{i}$$  is the number of observations for State level i; ceil stands for ceiling functions
+We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below:
+$$n_{i}$$  
+is the number of observations for State level i; ceil stands for ceiling functions
 
 $$a_i = ceil\left(\frac{n_i}{100}\right) x 10$$
 $$N = \sum_{i=1}^{51}n_i = 71,864$$
 $$A = \sum_{i=1}^{51}a_i = 7,280$$ 
          
-We used the ceiling function because $$a_{i}$$ is not integers; we take ceiling values for $$a_{i}$$ to protect the integrality of levels with few rows. After this, “Sampling” package was installed loaded, strata() function was used to get stratified samples named as food. (See below for a readout of the dataset’s structure and variable names). However, once we extracted the sample food from the original dataset, we realized that we had 47 observations where all of our variables were zero. To mend this issue in our analysis, we subsetted the *food* data frame to only include variables greater than zero (0>). As expected, this further decreased the data frame to 7,232 variables. For further analysis, we chose Desert as our single dependent variable. 
+We used the ceiling function because
+$$a_{i}$$ 
+is not integers; we take ceiling values for 
+$$a_{i}$$ 
+to protect the integrality of levels with few rows. After this, “Sampling” package was installed loaded, strata() function was used to get stratified samples named as food. (See below for a readout of the dataset’s structure and variable names). However, once we extracted the sample food from the original dataset, we realized that we had 47 observations where all of our variables were zero. To mend this issue in our analysis, we subsetted the *food* data frame to only include variables greater than zero (0>). As expected, this further decreased the data frame to 7,232 variables. For further analysis, we chose Desert as our single dependent variable. 
 
 As per the USDA’s guidelines and definitions, this variable indicates whether a “Census Tract Location” is classified as a food desert. Specifically, this variables measures whether or not there is a full service grocery store in a rural or urban census tract. If an urban census tract does not have a full service grocery store within one mile of the tract then it is a food desert. As such, if a rural census tract does not have  a full service grocery store within 10 miles of the tract then it is a food desert. To ensure that our new dataset was representative of the original data, we looked at the proportions of the data. The original USDA dataset had approximately 12% of it’s observations classified as food deserts, and our extracted data also has only 12% of it’s observations classified as food deserts. This report uses the variable Desert to classify a specific tract as a food desert to run an appropriate analysis to test our hypothesis regarding the causes of food deserts. All of the information in our dataset came from the 2010 Census. Now that we have simplified our dataset and chose to only work with 22 variables, the variable definitons are below. 
 
@@ -1013,6 +1019,7 @@ Again, we know that our dependent variable is Desert which is binary, and logist
 We did not include variable 'State' in our model because there are too many levels, it increased the difficulty for us to conclude, so we drop it in the process of plotting, but with no doubts, variable 'State' should be kept in the linear model try lm() part because with so many levels, at least some of them are significant, and this has been proved by the summary() function in the next step.
 
 The biggest take-away from the the feature selection is that the Region variable is pretty useless in any analysis and we should not consider it in a logistic regression. However, we will look at what the bestglm () function tells us in the next chapter. 
+
 ## Chapter 4.1 
 ### Best GLM function for logisitc regression - Variable Selection 
 Now that we have looked at variable selection throught feature selection and the 'leaps' package, we are now going to look into the bestglm method to find the best fit models for logisitc regression. The glmbest () function does have limits. There is a 15 variable max and categorical varaibles designated as factors are only allowed to have two levels. Therefore, when deciding which variables to use we are automatically excluding 'CensusTract', 'State', and 'Region'. Additionally, we will decide the rest of the variable selection based off the multicollinearity piece of our data. By controlling for multicollinearity will we be taking out the variables that are highly correlated to one another based off the correlation matrix. The first model that we are building will have the population variable in it, as such we will exclude all the variables that were highly correlated with population$$-$$such as occupied housing units, total white population, and total kid population. Additionally, our correlation matrix told us that the 'TractSNAP' variable was highly correlated with the 'TractLOWI' variable. Due to the sequential selection suggesting the removal of 'TRACTSNAP' we will take out this variable in replace of the total amount of low-income people in a census tract. Furthermore, the 'TractHispanic' variable was highly correlated with 'TractOMultir' or the total population of multi-racial individuals. However, because this variable is not well-defined we will exclude to have 'TractHispanic.' Then for our second model we will be using the variables we excluded in our first model and exclude the variables that were included to maintain control over multicollinearity and test for the best fit model. 
@@ -1053,22 +1060,19 @@ nopop.glm$BestModel
 The results above give us the top five models based on the criteria we selected. The next section will break down each model along with the models chosen from forwards selection to determine the best fit model from the AIC level. 
 # Chapter 4.2: Model Selection 
 ## Step-Wise Selection with Dependent Variable as a Factor 
-To continue with model selection we wanted to test whether or not the logistic regression makes a difference when we classify the Desert variable as a factor with two levels. Here we are running the regressions to further determine the best fit model thorugh step-wise by adding variables onto an empty general model.
+To continue with model selection we wanted to test whether or not the logistic regression makes a difference when we classify the Desert variable as a factor with two levels. Here we are running the regressions to further determine the best fit model thorugh step-wise by adding variables onto an empty general model.And based on the outputs of the two models above, we saw that: No matter variable 'Desert' is numerical or categorical, we get the same results, but for stringency, we will use variable 'Desertfactor' in the dataset named as 'newfood'.
 ```{r}
-# Change variable 'Desert' to factor variable here and the new dataset is named as newfood now
 newfood<-food
 newfood$Desertfactor<-as.factor(newfood$Desert)
 newfood<-newfood[,-8]
 
 emptyglm<-glm(Desertfactor~1,data=newfood,family = binomial)
 
-
-
 forwards<-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "forward")
 formula(forwards)
 summary(forwards)
 
-backwards <-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backwards")
+backwards <-step(emptyglm,scope=list(lower=formula(emptyglm),upper=formula(fullglm)),direction = "backward")
 formula(backwards)
 summary(backwards)
 
@@ -1081,7 +1085,7 @@ The results of the step-wise function for the forwards and backwards directions 
 
 # Chapter 4.3: Model Selection 
 ## AIC Table - Best Fit Model 
-Here we are using AIC levels to determine the best fit model to use for our logisitcal regression. We have multiple models from the glmbest () and forwards, backwards, sequential, and the step-wise model. Though when doing the glmbest() function our results did not let 'State' be apart of the model, we will be adding this variable to both of these models to test AIC. Additionally
+Here we are using AIC levels to determine the best fit model to use for our logisitcal regression. We have multiple models from the glmbest () and forwards, backwards, sequential, and the step-wise model. Though when doing the glmbest() function our results did not let 'State' be apart of the model, we will be adding this variable to both of these models to test AIC. 
 
 ```{r}
 # Model Building Logistic Regression Based on Featured Selection Variables
@@ -1126,10 +1130,7 @@ aictab(cand.set=models, modnames=model.names)
 #emptyglm$deviance
 ```
 
-
-
-
-### Chapter 4.4: Logistic Regression 
+# Chapter 4.4: Logistic Regression 
 Here we are running the logistic regression on the best fit model as well as a model to control for multicollinearity on the best fit model.
 ```{r}
 forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI + 
@@ -1139,27 +1140,6 @@ forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI +
 summary(forwards_2)
 exp(forwards2_corr$coefficients)
 plot(forwards_2)
-```
-
-
-
-We have not changed the variable 'Desert' to factor variable until the model building part since correlation matrix will need variable 'Desert' to be numerical, and all test before gave same results for 'Desert' in factor format and numerical format.
-
-And based on the outputs of the two models above, we saw that: No matter variable 'Desert' is numerical or categorical, we get the same results, but for stringency, we will use variable 'Desertfactor' in the dataset named as 'newfood'.
-
-For the variable selection process, we saw multicollinearity is not good, this is an inborn disadvantage of our dataset, we have mentioned this in Chi-Square test part. Further detection is needed.
-
-# Chapter 5: Conclusion
-
-To conclude, we were able to reject our null hypothesis because we have sufficient evidence that there are multiple indicators of whether or not a food desert is located in a Census Tract. Our null suggests that the given variables are independent of each other. Clearly, in the analysis portion of our work, it was evident that we were able to reject this as there was significance between many of the variables within the logistic model. As it so happens, this is what we did predict given the background information we have researched on food deserts. And so, as a result, our alternate hypothesis made more sense; there is a relationship between the variables assessed. 
-
-The data suggests that some confounding factors are to be accounted for during future research if necessary. To begin with, our original dataset (sample size roughly ~ 72,000) was retrieved from USDA- this can be considered as sampling. We then conducted stratified sampling again to retrieve an even smaller data set (sample size is 7,280) to use, which was more manageable in R. At this point, we have done sampling twice already to the original dataset of n = 72,000. And so, although we tried our best to keep information from the original dataset complete and sufficient, bias issues cannot be avoided or even worse in some cases, are not detected. 
-
-Likewise, non-sampling errors will lead to sampling bias as well. It may be wise, then, to generate more heatmaps for different variables, and compare these results to published literature looking at heatmaps generated from much larger datasets found like those found on USDA 
-
-
-
-
 ```
 ### Logistic Regression Model Diagnostics
 ```{R Model Diagnostics}
@@ -1177,6 +1157,17 @@ unloadPkg("caret")
 loadPkg("ModelMetrics")
 confusionMatrix(food_test$Desert,predicted)
 ```
+
+# Chapter 5: Conclusion
+To conclude, we were able to reject our null hypothesis because we have sufficient evidence that there are multiple indicators of whether or not a food desert is located in a Census Tract. Our null suggests that the given variables are independent of each other. Clearly, in the analysis portion of our work, it was evident that we were able to reject this as there was significance between many of the variables within the logistic model. As it so happens, this is what we did predict given the background information we have researched on food deserts. And so, as a result, our alternate hypothesis made more sense; there is a relationship between the variables assessed. 
+
+The data suggests that some confounding factors are to be accounted for during future research if necessary. To begin with, our original dataset (sample size roughly ~ 72,000) was retrieved from USDA- this can be considered as sampling. We then conducted stratified sampling again to retrieve an even smaller data set (sample size is 7,280) to use, which was more manageable in R. At this point, we have done sampling twice already to the original dataset of n = 72,000. And so, although we tried our best to keep information from the original dataset complete and sufficient, bias issues cannot be avoided or even worse in some cases, are not detected. 
+
+Likewise, non-sampling errors will lead to sampling bias as well. It may be wise, then, to generate more heatmaps for different variables, and compare these results to published literature looking at heatmaps generated from much larger datasets found like those found on USDA 
+
+
+
+
 
 
 
