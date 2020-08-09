@@ -858,7 +858,8 @@ plot_usmap(data = dataforheatmap, values = "Desertp", labels = T, size=0.2) + la
 
 # Chapter 4: Model Building
 ## Variable Selection$-$Feature Selection 
-Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levles for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. 
+Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levles for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. We know that our response variable is variable ‘Desert’ which is binary, but linear models still deserve a try because it may provide us with some ideas about variable selection.
+
 ### Forward Selection 
 ```{r Forward Variable Selection}
 reg.forward.1 <-regsubsets(Desert ~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
