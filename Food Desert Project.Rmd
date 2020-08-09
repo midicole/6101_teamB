@@ -819,18 +819,17 @@ Overall, the results of our t-test align with the literature around food deserts
 
 # Chapter 2.3 Exploratory Data Analysis
 ## Correlation Matrix 
+Here we are plotting a correlation matrix to determine which of our variables are highly correlated with one antoher. We will use the matrix to help us determine what variables to use and control for multicollinearity.  The dependent variable in our data is a 0 or 1 indicator variable that determines whether or not a census tract is in a food desert, because we are running a logisitical regression we knew that it is not necessary for us to turn the variable into a factor. Thus, we use it here in the correlation matrix, but realize that this does not tell us much based on the nature of the variable.  
 ```{r Correaltion of Variables on Desert Variable}
 food_coronly <- food[c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
 corr.food <- cor(food_coronly)
 corrplot(corr.food)
 ```
-
-
-
+From the correlation matrix we will look at variables that are at .7 or above to assess their correlation with one another. From this criteria, we can see that the population variables is higly correlated with the occupied housing units, the white population, and the total amount of kids in a census tract. Furthermore, the occupied housing variable is also highly correlated with the white population and total amoutn of kids in a census tract. The low-income population variable is highly correlated with the amount of people receiving SNAP benefits in a census tract. The multiple race/other variable is highly correlated with Hispanic$-$this is interesting because it seems that this variable would be correlated with all the other races, but it is only strongly correlated with the Hispanic tract variable. As such, we will be sure to keep this in mind as we are building our models for the logisitic regression. 
 
 # Chapter 3: Model Building 
-## Linear Model Try
-### Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
+## Variable Selection$-$Feature Selection 
+Here we are dissecting which variabels we should use in our model based on Adjusted R-Squared, Cp, BIC, and multicollinearity. 
 ```{r Forward Variable Selection}
 # Deciding Best Varaible with Forward Selection and Subsetting 
 reg.forward.1 <-regsubsets(Desert ~.-CensusTract-State, data = food, nvmax=19, nbest=1, method="forward")
