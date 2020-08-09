@@ -922,8 +922,7 @@ summary(model_seq_BIC)
 
 anova(model_seq_adjr2,model_seq_BIC)
 ```
-
-Cp and adjusted R-square gave the same result, so we only compare it with the model from BIC
+The results from sequential selection for the adjusted R-squared and Cp criterion gave us the same variables. So, we are only comparing adjusted R-squared with the BIC best fit model. 
 
 We got a p-value larger than 0.05 from output of F test but not very obviously significant, and from summary of model_seq_adjr2, we can see that variable 'TractAsian' should be excluded. 
 
