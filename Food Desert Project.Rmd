@@ -915,18 +915,13 @@ plot(reg.seq.1, scale = "adjr2", main = "Adjusted R^2")
 plot(reg.seq.1, scale = "Cp", main = "CP")
 plot(reg.seq.1, scale = "bic", main = "BIC")
 
-reg.seq.2 <- regsubsets(Desert~.-CensusTract-State-OHU2010-TractWhite-TractKids-TractLOWI-TractOMultir, data= food, nvmax=19, nbest=1, method="seqrep")
-plot(reg.seq.2, scale = "adjr2", main = "Adjusted R^2")
-plot(reg.seq.2, scale = "Cp", main = "CP")
-plot(reg.seq.2, scale = "bic", main = "BIC")
+model_seq_adjr2<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food)
+model_seq_BIC<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP, data= food)
 
-#model_seq_adjr2<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite, data= food)
-#model_seq_BIC<-lm(Desert~.-CensusTract-State-TractHispanic-TractBlack-TractWhite-TractAsian-TractSNAP, data= food)
+summary(model_seq_adjr2)
+summary(model_seq_BIC)
 
-#summary(model_seq_adjr2)
-#summary(model_seq_BIC)
-
-#anova(model_seq_adjr2,model_seq_BIC)
+anova(model_seq_adjr2,model_seq_BIC)
 ```
 
 Cp and adjusted R-square gave the same result, so we only compare it with the model from BIC
