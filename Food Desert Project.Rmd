@@ -1082,7 +1082,7 @@ The results of the step-wise function for the forwards and backwards directions 
 ## AIC Table - Best Fit Model 
 Here we are using AIC levels to determine the best fit model to use for our logisitcal regression. We have multiple models from the glmbest () and forwards, backwards, sequential, and the step-wise model. Though when doing the glmbest() function our results did not let 'State' be apart of the model, we will be adding this variable to both of these models to test AIC. 
 
-```{r}
+```{r results='markup'}
 # Model Building Logistic Regression Based on Featured Selection Variables
 model.f <- glm(Desert~.-CensusTract-TractBlack, data=food, family=binomial)
 model.b <- glm(Desert~.-CensusTract-TractHispanic, data=food, family="binomial")
@@ -1112,7 +1112,9 @@ models <- list(model.f, model.b, model.seq, emptyglm, bestglm.1, bestglm.1_state
 model.names <- c("model.f", "model.b", "model.seq", "emptyglm", "bestglm.1", "bestglm.1_state", "bestglm.2", "bestglm.2_state", "forwards_2", "forwards2_corr", "model.lit")
 aictab(cand.set=models, modnames=model.names)
 ```
+As you can see from the table, out of all of our models the forwards_2 model that we got from the step-wise function is the best fit model. The AIC table shows us that by far this model has the smallest AIC, and because we are doing a logistic regression we want to use AIC as our final criteria for model selection. The AIC measures the maximum likelihood, which is why we want this value to be low. Additionally the AIC is the better criteria for explanatory models and we are wanting to assess what variables impact whether or not a census tract is in a food desert. Because we know that the forwards_2 model did not control for multicollinearity we wanted to use the variables from the step-wise result to asses for multicollinearity. That model is called forwards2_corr and as you can see taking out the variables that were highly correlated only increased the AIC level.
 
+Additionally, we wanted to test how our bestglm models compared to the feature selection models and added them to the table. Unfortunately, the bestglm models are not considered good models based on their AIC level. This is interesting because the bestglm() function is supposed to help you pick the best variables for a logisitc regression. We used AIC model selection to distinguish between a set of possible models describing potential indicators of food deserts. The best fit model, carrying 88% of the cumuluative model weight was the forwards_2 model that included 15 variables to help explain the causes of food deserts.  
 # Chapter 4.4: Logistic Regression 
 Here we are running the logistic regression on the best fit model as well as a model to control for multicollinearity on the best fit model.
 ```{r results='markup'}
