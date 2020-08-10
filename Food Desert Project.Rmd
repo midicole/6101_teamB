@@ -1116,16 +1116,16 @@ As you can see from the table, out of all of our models the forwards_2 model tha
 
 Additionally, we wanted to test how our bestglm models compared to the feature selection models and added them to the table. Unfortunately, the bestglm models are not considered good models based on their AIC level. This is interesting because the bestglm() function is supposed to help you pick the best variables for a logisitc regression. We used AIC model selection to distinguish between a set of possible models describing potential indicators of food deserts. The best fit model, carrying 88% of the cumuluative model weight was the forwards_2 model that included 15 variables to help explain the causes of food deserts.  
 # Chapter 4.4: Logistic Regression 
-Here we are running the logistic regression on the best fit model as well as a model to control for multicollinearity on the best fit model.
+Here we are running the logistic regression on the best fit model 'forwards_2'.
 ```{r results='markup'}
 forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI + 
     TractHUNV + TractHispanic + TractAsian + NUMGQTRS + TractAIAN + 
     TractKids + TractSNAP + TractSeniors + POP2010 + OHU2010 + 
     PovertyRate,data=food,family = binomial)
 summary(forwards_2)
-exp(forwards2_corr$coefficients)
+exp(forwards_2$coefficients)
 ```
-
+The above output shows you the coefficients of the forwards_2 model and what variables are statistically significant from this model. What is interesting to note is that states like Alaska and Florida are both statistically significant. At the beginning of the report we looked at a heat map of the food desert proportions across the country and both of these states had higher proportions compared to the rest of the nation. Additionally, we see that states like Michigan that are experiencing a mass wave of gentrification are also statistically significant. The variable Urban is significant with at the .001 level, meaning we are 99.9% confident that this variable has a positive impact on the likelihood of a census tract being in a food desert. The results of this table align with what we have seen in the literature around food deserts and the indicators of food deserts across the country. Furthermore, when you examine the exponetiated coefficients of the variables we can see that all the variables are positive. At the beginning of the report when we conducted normality test we were able to note that the distribution of our whole data set was positive and right-skewed and this is reiterated here.For example, the Urban coefficient is 4.29--this means that  see that 
 
 
 Below you can see the ROC curve of the forwards_2 logisitic regression. The curve reflects the fact that we could not control for multicollinearity. 
