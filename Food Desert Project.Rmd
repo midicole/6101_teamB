@@ -189,11 +189,9 @@ outlierKD2 <- function(df, var, rm=FALSE) {
 }
 ```
 # Chapter 1: Introduction 
-<<<<<<< HEAD
 Food insecurity continues to be a pressing issue throughout the United States. The terminology of ‘food deserts’ has consistently been used to describe neighborhoods with limited access to grocery stores or supermarkets. Studies have shown that the most vulnerable populations reside in areas with limited access to full-service grocery outlets. The literature surrounding food insecurity suggests that food deserts emerge from numerous sources including: urban sprawl, residents’ socioeconomic status, racial disparities, and neighborhood density. Research has shown that communities in food deserts are at a higher risk of health issues such as obesity and diabetes. While food deserts have become a legislative priority to address health inequities, there is no concrete evidence suggesting that increasing access to food retail would improve health issues in these communities. 
-=======
+
 Food insecurity continues to be a pressing issue across the United States. The terminology of ‘food deserts’ has consistently been used to describe neighborhoods with limited access to grocery stores or supermarkets. Studies have shown that the most vulnerable populations reside in areas with limited access to full-service grocery outlets (Walker, 2012). The literature around food insecurity suggests that food deserts emerge from numerous sources including: urban sprawl, residents’ socioeconomic status, racial disparities, and neighborhood density (Dutko et al., 2012). Research shows that communities in food deserts are at higher risk of health issues including obesity and diabetes. While food deserts have become a legislative priority to address health inequities, there is no concrete evidence suggesting that increasing access to food retail would improve health issues in these communities (Block & Subramanian, 2015). 
->>>>>>> 331d65453353368f49a21e8cb697788c2cd1ef64
 
 The United States Department of Agriculture (USDA) has provided a dataset using Census data from 2010 to identify whether a census tract is in a food desert. Given the abundance of research surrounding food deserts and their impact on the quality of life, our project aims to understand the underlying causes of food deserts. Simply put, it boils down to one question: *what variables impact whether or not a census tract is located in a food desert?* To understand why populations experience health inequities and food insecurity, the underlying causes of food deserts in the United States manifests itself as a focal point of the research conducted. Our analyses will lay the foundation for assessing the root causes of food insecurity. 
 
@@ -210,13 +208,13 @@ The report is organized as follows:
 # Chapter 1.1: Description of Data
 The USDA’s [dataset](https://www.ers.usda.gov/data-products/food-access-research-atlas/download-the-data/) originally consisted of 147 variables and 72,864 observations of data on food deserts using the Census 2010 results. For us to both manage and  work effectively with the data, we chose to use 22 variables. However, cutting the variables did not change our total observations. So, we extracted a sample from the overall dataset so R would be able to process the data efficiently and with efficacy. Though we want a smaller sample of data, we have ensure that the information from the original dataset is not lost due to the sampling process. Therefore, we chose to draw our sample data proportionally based on the strata of the State variable. 
 
-We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below: ni representing the number of observations for State level i; wherein ceil stands for ceiling functions
+We chose to use the State variable because its representation is the most significant and it has obvious levels. The first step conducted was deciding to draw a dataset with a size of 7,280 rows to reflect the original dataset of 72,864 rows. Then we used the *table()* function to see the proportion of the State variable. Unfortunately, our results were not very satisfying. To simplify this process we used the calculations as seen below: $n_i$ representing the number of observations for State level i; wherein ceil stands for ceiling functions
 
 $$a_i = ceil\left(\frac{n_i}{100}\right) x 10$$
 $$N = \sum_{i=1}^{51}n_i = 71,864$$
 $$A = \sum_{i=1}^{51}a_i = 7,280$$ 
          
-We used the ceiling function because ai are not integers; we take ceiling values for ai to protect the integrity of levels by accommodating with having few rows. After this, “Sampling” package was installed  and loaded, strata() function was used to get stratified samples named as food. (See below for a readout of the dataset’s structure and variable names). However, once we extracted the sample food from the original dataset, we realized that we had 47 observations in which all of our variables were zero. To mend this issue in our analysis, we subsetted the *food* data frame to only include variables greater than zero (0>). As expected, this further decreased the data frame to 7,232 variables. For further analysis, we chose Desert as our single dependent variable. 
+We used the ceiling function because $a_i$ are not integers; we take ceiling values for $a_i$ to protect the integrity of levels by accommodating with having few rows. After this, “Sampling” package was installed  and loaded, strata() function was used to get stratified samples named as food. (See below for a readout of the dataset’s structure and variable names). However, once we extracted the sample food from the original dataset, we realized that we had 47 observations in which all of our variables were zero. To mend this issue in our analysis, we subsetted the *food* data frame to only include variables greater than zero (0>). As expected, this further decreased the data frame to 7,232 variables. For further analysis, we chose Desert as our single dependent variable. 
 
 As per the USDA’s guidelines and definitions, this variable indicates whether a “Census Tract Location” is classified as a food desert. Specifically, this variables measures whether or not there is a full service grocery store in a rural or urban census tract. If an urban census tract does not have a full service grocery store within one mile of the tract then it is a food desert. As such, if a rural census tract does not have  a full service grocery store within 10 miles of the tract then it is a food desert. To ensure that our new dataset was representative of the original data, we looked at the proportions of the data. The original USDA dataset had approximately 12% of it’s observations classified as food deserts, and our extracted data also has only 12% of it’s observations classified as food deserts. This report uses the variable Desert to classify a specific tract as a food desert to run an appropriate analysis to test our hypothesis regarding the causes of food deserts. All of the information in our dataset came from the 2010 Census. After simplification of our dataset and choosing to only work with 22 variables, the variable definitions are as listed below. 
 
@@ -236,7 +234,7 @@ As per the USDA’s guidelines and definitions, this variable indicates whether 
 14. TractWhite: Total number of white people in the tract 
 15. TractBlack: Total number of black people in the tract 
 16. TractAsian: Total number of Asian people in the tract
-17. TractNHOPI: Total number of Native Hawaiin or Other Pacific Islander in the tract 
+17. TractNHOPI: Total number of Native Hawaiian or Other Pacific Islander in the tract 
 18. TractAIAN: Total number of American Indian and Alaskan Native in tract 
 19. Tract0Multir: Total number of multiple race/other race population in tract 
 20. TractHispanic: Total number of Hispanic or Latinx population in tract
@@ -255,11 +253,10 @@ str(food)
 
 # Chapter 2: Exploratory Data Analysis 
 ## Histograms and Q-Q Plots
-<<<<<<< HEAD
+
 Here we are looking at the normality of our quantitative independent variables to assessing whether or not we should exclude outliers when we build our model. We are assessing the normality of our variables from histograms and Q-Q plots. 
-=======
-The following data analyses are separated by testing the normality of each one of the independent quantitative variables in our dataset. The literature regarding food deserts explains that low-income factors and racial minorities are related to food deserts because of urban sprawl and gentrification (Hamidi,2019). We are assessing the normality of these data points to ensure that when we run the respective analyses, our data is sufficient, and outliers have been normalized in scale to our data set. We are assesisng the normality of our variables from histograms, Q-Q plots, and Kolmogorov-Smirnov test. 
->>>>>>> 331d65453353368f49a21e8cb697788c2cd1ef64
+
+The following data analyses are separated by testing the normality of each one of the independent quantitative variables in our dataset. The literature regarding food deserts explains that low-income factors and racial minorities are related to food deserts because of urban sprawl and gentrification (Hamidi,2019). We are assessing the normality of these data points to ensure that when we run the respective analyses, our data is sufficient, and outliers have been normalized in scale to our data set. We are assessing the normality of our variables from histograms, Q-Q plots, and Kolmogorov-Smirnov test. 
 
 ### Poverty Rate Normality Test 
 ```{r Poverty Rate Normality, results= "hide"}
@@ -447,7 +444,7 @@ qqnorm(food.desert$TractKids, main="Q-Q Plot of Kid Count Population in Food Des
 qqline(food.desert$TractKids)
 ```
 
-When we subset our data to only census tracts that are located in food deserts the mean is 1,097, and the mean of the *food* data is 1,025, and there is an increase but not a significant increase in the mean of the data. However, the maximum amount of kids in the *food* data is 9,377 and for the subsetted data the total is 5,938 - though this makes sense because the subsetted data has significanlty smaller datapoints than *food*. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
+When we subset our data to only census tracts that are located in food deserts the mean is 1,097, and the mean of the *food* data is 1,025, and there is an increase but not a significant increase in the mean of the data. However, the maximum amount of kids in the *food* data is 9,377 and for the subsetted data the total is 5,938 - though this makes sense because the subsetted data has significantly smaller data points than *food*. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
 ***Finding Outliers***
 ```{r, results= "hide"} 
@@ -495,7 +492,7 @@ qqline(food$TractWhite)
 
 The white population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
-***White Populatin Normality Test in only Food Deserts***
+***White Population Normality Test in only Food Deserts***
 ```{r, results= "hide"} 
 summary(food.desert$TractWhite) 
 hist(food.desert$TractWhite, main="Histogram of White Population in Food Deserts", xlab="Total White Population", col="dark green")
@@ -549,7 +546,7 @@ qqnorm(food$TractAsian, main="Q-Q Plot of Asian Population")
 qqline(food$TractAsian)
 ```
 
-The asian population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
+The Asian population variable shows a right-skewed distribution through the histogram and Q-Q plot. This matches our statistical summary of the data points with the mean being larger than the median. The distribution shows us that our data points for this variable are positive. 
 
 ***Asian Population Normality Test of only Food Deserts***
 ```{r, results= "hide"} 
@@ -559,7 +556,7 @@ qqnorm(food.desert$TractAsian, main="Q-Q Plot of Asian Population in Food Desert
 qqline(food.desert$TractAsian)
 ```
 
-When we subset our data to only census tracts that are located in food deserts the mean is 95 which is only slightly smaller than the mean of the asian population of the *food* data. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
+When we subset our data to only census tracts that are located in food deserts the mean is 95 which is only slightly smaller than the mean of the Asian population of the *food* data. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
 ***Finding Outliers***
 ```{r, results= "hide"}
@@ -587,7 +584,7 @@ qqnorm(food.desert$TractNHOPI, main="Q-Q Plot of Native Hawaiian or Pacific Isla
 qqline(food.desert$TractNHOPI)
 ```
 
-When we subset our data to only census tracts that are located in food deserts the mean is 8 which is higher than the mean of our *food* data but only by two people. However, what is interesting to note about the subsetted data is that the maximum amount for the *food* data and subset is the same at 1,333. This means that there are 1,333 people who identify as Native Hawaiian or Pacific Islander located in a food desert. Native and indigenous people are a minority population in the United States, yet the maximum amount of this population from our data does not have access to full service grocery stores. Unforuntately, we do not have enough information to determine if this variable is significant in our analysis, however we will discuss this later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
+When we subset our data to only census tracts that are located in food deserts the mean is 8 which is higher than the mean of our *food* data but only by two people. However, what is interesting to note about the subsetted data is that the maximum amount for the *food* data and subset is the same at 1,333. This means that there are 1,333 people who identify as Native Hawaiian or Pacific Islander located in a food desert. Native and indigenous people are a minority population in the United States, yet the maximum amount of this population from our data does not have access to full service grocery stores. Unfortunately, we do not have enough information to determine if this variable is significant in our analysis, however we will discuss this later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
 ***Finding Outliers***
 ```{r, results='hide'}
@@ -615,7 +612,7 @@ qqnorm(food.desert$TractAIAN, main="Q-Q Plot of American Indian and Alaskan Nati
 qqline(food.desert$TractAIAN)
 ```
 
-When we subset our data to only census tracts that are located in food deserts the mean is 105, which is more than double the mean of the American Indian or Alaskan Native population in the *food* data. Furthermore, it is interesting to note that with this population like the Native Hawaiin or Pacific Islander variable, that the maximum total is the same for the *food* data and the subsetted data at 9,009. This means that a minority population, who is unproportionally represented with the rest of the country, and has a higher probability of being in a food desert--at least from our dataset. However, we do not have enough information to make this claim and will do further analysis on this later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
+When we subset our data to only census tracts that are located in food deserts the mean is 105, which is more than double the mean of the American Indian or Alaskan Native population in the *food* data. Furthermore, it is interesting to note that with this population like the Native Hawaiian or Pacific Islander variable, that the maximum total is the same for the *food* data and the subsetted data at 9,009. This means that a minority population, who is disproportionately represented with the rest of the country, and has a higher probability of being in a food desert--at least from our dataset. However, we do not have enough information to make this claim and will do further analysis on this later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive. 
 
 ***Finding Outliers***
 ```{r, results='hide'}
@@ -623,9 +620,9 @@ outlierKD2(food,TractAIAN , rm=FALSE)
 outlierKD2(food.desert, TractAIAN, rm=FALSE)
 ```
 
-When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 42 and without outliers it is about 18 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 105 to 22, which seems like a big change, but it is not significant enoguh to impact the distribution. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
+When we look at the *food* data we can see that the distribution is still slightly skewed to the right with and without outliers. Furthermore, the mean with outliers is about 42 and without outliers it is about 18 so this did not change much. When we subset our *food* data to only include food deserts the mean with and without outliers changes from 105 to 22, which seems like a big change, but it is not significant enough to impact the distribution. The removal of outliers does not change the results of the data points enough to create a normal distribution. We can see that the distribution is still right-skewed or positive with the removal of outliers. 
 
-### Mutliple Races or Other Race Population Normality Test 
+### Multiple Races or Other Race Population Normality Test 
 ```{r Multiple race/other race population Normality Test, results='hide'}
 summary(food$TractOMultir)
 hist(food$TractOMultir, main="Histogram of Multiple race/other race population", xlab="Mixed Race or Other Race population", col="orange")
@@ -643,7 +640,7 @@ qqnorm(food.desert$TractOMultir, main="Q-Q Plot of Multiple race/other race popu
 qqline(food.desert$TractOMultir)
 ```
 
-When we subset our data to only census tracts that are located in food deserts the mean is about 439 which is only slightly larger than the *food* data mean of people who identify as multiple races or other. The nature of this variable is vague because it doesn't specify what races one identifies as, and the data source did not do a great job of explaining what is meant by the other aspect of this variable. As such, this variable might not be useful for the anlaysis. However, we do not have enough information to tell at this point and will decide later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive.   
+When we subset our data to only census tracts that are located in food deserts the mean is about 439 which is only slightly larger than the *food* data mean of people who identify as multiple races or other. The nature of this variable is vague because it doesn't specify what races one identifies as, and the data source did not do a great job of explaining what is meant by the other aspect of this variable. As such, this variable might not be useful for the analysis. However, we do not have enough information to tell at this point and will decide later on in the report. Nonetheless, the Histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive.   
 
 ***Finding Outliers***
 ```{r, results='hide'}
@@ -671,7 +668,7 @@ qqnorm(food.desert$TractHispanic, main="Q-Q Plot of Hispanic population in Food 
 qqline(food.desert$TractHispanic)
 ```
 
-When we subset our data to only census tracts that are located in food deserts the mean is 862, which is about 17% larger than the Hispanic population mean in the *food* data. Furthermore, similar to the American Indian and Native Hawaiian population, the maximum amount of the Hispanic population is the same for the *food* data and the subsetted data - meaning that 14,402 people who identify as Hispanic do not have access to a full service grocery store. So far, the exploratory data analyses has shown us multiple minority populations with significant increases of population totals in food deserts. We will explore this later on in the report, but just from EDA the literature around food deserts seems to match up with our dat. Nonetheless, the histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive.   
+When we subset our data to only census tracts that are located in food deserts the mean is 862, which is about 17% larger than the Hispanic population mean in the *food* data. Furthermore, similar to the American Indian and Native Hawaiian population, the maximum amount of the Hispanic population is the same for the *food* data and the subsetted data - meaning that 14,402 people who identify as Hispanic do not have access to a full service grocery store. So far, the exploratory data analyses has shown us multiple minority populations with significant increases of population totals in food deserts. We will explore this later on in the report, but just from EDA the literature around food deserts seems to match up with our data. Nonetheless, the histogram and Q-Q plot of this variable show us that the distribution is still right-skewed or positive.   
 
 ***Finding Outliers*** 
 ```{R, results='hide'}
@@ -684,7 +681,7 @@ When we look at the *food* data we can see that the distribution is still slight
 ### Housing Units Without a Vehicle Normality Test 
 ```{r Housing units without access to a vehicle Normality Test, results='hide'}
 summary(food$TractHUNV)
-hist(food$TractHUNV, main="Histogram of Housing Units w/o a Vehicle", xlab="Total Hosuing Units w/o a Vehicle", col="orange")
+hist(food$TractHUNV, main="Histogram of Housing Units w/o a Vehicle", xlab="Total Housing Units w/o a Vehicle", col="orange")
 qqnorm(food$TractHUNV, main="Q-Q Plot of Housing Units w/o a Vehicle")
 qqline(food$TractHUNV)
 ```
@@ -854,12 +851,12 @@ state.tble$expected
 state.tble$p.value
 xkabledply(state.tble$expected, title="Cross table for the Expected Frequencies of Food Deserts in U.S. States")
 ```
-When running the chi-square test on the state variable and desert variable we can once agian reject the null. The output here shows us that the test statistic is 297.53 which is much large than the critical chi-square value for 50 degrees of freedom at 67.505. The p-value is smaller than .05 so these results are statistically significant. 
+When running the chi-square test on the state variable and desert variable we can once again reject the null. The output here shows us that the test statistic is 297.53 which is much large than the critical chi-square value for 50 degrees of freedom at 67.505. The p-value is smaller than .05 so these results are statistically significant. 
 
 The chi-square test showed us that we should be able to use the 'Region', 'Urban', and 'State' variables in our model as they will all have a relationship with our dependent variable. However, we will need to assess this further during the model building part of the report. 
 
 # Chapter 2.2 
-## Exploratorday Data Analysis: Two Sample T-Test 
+## Exploratory Data Analysis: Two Sample T-Test 
 Here we are performing two-sample t test. This part of the report seeks to answer this question: Are the means of the continuous or quantitative variables different based on whether or a census tract is a food desert? 
 
 To answer this question the first step was to subset our data to include two samples: one with food deserts and the other with no food deserts. This is similar to the earlier EDA that we did, but we need a data frame that has excludes any food deserts in order to execute the analysis. 
@@ -896,7 +893,7 @@ Overall, the results of our t-test align with the literature around food deserts
 
 # Chapter 2.3 Exploratory Data Analysis
 ## Correlation Matrix 
-Here, we are plotting a correlation matrix to determine which of our variables are highly correlated with one another. We will use the matrix to help us determine what variables to use and control for multicollinearity.  The dependent variable in our data is a 0 or 1 indicator variable that determines whether or not a census tract is in a food desert, because we are running a logisitical regression we knew that it is not necessary for us to turn the variable into a factor. Thus, we use it here in the correlation matrix, but realize that this does not tell us much based on the nature of the variable.  
+Here, we are plotting a correlation matrix to determine which of our variables are highly correlated with one another. We will use the matrix to help us determine what variables to use and control for multicollinearity.  The dependent variable in our data is a 0 or 1 indicator variable that determines whether or not a census tract is in a food desert, because we are running a logistical regression we knew that it is not necessary for us to turn the variable into a factor. Thus, we use it here in the correlation matrix, but realize that this does not tell us much based on the nature of the variable.  
 
 ```{r Correaltion of Variables on Desert Variable}
 food_coronly <- food[c("Desert","POP2010","OHU2010","NUMGQTRS","PovertyRate","MedianFamilyIncome","TractLOWI","TractKids","TractSeniors","TractWhite","TractBlack","TractAsian","TractNHOPI","TractAIAN","TractOMultir","TractHispanic","TractHUNV","TractSNAP")]
@@ -938,7 +935,7 @@ The results depicted by the graphs are easy to interpret upon first gaze. Howeve
 
 # Chapter 4: Model Building
 ## Variable Selection$-$Feature Selection 
-Here, we are dissecting which variables we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levels for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. We know that our response variable is variable ‘Desert’ which is binary, but using forward, backwards, sequential, and exhuastive selection may provide us with some ideas about variable selection.
+Here, we are dissecting which variables we should use in our model based on Adjusted R-Squared, Cp, BIC, and AIC. We are automatically excluding Census Tract and State variable because they have too many levels for this analysis. Additionally, we realize that we should be using bestglm() function to determine what variables to use for a logistic regression, but to have a comprehensive analysis we are going to try regsubsets() and bestglm() functions for model building. We know that our response variable is variable ‘Desert’ which is binary, but using forward, backwards, sequential, and exhaustive selection may provide us with some ideas about variable selection.
 
 ### Forward Selection 
 ```{r Forward Variable Selection}
@@ -960,10 +957,10 @@ anova(model_forward_adjr2,model_forward_bic)
 anova(model_forward_Cp,model_forward_bic)
 ```
 
-After running through all linear models the results showed us that the Region variable comes back as NA meaning this variable is useless to the model and does not seem to impact our dependent variable. We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite, the summary of model_forward_adjr2 indicated that TractWhiteshould not be included in the model because it is not statistically significant, and anova() function's F test gave the same conclusion. When comparing model_forward_Cp to to model_forward_bic we can see that  model_forward_Cp is a better fit model based on the anova results. The model_forward_Cp fit uses all the variables except for TractBlack and TractWhite. We will keep this in mind and see how the backwards, sequential, and exhaustive methods align or contradict the results from forwards selection. 
+After running through all linear models the results showed us that the Region variable comes back as NA meaning this variable is useless to the model and does not seem to impact our dependent variable. We know that the difference between model_forward_adjr2 and model_forward_Cp is TractWhite, the summary of model_forward_adjr2 indicated that TractWhite should not be included in the model because it is not statistically significant, and anova() function's F test gave the same conclusion. When comparing model_forward_Cp to to model_forward_bic we can see that  model_forward_Cp is a better fit model based on the anova results. The model_forward_Cp fit uses all the variables except for TractBlack and TractWhite. We will keep this in mind and see how the backwards, sequential, and exhaustive methods align or contradict the results from forwards selection. 
 
 ### Backwards Selection
-Now we will try backwards selection to see what variables are the best fit based on this method. Again, we realize that becuase our dependent variable is binary we will need to run a logisitc regression. However, we want to have a comprehensive overview of the variables and their outcomes; this is why we are using feature selection to find the best fit linear model. 
+Now we will try backwards selection to see what variables are the best fit based on this method. Again, we realize that because our dependent variable is binary we will need to run a logistic regression. However, we want to have a comprehensive overview of the variables and their outcomes; this is why we are using feature selection to find the best fit linear model. 
 
 ```{R Backward Variable Selection}
 # Backward Selection
@@ -981,7 +978,7 @@ summary(model_backward_BIC)
 anova(model_backward_adjr2,model_backward_BIC)
 ```
 
-Similar to forward selection, when we ran the different models the Region variable comes back as NA for the analysis fore each different region. The results from backwards selection based on the adjsuted R-squared and Cp criterion show that the best fit model would not include the total Hispanic population in a census tract.  The BIC model also shows not to include the total Hispanic population. However, the best BIC model also says not to include median family income, the total Asian popualtion, the total Black population, the total Native Hawaiian population,total White popualtion, and the total multiple racial or other populations in a census tract. So because adjusted R-squared and Cp are the same we are only comparing the adjusted R-squared and BIC models. Based on the results, model_backward_adjr2 is a better choice.
+Similar to forward selection, when we ran the different models the Region variable comes back as NA for the analysis fore each different region. The results from backwards selection based on the adjusted R-squared and Cp criterion show that the best fit model would not include the total Hispanic population in a census tract.  The BIC model also shows not to include the total Hispanic population. However, the best BIC model also says not to include median family income, the total Asian population, the total Black population, the total Native Hawaiian population,total White population, and the total multiple racial or other populations in a census tract. So because adjusted R-squared and Cp are the same we are only comparing the adjusted R-squared and BIC models. Based on the results, model_backward_adjr2 is a better choice.
 
 ### Sequential Selection 
 After doing forwards and backwards selection to make the sequential selection easier, we removed variables 'TractBlack', 'TractWhite' and 'TractHispanic'. 
@@ -1024,7 +1021,7 @@ We did not include the variable 'State' in our model because there are too many 
 The biggest take-away from the the feature selection is that the Region variable is pretty useless in any analysis and we should not consider it in a logistic regression. However, we will look at what the bestglm () function tells us in the next chapter. 
 
 ## Chapter 4.1 
-### Best GLM function for logisitc regression - Variable Selection 
+### Best GLM function for logistic regression - Variable Selection 
 Now that we have looked at variable selection through feature selection and the 'leaps' package, we are now going to look into the bestglm method to find the best fit models for logistic regression. It is key to note that the glmbest () function does have limits. There is a 15 variable maximum, and categorical variables designated as factors are only designated to have two levels at most. Therefore, when deciding which variables to use, we are automatically excluding 'CensusTract', 'State', and 'Region'. Additionally, we will decide the rest of the variable selection based off the multicollinearity piece of our data. By controlling for multicollinearity will we be taking out the variables that are highly correlated to one another based off the correlation matrix. The first model that we are building will have the population variable in it. As such, we will exclude all the variables that were highly correlated with population - such as occupied housing units, total white population, and total kid population. Additionally, our correlation matrix told us that the 'TractSNAP' variable was highly correlated with the 'TractLOWI' variable. Due to the sequential selection suggesting the removal of 'TRACTSNAP', we will take out this variable in replace of the total amount of low-income people in a census tract. Also, the 'TractHispanic' variable was highly correlated with 'TractOMultir' or the total population of multi-racial individuals. However, because this variable is not well-defined we will exclude 'TractHispanic.' Then, for our second model we will be using the variables we excluded in our first model and exclude the variables that were included to maintain control over multicollinearity and test for the best fit model. 
 
 ```{r bestglm Method}
@@ -1088,7 +1085,7 @@ The results of the step-wise function for the forwards and backwards directions 
 
 # Chapter 4.3: Model Selection 
 ## AIC Table - Best Fit Model 
-Here we are using AIC levels to determine the best fit model to use for our logisitcal regression. We have multiple models from the glmbest () and forwards, backwards, sequential, and the step-wise model. Though when doing the glmbest() function our results did not let 'State' be apart of the model, we will be adding this variable to both of these models to test AIC. 
+Here we are using AIC levels to determine the best fit model to use for our logistical regression. We have multiple models from the glmbest () and forwards, backwards, sequential, and the step-wise model. Though when doing the glmbest() function our results did not let 'State' be apart of the model, we will be adding this variable to both of these models to test AIC. 
 
 ```{r results='markup'}
 # Model Building Logistic Regression Based on Featured Selection Variables
@@ -1122,7 +1119,7 @@ aictab(cand.set=models, modnames=model.names)
 ```
 As you can see from the table, out of all of our models the forwards_2 model that we got from the step-wise function is the best fit model. The AIC table shows us that by far this model has the smallest AIC, and because we are doing a logistic regression we want to use AIC as our final criteria for model selection. The AIC measures the maximum likelihood, which is why we want this value to be low. Additionally the AIC is the better criteria for explanatory models and we are wanting to assess what variables impact whether or not a census tract is in a food desert. Because we know that the forwards_2 model did not control for multicollinearity we wanted to use the variables from the step-wise result to asses for multicollinearity. That model is called forwards2_corr and as you can see taking out the variables that were highly correlated only increased the AIC level.
 
-Additionally, we wanted to test how our bestglm models compared to the feature selection models and added them to the table. Unfortunately, the bestglm models are not considered good models based on their AIC level. This is interesting because the bestglm() function is supposed to help you pick the best variables for a logisitc regression. We used AIC model selection to distinguish between a set of possible models describing potential indicators of food deserts. The best fit model, carrying 88% of the cumuluative model weight was the forwards_2 model that included 15 variables to help explain the causes of food deserts.  
+Additionally, we wanted to test how our bestglm models compared to the feature selection models and added them to the table. Unfortunately, the bestglm models are not considered good models based on their AIC level. This is interesting because the bestglm() function is supposed to help you pick the best variables for a logistic regression. We used AIC model selection to distinguish between a set of possible models describing potential indicators of food deserts. The best fit model, carrying 88% of the cumulative model weight was the forwards_2 model that included 15 variables to help explain the causes of food deserts.  
 # Chapter 4.4: Logistic Regression 
 Here we are running the logistic regression on the best fit model 'forwards_2'.
 ```{r results='markup'}
@@ -1133,7 +1130,7 @@ forwards_2<-glm(Desert ~ MedianFamilyIncome + State + Urban + TractLOWI +
 summary(forwards_2)
 exp(forwards_2$coefficients)
 ```
-The above output shows you the coefficients of the forwards_2 model and what variables are statistically significant from this model. What is interesting to note is that states like Alaska and Florida are both statistically significant. At the beginning of the report we looked at a heat map of the food desert proportions across the country and both of these states had higher proportions compared to the rest of the nation. Additionally, we see that states like Michigan that are experiencing a mass wave of gentrification are also statistically significant. The variable Urban is significant with at the .001 level, meaning we are 99.9% confident that this variable has a positive impact on the likelihood of a census tract being in a food desert. The results of this table align with what we have seen in the literature around food deserts and the indicators of food deserts across the country. Furthermore, when you examine the exponetiated coefficients of the variables we can see that all the variables are positive. At the beginning of the report when we conducted normality test we were able to note that the distribution of our whole data set was positive and right-skewed and this is reiterated here.For example, the Urban coefficient is 4.36; so, the odd-ratio of census tract being located in a food desert increases by a factor of 4.36 when located in an urban area. We are 99.9% confident that the urban indicator has a positive relationship with a census tract being located in a food desert.
+The above output shows you the coefficients of the forwards_2 model and what variables are statistically significant from this model. What is interesting to note is that states like Alaska and Florida are both statistically significant. At the beginning of the report we looked at a heat map of the food desert proportions across the country and both of these states had higher proportions compared to the rest of the nation. Additionally, we see that states like Michigan that are experiencing a mass wave of gentrification are also statistically significant. The variable Urban is significant with at the .001 level, meaning we are 99.9% confident that this variable has a positive impact on the likelihood of a census tract being in a food desert. The results of this table align with what we have seen in the literature around food deserts and the indicators of food deserts across the country. Furthermore, when you examine the exponentiated coefficients of the variables we can see that all the variables are positive. At the beginning of the report when we conducted normality test we were able to note that the distribution of our whole data set was positive and right-skewed and this is reiterated here.For example, the Urban coefficient is 4.36; so, the odd-ratio of census tract being located in a food desert increases by a factor of 4.36 when located in an urban area. We are 99.9% confident that the urban indicator has a positive relationship with a census tract being located in a food desert.
 
 The begining of our analysis showed some interesing data around racial disparities and the means of racial populations in food deserts versus not in food deserts. Specifically, American Indian and Native Alaskan population were disproportionatally located in food desert tracts compared to not when we conducted our two sample t-test. Now, looking at our regression results this variable is statistically significant at the .001 level. This means that we are 99.9% confident that the odd-ratio of a census tract being a food desert increases when you are adding at least one additonal American Indian or Alaskan Native person to the census tract. The results of our regression are not suprising based on the exploratory data analysis that we completed earlier in this report.  
 
